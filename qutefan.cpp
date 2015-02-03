@@ -8,31 +8,26 @@ QuteFan::QuteFan(QWidget *parent) :
 {
     ui->setupUi(this);
 
-    trayIcon = new QSystemTrayIcon(this);
-    trayIcon->setIcon(windowIcon());
-    trayIcon->show();
-
     nvapi = new QNvAPI();
-    if(!nvapi->Available()) {
+    trayIcon = new QSystemTrayIcon(this);
+    timer = new QTimer(this);
+
+    if(!nvapi->Available())
         QMessageBox::critical(this, "Error", "NvAPI is not available.");
-        exit(1);
-    }
 
     nvapi->status = nvapi->Initialize();
 
-
-    for (i = 0; nvapi->status == NVAPI_OK; i++) {
+    for(unsigned int i = 0; nvapi->status == NVAPI_OK; i++) {
         nvapi->status = nvapi->EnumNvidiaDisplayHandle(i, &nvapi->displayHandle[i]);
         if (nvapi->status == NVAPI_OK)
             nvapi->displayCount++;
     }
     qDebug("No of displays = %u", nvapi->displayCount);
 
-
     nvapi->status = nvapi->EnumPhysicalGPUs(nvapi->gpuHandle, &nvapi->gpuCount);
     qDebug("Total number of GPU's = %u", nvapi->gpuCount);
 
-    for(i = 0; i < nvapi->gpuCount; i++) {
+    for(unsigned int i = 0; i < nvapi->gpuCount; i++) {
         nvapi->GPU_GetFullName(nvapi->gpuHandle[i], nvapi->gpuName[i]);
 
         gpuTab[i] = new GpuTab();
@@ -40,17 +35,17 @@ QuteFan::QuteFan(QWidget *parent) :
         ui->tabWidgetGpu->addTab(gpuTab[i], QString("%1").arg(nvapi->gpuName[i]));
     }
 
-
     nvapi->status = nvapi->GetInterfaceVersionString(nvapi->version);
     qDebug("Version: %s", nvapi->version);
 
+    trayIcon->setIcon(windowIcon());
+    trayIcon->show();
 
-    saveDefaults();
-
-
-    timer = new QTimer(this);
+    // Signals and slots
+    connect(ui->actionQuit, SIGNAL(triggered()), this, SLOT(close()));
     connect(timer, SIGNAL(timeout()), this, SLOT(regulate()));
 
+    saveDefaults();
     timer->start(1000);
 }
 
@@ -62,30 +57,53 @@ QuteFan::~QuteFan()
 
 void QuteFan::saveDefaults()
 {
-    for(i = 0; i < nvapi->gpuCount; i++) {
+    for(unsigned int i = 0; i < nvapi->gpuCount; i++) {
         nvapi->status = nvapi->GPU_GetCoolerSettings(nvapi->gpuHandle[i], 0, &nvapi->coolerSettings[i]);
-
         defaultCoolerLevels[i].cooler[0].level = nvapi->coolerSettings[i].cooler[0].currentLevel;
         defaultCoolerLevels[i].cooler[0].policy = nvapi->coolerSettings[i].cooler[0].currentPolicy;
     }
+    qDebug("Saved defaults");
 }
 
 void QuteFan::restoreDefaults()
 {
-    for(i = 0; i < nvapi->gpuCount; i++)
+    for(unsigned int i = 0; i < nvapi->gpuCount; i++)
         nvapi->status = nvapi->GPU_SetCoolerLevels(nvapi->gpuHandle[i], 0, &defaultCoolerLevels[i]);
+    qDebug("Restored defaults");
 }
 
 void QuteFan::regulate()
 {
-    for(i = 0; i < nvapi->gpuCount; i++) {
+    for(unsigned int i = 0; i < nvapi->gpuCount; i++) {
         nvapi->status = nvapi->GPU_GetThermalSettings(nvapi->gpuHandle[i], 0, &nvapi->thermalSettings[i]);
         gpuTab[i]->setTempValue(QString("%1°C").arg(nvapi->thermalSettings[i].sensor[0].currentTemp));
 
         NV_GPU_COOLER_LEVELS newCoolerLevels;
-        newCoolerLevels.cooler[0].level = nvapi->thermalSettings[i].sensor[0].currentTemp;
         newCoolerLevels.cooler[0].policy = 1;
-        nvapi->status = nvapi->GPU_SetCoolerLevels(nvapi->gpuHandle[i], 0, &newCoolerLevels);
+
+
+        GpuTab::FanMode mode = gpuTab[i]->getMode();
+        if(mode == GpuTab::FanMode::Off) {
+            if(mode != lastMode[i]) restoreDefaults();
+
+        } else if(mode == GpuTab::FanMode::Quiet) {
+            newCoolerLevels.cooler[0].level = NVAPI_MIN_COOLER_LEVEL;
+            nvapi->status = nvapi->GPU_SetCoolerLevels(nvapi->gpuHandle[i], 0, &newCoolerLevels);
+
+        } else if(mode == GpuTab::FanMode::Fixed) {
+            newCoolerLevels.cooler[0].level = gpuTab[i]->getFixedLevel();
+            nvapi->status = nvapi->GPU_SetCoolerLevels(nvapi->gpuHandle[i], 0, &newCoolerLevels);
+
+        } else if(mode == GpuTab::FanMode::Linear) {
+            newCoolerLevels.cooler[0].level = nvapi->thermalSettings[i].sensor[0].currentTemp + gpuTab[i]->getLinearOffset();
+            nvapi->status = nvapi->GPU_SetCoolerLevels(nvapi->gpuHandle[i], 0, &newCoolerLevels);
+
+        } else if(mode == GpuTab::FanMode::Graph) {
+
+        }
+
+        lastMode[i] = mode;
+
 
         nvapi->status = nvapi->GPU_GetCoolerSettings(nvapi->gpuHandle[i], 0, &nvapi->coolerSettings[i]);
         gpuTab[i]->setLevelValue(QString("%1%").arg(nvapi->coolerSettings[i].cooler[0].currentLevel));

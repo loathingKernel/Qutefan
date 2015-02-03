@@ -30,12 +30,12 @@ private slots:
 
 private:
     Ui::QuteFan *ui;
+    GpuTab::FanMode lastMode[NVAPI_MAX_PHYSICAL_GPUS] = {};
     QSystemTrayIcon *trayIcon;
     GpuTab *gpuTab[NVAPI_MAX_PHYSICAL_GPUS];
     QTimer *timer;
     QNvAPI *nvapi;
     NV_GPU_COOLER_LEVELS defaultCoolerLevels[NVAPI_MAX_PHYSICAL_GPUS];
-    unsigned int i;
 };
 
 #endif // QUTEFAN_H
