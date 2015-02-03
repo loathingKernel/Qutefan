@@ -1,4 +1,5 @@
 build-*
+*.db
 platforms/nvapi/include
 
 # C++ objects and libs
