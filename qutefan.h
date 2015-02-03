@@ -4,7 +4,9 @@
 #include <QMainWindow>
 #include <QMessageBox>
 #include <QTimer>
-#include <QTextStream>
+#include <QIcon>
+#include <QSystemTrayIcon>
+#include "gputab.h"
 #include "platforms/nvapi/qnvapi.h"
 
 
@@ -28,6 +30,8 @@ private slots:
 
 private:
     Ui::QuteFan *ui;
+    QSystemTrayIcon *trayIcon;
+    GpuTab *gpuTab[NVAPI_MAX_PHYSICAL_GPUS];
     QTimer *timer;
     QNvAPI *nvapi;
     NV_GPU_COOLER_LEVELS defaultCoolerLevels[NVAPI_MAX_PHYSICAL_GPUS];

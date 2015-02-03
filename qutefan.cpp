@@ -8,6 +8,10 @@ QuteFan::QuteFan(QWidget *parent) :
 {
     ui->setupUi(this);
 
+    trayIcon = new QSystemTrayIcon(this);
+    trayIcon->setIcon(windowIcon());
+    trayIcon->show();
+
     nvapi = new QNvAPI();
     if(!nvapi->Available()) {
         QMessageBox::critical(this, "Error", "NvAPI is not available.");
@@ -30,7 +34,10 @@ QuteFan::QuteFan(QWidget *parent) :
 
     for(i = 0; i < nvapi->gpuCount; i++) {
         nvapi->GPU_GetFullName(nvapi->gpuHandle[i], nvapi->gpuName[i]);
-        ui->tabWidget->setTabText(i, QString("%1").arg(nvapi->gpuName[i]));
+
+        gpuTab[i] = new GpuTab();
+        gpuTab[i]->setObjectName(QStringLiteral("gpuTab_%1").arg(i));
+        ui->tabWidget->addTab(gpuTab[i], QString("%1").arg(nvapi->gpuName[i]));
     }
 
 
@@ -73,7 +80,7 @@ void QuteFan::regulate()
 {
     for(i = 0; i < nvapi->gpuCount; i++) {
         nvapi->status = nvapi->GPU_GetThermalSettings(nvapi->gpuHandle[i], 0, &nvapi->thermalSettings[i]);
-        ui->labelTempValue->setText(QString("%1°C").arg(nvapi->thermalSettings[i].sensor[0].currentTemp));
+        this->gpuTab[i]->labelTempValue->setText(QString("%1°C").arg(nvapi->thermalSettings[i].sensor[0].currentTemp));
 
         NV_GPU_COOLER_LEVELS newCoolerLevels;
         newCoolerLevels.cooler[0].level = nvapi->thermalSettings[i].sensor[0].currentTemp;
@@ -81,7 +88,7 @@ void QuteFan::regulate()
         nvapi->status = nvapi->GPU_SetCoolerLevels(nvapi->gpuHandle[i], 0, &newCoolerLevels);
 
         nvapi->status = nvapi->GPU_GetCoolerSettings(nvapi->gpuHandle[i], 0, &nvapi->coolerSettings[i]);
-        ui->labelLevelValue->setText(QString("%1%").arg(nvapi->coolerSettings[i].cooler[0].currentLevel));
+        this->gpuTab[i]->labelLevelValue->setText(QString("%1%").arg(nvapi->coolerSettings[i].cooler[0].currentLevel));
     }
 
 }

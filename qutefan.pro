@@ -11,14 +11,21 @@ greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 TARGET   = qutefan
 TEMPLATE = app
 
-
-SOURCES += main.cpp \
+SOURCES += \
+    main.cpp \
     qutefan.cpp \
     platforms/nvapi/qnvapi.cpp \
-    platforms/nvctrl/qnvctrl.cpp
+    platforms/nvctrl/qnvctrl.cpp \
+    gputab.cpp
 
-HEADERS += qutefan.h \
+HEADERS += \
+    qutefan.h \
     platforms/nvapi/qnvapi.h \
-    platforms/nvctrl/qnvctrl.h
+    platforms/nvctrl/qnvctrl.h \
+    gputab.h
 
-FORMS += qutefan.ui
+FORMS += \
+    qutefan.ui
+
+RESOURCES += \
+    qutefan.qrc
