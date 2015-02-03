@@ -12,20 +12,21 @@ TARGET   = qutefan
 TEMPLATE = app
 
 SOURCES += \
-    main.cpp \
-    qutefan.cpp \
     platforms/nvapi/qnvapi.cpp \
     platforms/nvctrl/qnvctrl.cpp \
+    main.cpp \
+    qutefan.cpp \
     gputab.cpp
 
 HEADERS += \
-    qutefan.h \
     platforms/nvapi/qnvapi.h \
     platforms/nvctrl/qnvctrl.h \
+    qutefan.h \
     gputab.h
 
 FORMS += \
-    qutefan.ui
+    qutefan.ui \
+    gputab.ui
 
 RESOURCES += \
     qutefan.qrc
