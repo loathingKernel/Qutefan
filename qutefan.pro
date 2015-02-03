@@ -30,3 +30,6 @@ FORMS += \
 
 RESOURCES += \
     qutefan.qrc
+
+RC_ICONS += \
+    images/qutefan.ico
