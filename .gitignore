@@ -1,6 +1,5 @@
-build-*
-*.db
-platforms/nvapi/include
+Thumbs.db
+platforms/*/include
 
 # C++ objects and libs
 *.slo
