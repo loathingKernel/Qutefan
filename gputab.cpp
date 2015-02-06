@@ -25,12 +25,12 @@ void GpuTab::setLevelValue(QString value)
 
 int GpuTab::getFixedLevel()
 {
-    return ui->spinBoxFixedLevelValue->text ().toInt();
+    return ui->spinBoxFixedLevel->text ().toInt();
 }
 
 int GpuTab::getLinearOffset()
 {
-    return ui->spinBoxLinearOffsetValue->text().toInt();
+    return ui->spinBoxLinearOffset->text().toInt();
 }
 
 GpuTab::FanMode GpuTab::getMode()

@@ -6,9 +6,12 @@
 #include <QTimer>
 #include <QIcon>
 #include <QSystemTrayIcon>
+#include <QCloseEvent>
 #include "gputab.h"
-#include "platforms/nvapi/qnvapi.h"
+#include "qutefantrayicon.h"
 
+#include "platforms/nvapi/qnvapi.h"
+#include "platforms/nvctrl/qnvctrl.h"
 
 namespace Ui {
 class QuteFan;
@@ -22,20 +25,33 @@ public:
     explicit QuteFan(QWidget *parent = 0);
     ~QuteFan();
 
-    void saveDefaults();
-    void restoreDefaults();
+protected:
+    void closeEvent(QCloseEvent *event);
 
 private slots:
-    void regulate();
+    void regulateFan();
+    void intervalChanged(int);
 
 private:
-    Ui::QuteFan *ui;
-    GpuTab::FanMode lastMode[NVAPI_MAX_PHYSICAL_GPUS] = {};
-    QSystemTrayIcon *trayIcon;
-    GpuTab *gpuTab[NVAPI_MAX_PHYSICAL_GPUS];
-    QTimer *timer;
+    void initializeNvAPI();
+    void initializeNVCtrl();
+
+    void storeGpuDefaults();
+    void restoreGpuDefaults(unsigned int);
+
     QNvAPI *nvapi;
     NV_GPU_COOLER_LEVELS defaultCoolerLevels[NVAPI_MAX_PHYSICAL_GPUS];
+
+    GpuTab *gpuTab[NVAPI_MAX_PHYSICAL_GPUS];
+    GpuTab::FanMode lastMode[NVAPI_MAX_PHYSICAL_GPUS] = {};
+
+    QTimer *timer;
+    int interval;
+
+    QuteFanTrayIcon *trayIcon;
+    bool firstCloseToTray = true;
+
+    Ui::QuteFan *ui;
 };
 
 #endif // QUTEFAN_H

@@ -6,16 +6,100 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>235</width>
-    <height>175</height>
+    <width>346</width>
+    <height>201</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>Form</string>
   </property>
   <layout class="QGridLayout" name="gridLayout">
-   <item row="2" column="0" colspan="2">
-    <spacer name="verticalSpacerTab">
+   <item row="0" column="2">
+    <widget class="QGroupBox" name="groupBoxReadings">
+     <property name="title">
+      <string>Readings:</string>
+     </property>
+     <layout class="QVBoxLayout" name="verticalLayout">
+      <item>
+       <layout class="QHBoxLayout" name="horizontalLayoutLevel">
+        <item>
+         <widget class="QLabel" name="labelLevel">
+          <property name="text">
+           <string>Fan level:</string>
+          </property>
+          <property name="alignment">
+           <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QLabel" name="labelLevelValue">
+          <property name="minimumSize">
+           <size>
+            <width>36</width>
+            <height>0</height>
+           </size>
+          </property>
+          <property name="maximumSize">
+           <size>
+            <width>36</width>
+            <height>16777215</height>
+           </size>
+          </property>
+          <property name="frameShape">
+           <enum>QFrame::StyledPanel</enum>
+          </property>
+          <property name="text">
+           <string>0%</string>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </item>
+      <item>
+       <layout class="QHBoxLayout" name="horizontalLayoutTemp">
+        <item>
+         <widget class="QLabel" name="labelTemp">
+          <property name="text">
+           <string>Temperature:</string>
+          </property>
+          <property name="alignment">
+           <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QLabel" name="labelTempValue">
+          <property name="minimumSize">
+           <size>
+            <width>36</width>
+            <height>0</height>
+           </size>
+          </property>
+          <property name="maximumSize">
+           <size>
+            <width>36</width>
+            <height>16777215</height>
+           </size>
+          </property>
+          <property name="frameShape">
+           <enum>QFrame::StyledPanel</enum>
+          </property>
+          <property name="text">
+           <string>0ºC</string>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </item>
+     </layout>
+     <zorder>horizontalSpacer_2</zorder>
+     <zorder></zorder>
+     <zorder></zorder>
+    </widget>
+   </item>
+   <item row="2" column="1">
+    <spacer name="verticalSpacerMode">
      <property name="orientation">
       <enum>Qt::Vertical</enum>
      </property>
@@ -27,87 +111,20 @@
      </property>
     </spacer>
    </item>
-   <item row="3" column="1">
-    <layout class="QHBoxLayout" name="horizontalLayoutLevel">
-     <item>
-      <widget class="QLabel" name="labelLevel">
-       <property name="text">
-        <string>Fan level:</string>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QLabel" name="labelLevelValue">
-       <property name="minimumSize">
-        <size>
-         <width>36</width>
-         <height>0</height>
-        </size>
-       </property>
-       <property name="frameShape">
-        <enum>QFrame::StyledPanel</enum>
-       </property>
-       <property name="text">
-        <string>0%</string>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <spacer name="horizontalSpacerLevel">
-       <property name="orientation">
-        <enum>Qt::Horizontal</enum>
-       </property>
-       <property name="sizeHint" stdset="0">
-        <size>
-         <width>40</width>
-         <height>20</height>
-        </size>
-       </property>
-      </spacer>
-     </item>
-    </layout>
+   <item row="1" column="2" rowspan="2">
+    <spacer name="verticalSpacerReadings">
+     <property name="orientation">
+      <enum>Qt::Vertical</enum>
+     </property>
+     <property name="sizeHint" stdset="0">
+      <size>
+       <width>20</width>
+       <height>40</height>
+      </size>
+     </property>
+    </spacer>
    </item>
-   <item row="3" column="0">
-    <layout class="QHBoxLayout" name="horizontalLayoutTemp">
-     <item>
-      <widget class="QLabel" name="labelTemp">
-       <property name="text">
-        <string>Temperature:</string>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QLabel" name="labelTempValue">
-       <property name="minimumSize">
-        <size>
-         <width>36</width>
-         <height>0</height>
-        </size>
-       </property>
-       <property name="frameShape">
-        <enum>QFrame::StyledPanel</enum>
-       </property>
-       <property name="text">
-        <string>0ºC</string>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <spacer name="horizontalSpacerTemp">
-       <property name="orientation">
-        <enum>Qt::Horizontal</enum>
-       </property>
-       <property name="sizeHint" stdset="0">
-        <size>
-         <width>40</width>
-         <height>20</height>
-        </size>
-       </property>
-      </spacer>
-     </item>
-    </layout>
-   </item>
-   <item row="0" column="0" colspan="2">
+   <item row="0" column="1" rowspan="2">
     <layout class="QGridLayout" name="gridLayoutMode">
      <item row="3" column="0">
       <widget class="QRadioButton" name="radioButtonLinear">
@@ -132,42 +149,6 @@
        </property>
       </widget>
      </item>
-     <item row="1" column="0">
-      <widget class="QRadioButton" name="radioButtonQuiet">
-       <property name="font">
-        <font>
-         <weight>75</weight>
-         <bold>true</bold>
-        </font>
-       </property>
-       <property name="text">
-        <string>Quiet</string>
-       </property>
-      </widget>
-     </item>
-     <item row="3" column="3">
-      <spacer name="horizontalSpacerMode">
-       <property name="orientation">
-        <enum>Qt::Horizontal</enum>
-       </property>
-       <property name="sizeHint" stdset="0">
-        <size>
-         <width>40</width>
-         <height>20</height>
-        </size>
-       </property>
-      </spacer>
-     </item>
-     <item row="3" column="2">
-      <widget class="QSpinBox" name="spinBoxLinearOffsetValue">
-       <property name="minimum">
-        <number>-10</number>
-       </property>
-       <property name="maximum">
-        <number>10</number>
-       </property>
-      </widget>
-     </item>
      <item row="0" column="0">
       <widget class="QRadioButton" name="radioButtonOff">
        <property name="font">
@@ -184,10 +165,43 @@
        </property>
       </widget>
      </item>
+     <item row="1" column="0">
+      <widget class="QRadioButton" name="radioButtonQuiet">
+       <property name="font">
+        <font>
+         <weight>75</weight>
+         <bold>true</bold>
+        </font>
+       </property>
+       <property name="text">
+        <string>Quiet</string>
+       </property>
+      </widget>
+     </item>
+     <item row="3" column="2">
+      <widget class="QSpinBox" name="spinBoxLinearOffset">
+       <property name="minimum">
+        <number>-10</number>
+       </property>
+       <property name="maximum">
+        <number>10</number>
+       </property>
+      </widget>
+     </item>
      <item row="4" column="1" colspan="2">
       <widget class="QPushButton" name="pushButtonGraphEdit">
        <property name="text">
         <string>Edit</string>
+       </property>
+      </widget>
+     </item>
+     <item row="2" column="1">
+      <widget class="QLabel" name="labelFixedLevel">
+       <property name="text">
+        <string>Level:</string>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
        </property>
       </widget>
      </item>
@@ -217,18 +231,8 @@
        </property>
       </widget>
      </item>
-     <item row="2" column="1">
-      <widget class="QLabel" name="labelFixedLevel">
-       <property name="text">
-        <string>Level:</string>
-       </property>
-       <property name="alignment">
-        <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-       </property>
-      </widget>
-     </item>
      <item row="2" column="2">
-      <widget class="QSpinBox" name="spinBoxFixedLevelValue">
+      <widget class="QSpinBox" name="spinBoxFixedLevel">
        <property name="minimum">
         <number>30</number>
        </property>
@@ -238,6 +242,19 @@
       </widget>
      </item>
     </layout>
+   </item>
+   <item row="0" column="3" rowspan="3">
+    <spacer name="horizontalSpacerTab">
+     <property name="orientation">
+      <enum>Qt::Horizontal</enum>
+     </property>
+     <property name="sizeHint" stdset="0">
+      <size>
+       <width>40</width>
+       <height>20</height>
+      </size>
+     </property>
+    </spacer>
    </item>
   </layout>
  </widget>

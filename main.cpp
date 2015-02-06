@@ -5,7 +5,7 @@ int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
     a.setOrganizationName("loathingkernel");
-    a.setApplicationName("QuteFan");
+    a.setApplicationName("Qutefan");
     a.setApplicationVersion("0.0.1");
     a.setStyle("GTK+");
 
@@ -14,7 +14,7 @@ int main(int argc, char *argv[])
     a.setFont(f);
 
     QuteFan w;
-    w.setWindowTitle(QString("%1").arg(a.applicationName()));
+    w.setWindowTitle(a.applicationName());
     w.show();
 
     return a.exec();

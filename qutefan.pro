@@ -16,13 +16,15 @@ SOURCES += \
     platforms/nvctrl/qnvctrl.cpp \
     main.cpp \
     qutefan.cpp \
-    gputab.cpp
+    gputab.cpp \
+    qutefantrayicon.cpp
 
 HEADERS += \
     platforms/nvapi/qnvapi.h \
     platforms/nvctrl/qnvctrl.h \
     qutefan.h \
-    gputab.h
+    gputab.h \
+    qutefantrayicon.h
 
 FORMS += \
     qutefan.ui \
