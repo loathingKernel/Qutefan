@@ -85,6 +85,16 @@ NvAPI_Status QNvAPI::EnumPhysicalGPUs(NvPhysicalGpuHandle nvGPUHandle[NVAPI_MAX_
     return nvapi_status;
 }
 
+NvAPI_Status QNvAPI::EnumPhysicalGPUs()
+{
+    NvPhysicalGpuHandle handle[NVAPI_MAX_PHYSICAL_GPUS];
+
+    nvapi_status = EnumPhysicalGPUs(handle, &gpuCount);
+    for(unsigned int i = 0; i < gpuCount; i++)
+        gpu[i].handle = handle[i];
+    return nvapi_status;
+}
+
 NvAPI_Status QNvAPI::GetInterfaceVersionString(NvAPI_ShortString szDesc)
 {
     nvapi_status = nvapi_GetInterfaceVersionString(szDesc);
@@ -217,7 +227,7 @@ NvAPI_Status QNvAPI::GPU_SetCoolerLevels(NvPhysicalGpuHandle hPhysicalGpu, NvU32
     pCoolerLevels->version = NV_GPU_COOLER_LEVELS_VER;
     nvapi_status = nvapi_GPU_SetCoolerLevels(hPhysicalGpu, coolerIndex, pCoolerLevels);
     if(nvapi_status != NVAPI_OK)
-        qDebug("NvAPI_GPU_GetCoolerLevels() failed with status %d", nvapi_status);
+        qDebug("NvAPI_GPU_SetCoolerLevels() failed with status %d", nvapi_status);
     return nvapi_status;
 }
 

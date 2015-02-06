@@ -63,6 +63,7 @@ typedef struct {
 } NV_GPU_COOLER_LEVELS_V1;
 typedef NV_GPU_COOLER_LEVELS_V1 NV_GPU_COOLER_LEVELS;
 
+
 class QNvAPI : public QLibrary
 {
 public:
@@ -71,19 +72,21 @@ public:
     NvAPI_Status status = NVAPI_OK;
     NvAPI_ShortString version = {};
 
-    NvDisplayHandle displayHandle[NVAPI_MAX_PHYSICAL_GPUS*NVAPI_MAX_DISPLAY_HEADS] = {};
+    NV_DISPLAY_DRIVER_VERSION driverVersion = {};
+
     NvU32 displayCount = 0;
+    NvDisplayHandle displayHandle[NVAPI_MAX_PHYSICAL_GPUS*NVAPI_MAX_DISPLAY_HEADS] = {};
 
-    NvPhysicalGpuHandle gpuHandle[NVAPI_MAX_PHYSICAL_GPUS] = {};
     NvU32 gpuCount = 0;
-
-    NvAPI_ShortString gpuName[NVAPI_MAX_PHYSICAL_GPUS] = {};
-
-    NvU32 coolerTach[NVAPI_MAX_PHYSICAL_GPUS] = {};
-
-    NV_GPU_THERMAL_SETTINGS thermalSettings[NVAPI_MAX_PHYSICAL_GPUS] = {};
-    NV_GPU_COOLER_SETTINGS coolerSettings[NVAPI_MAX_PHYSICAL_GPUS] = {};
-    NV_GPU_COOLER_LEVELS coolerLevels[NVAPI_MAX_PHYSICAL_GPUS] = {};
+    typedef struct {
+        NvPhysicalGpuHandle handle;
+        NvAPI_ShortString name;
+        NvU32 coolerTach;
+        NV_GPU_THERMAL_SETTINGS thermalSettings;
+        NV_GPU_COOLER_SETTINGS coolerSettings;
+        NV_GPU_COOLER_LEVELS coolerLevels;
+    } NvGPU;
+    NvGPU gpu[NVAPI_MAX_PHYSICAL_GPUS] = {};
 
     QNvAPI(void);
 
@@ -91,6 +94,7 @@ public:
 
     NvAPI_Status EnumNvidiaDisplayHandle(NvU32, NvDisplayHandle*);
     NvAPI_Status EnumPhysicalGPUs(NvPhysicalGpuHandle[NVAPI_MAX_PHYSICAL_GPUS], NvU32*);
+    NvAPI_Status EnumPhysicalGPUs();
 
     NvAPI_Status GetInterfaceVersionString(NvAPI_ShortString);
     NvAPI_Status GetDisplayDriverVersion(NvDisplayHandle, NV_DISPLAY_DRIVER_VERSION*);
