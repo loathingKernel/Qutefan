@@ -6,6 +6,12 @@ GpuTab::GpuTab(QWidget *parent) :
     ui(new Ui::GpuTab)
 {
     ui->setupUi(this);
+
+#ifdef Q_OS_LINUX
+    QString groupBoxStyle("QGroupBox {border: 1px solid rgba(0, 0, 0, .3); border-radius: 5px; margin-top: 0.5em;}"
+                          "QGroupBox::title {subcontrol-origin: margin; left: 10px; padding: 0 3px 0 3px;}");
+    ui->groupBoxReadings->setStyleSheet(groupBoxStyle);
+#endif
 }
 
 GpuTab::~GpuTab()

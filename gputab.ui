@@ -16,46 +16,13 @@
   <layout class="QGridLayout" name="gridLayout">
    <item row="0" column="2">
     <widget class="QGroupBox" name="groupBoxReadings">
+     <property name="styleSheet">
+      <string notr="true"/>
+     </property>
      <property name="title">
       <string>Readings:</string>
      </property>
      <layout class="QVBoxLayout" name="verticalLayout">
-      <item>
-       <layout class="QHBoxLayout" name="horizontalLayoutLevel">
-        <item>
-         <widget class="QLabel" name="labelLevel">
-          <property name="text">
-           <string>Fan level:</string>
-          </property>
-          <property name="alignment">
-           <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="QLabel" name="labelLevelValue">
-          <property name="minimumSize">
-           <size>
-            <width>36</width>
-            <height>0</height>
-           </size>
-          </property>
-          <property name="maximumSize">
-           <size>
-            <width>36</width>
-            <height>16777215</height>
-           </size>
-          </property>
-          <property name="frameShape">
-           <enum>QFrame::StyledPanel</enum>
-          </property>
-          <property name="text">
-           <string>0%</string>
-          </property>
-         </widget>
-        </item>
-       </layout>
-      </item>
       <item>
        <layout class="QHBoxLayout" name="horizontalLayoutTemp">
         <item>
@@ -92,8 +59,43 @@
         </item>
        </layout>
       </item>
+      <item>
+       <layout class="QHBoxLayout" name="horizontalLayoutLevel">
+        <item>
+         <widget class="QLabel" name="labelLevel">
+          <property name="text">
+           <string>Fan level:</string>
+          </property>
+          <property name="alignment">
+           <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QLabel" name="labelLevelValue">
+          <property name="minimumSize">
+           <size>
+            <width>36</width>
+            <height>0</height>
+           </size>
+          </property>
+          <property name="maximumSize">
+           <size>
+            <width>36</width>
+            <height>16777215</height>
+           </size>
+          </property>
+          <property name="frameShape">
+           <enum>QFrame::StyledPanel</enum>
+          </property>
+          <property name="text">
+           <string>0%</string>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </item>
      </layout>
-     <zorder>horizontalSpacer_2</zorder>
      <zorder></zorder>
      <zorder></zorder>
     </widget>

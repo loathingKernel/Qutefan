@@ -7,7 +7,6 @@ int main(int argc, char *argv[])
     a.setOrganizationName("loathingkernel");
     a.setApplicationName("Qutefan");
     a.setApplicationVersion("0.0.1");
-    a.setStyle("GTK+");
 
     QFont f;
     f.setHintingPreference(QFont::PreferFullHinting);

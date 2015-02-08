@@ -7,6 +7,7 @@
 #include <QSystemTrayIcon>
 #include <QTimer>
 #include <QMainWindow>
+#include <QPainter>
 
 class QuteFanTrayIcon : public QSystemTrayIcon
 {
