@@ -10,8 +10,8 @@
 #include "gputab.h"
 #include "qutefantrayicon.h"
 
-#include "platforms/nvapi/qnvapi.h"
-#include "platforms/nvctrl/qnvctrl.h"
+#include "qnvapi.h"
+#include "qnvctrl.h"
 
 namespace Ui {
 class QuteFan;

@@ -22,6 +22,7 @@ QuteFanTrayIcon::QuteFanTrayIcon(QMainWindow *parent) :
 
     setContextMenu(menu);
     setIcon(parent->windowIcon());
+    setToolTip(qApp->applicationName());
 
     connect(this, SIGNAL(activated(QSystemTrayIcon::ActivationReason)),
             this, SLOT(activated(QSystemTrayIcon::ActivationReason)));
@@ -33,6 +34,11 @@ void QuteFanTrayIcon::updateMenu()
 {
     actionShow->setVisible(!main->isVisible());
     actionHide->setVisible(main->isVisible());
+}
+
+void QuteFanTrayIcon::updateTooltip(QString append)
+{
+    setToolTip(qApp->applicationName() + " " + append);
 }
 
 void QuteFanTrayIcon::showWindow()

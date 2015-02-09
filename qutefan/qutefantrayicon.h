@@ -19,6 +19,7 @@ signals:
 
 public slots:
     void updateMenu();
+    void updateTooltip(QString);
 
     void showWindow();
     void hideWindow();

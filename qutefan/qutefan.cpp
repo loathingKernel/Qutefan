@@ -97,6 +97,7 @@ void QuteFan::regulateFan()
 
         nvapi->status = nvapi->GPU_GetCoolerSettings(nvapi->gpu[i].handle, 0, &nvapi->gpu[i].coolerSettings);
         gpuTab[i]->setLevelValue(QString("%1%").arg(nvapi->gpu[i].coolerSettings.cooler[0].currentLevel));
+
     }
 
 }
