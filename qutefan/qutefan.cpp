@@ -19,12 +19,17 @@ QuteFan::QuteFan(QWidget *parent) :
         QMessageBox::critical(this, "Error", "No supported hardware was found.");
 #endif
 
-    storeGpuDefaults();
+    getGpuDefaults();
 
     // Dynamically add tabs for as many GPUs as were found.
     for(unsigned int i = 0; i < nvapi->gpuCount; i++) {
         gpuTab[i] = new GpuTab();
         ui->tabWidgetGpu->addTab(gpuTab[i], QString("%1").arg(nvapi->gpu[i].name));
+        gpuTab[i]->setFixedLevelLimits(
+                nvapi->gpu[i].coolerSettings.cooler[0].defaultMin,
+                nvapi->gpu[i].coolerSettings.cooler[0].defaultMax,
+                nvapi->gpu[i].coolerSettings.cooler[0].defaultMin,
+                5);
     }
 
     // Resize window to the minimum possible and don't let it be resized.
@@ -43,7 +48,7 @@ QuteFan::QuteFan(QWidget *parent) :
 QuteFan::~QuteFan()
 {
     for(unsigned int i = 0; i < nvapi->gpuCount; i++)
-        restoreGpuDefaults(i);
+        setGpuDefaults(i);
     delete ui;
 }
 
@@ -62,16 +67,21 @@ void QuteFan::closeEvent(QCloseEvent *event)
 
 void QuteFan::regulateFan()
 {
+    unsigned int currentTemp;
+    unsigned int currentLevel;
+
     for(unsigned int i = 0; i < nvapi->gpuCount; i++) {
         nvapi->status = nvapi->GPU_GetThermalSettings(nvapi->gpu[i].handle, 0, &nvapi->gpu[i].thermalSettings);
-        gpuTab[i]->setTempValue(QString("%1°C").arg(nvapi->gpu[i].thermalSettings.sensor[0].currentTemp));
+        currentTemp = nvapi->gpu[i].thermalSettings.sensor[0].currentTemp;
+        if(maxTemp[i] < currentTemp) maxTemp[i] = currentTemp;
+        gpuTab[i]->setTempValues(QString("%1°C").arg(currentTemp), QString("%1°C").arg(maxTemp[i]));
 
 
         GpuTab::FanMode mode = gpuTab[i]->getMode();
 
         if(mode == GpuTab::FanMode::Off) {
             if(mode != lastMode[i])
-                restoreGpuDefaults(i);
+                setGpuDefaults(i);
 
         } else {
             NV_GPU_COOLER_LEVELS newCoolerLevels;
@@ -79,13 +89,13 @@ void QuteFan::regulateFan()
 
             switch(mode) {
             case GpuTab::FanMode::Quiet:
-                newCoolerLevels.cooler[0].level = NVAPI_MIN_COOLER_LEVEL;
+                newCoolerLevels.cooler[0].level = nvapi->gpu[i].coolerSettings.cooler[0].defaultMin;
                 break;
             case GpuTab::FanMode::Fixed:
                 newCoolerLevels.cooler[0].level = gpuTab[i]->getFixedLevel();
                 break;
             case GpuTab::FanMode::Linear:
-                newCoolerLevels.cooler[0].level = nvapi->gpu[i].thermalSettings.sensor[0].currentTemp + gpuTab[i]->getLinearOffset();
+                newCoolerLevels.cooler[0].level =currentTemp + gpuTab[i]->getLinearOffset();
                 break;
             case GpuTab::FanMode::Graph:
                 break;
@@ -98,8 +108,9 @@ void QuteFan::regulateFan()
 
 
         nvapi->status = nvapi->GPU_GetCoolerSettings(nvapi->gpu[i].handle, 0, &nvapi->gpu[i].coolerSettings);
-        gpuTab[i]->setLevelValue(QString("%1%").arg(nvapi->gpu[i].coolerSettings.cooler[0].currentLevel));
-
+        currentLevel = nvapi->gpu[i].coolerSettings.cooler[0].currentLevel;
+        if(maxLevel[i] < currentLevel) maxLevel[i] = currentLevel;
+        gpuTab[i]->setLevelValues(QString("%1%").arg(currentLevel), QString("%1%").arg(maxLevel[i]));
     }
 
 }
@@ -129,7 +140,7 @@ void QuteFan::initializeNVCtrl()
 
 }
 
-void QuteFan::storeGpuDefaults()
+void QuteFan::getGpuDefaults()
 {
     for(unsigned int i = 0; i < nvapi->gpuCount; i++) {
         nvapi->status = nvapi->GPU_GetCoolerSettings(nvapi->gpu[i].handle, 0, &nvapi->gpu[i].coolerSettings);
@@ -139,7 +150,7 @@ void QuteFan::storeGpuDefaults()
     qDebug("Saved defaults");
 }
 
-void QuteFan::restoreGpuDefaults(unsigned int index)
+void QuteFan::setGpuDefaults(unsigned int index)
 {
     nvapi->status = nvapi->GPU_SetCoolerLevels(nvapi->gpu[index].handle, 0, &defaultCoolerLevels[index]);
     qDebug("Restored defaults for GPU %u", index);

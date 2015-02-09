@@ -23,8 +23,10 @@ public:
         Graph
     };
 
-    void setTempValue(QString);
-    void setLevelValue(QString);
+    void setTempValues(QString, QString);
+    void setLevelValues(QString, QString);
+
+    void setFixedLevelLimits(int, int, int, int);
 
     int getFixedLevel();
     int getLinearOffset();

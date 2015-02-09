@@ -13,6 +13,8 @@
 #include "qnvapi.h"
 #include "qnvctrl.h"
 
+#define QUTEFAN_MAX_PHYSICAL_GPUS   16
+
 namespace Ui {
 class QuteFan;
 }
@@ -36,14 +38,16 @@ private:
     void initializeNvAPI();
     void initializeNVCtrl();
 
-    void storeGpuDefaults();
-    void restoreGpuDefaults(unsigned int);
+    void getGpuDefaults();
+    void setGpuDefaults(unsigned int);
 
     QNvAPI *nvapi;
-    NV_GPU_COOLER_LEVELS defaultCoolerLevels[NVAPI_MAX_PHYSICAL_GPUS];
+    NV_GPU_COOLER_LEVELS defaultCoolerLevels[QUTEFAN_MAX_PHYSICAL_GPUS];
 
-    GpuTab *gpuTab[NVAPI_MAX_PHYSICAL_GPUS];
-    GpuTab::FanMode lastMode[NVAPI_MAX_PHYSICAL_GPUS] = {};
+    GpuTab *gpuTab[QUTEFAN_MAX_PHYSICAL_GPUS];
+    GpuTab::FanMode lastMode[QUTEFAN_MAX_PHYSICAL_GPUS] = {};
+    unsigned int maxTemp[QUTEFAN_MAX_PHYSICAL_GPUS] = {};
+    unsigned int maxLevel[QUTEFAN_MAX_PHYSICAL_GPUS] = {};
 
     QTimer *timer;
     int interval;

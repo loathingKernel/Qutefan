@@ -19,14 +19,24 @@ GpuTab::~GpuTab()
     delete ui;
 }
 
-void GpuTab::setTempValue(QString value)
+void GpuTab::setTempValues(QString value, QString max)
 {
     ui->labelTempValue->setText(value);
+    ui->labelTempMax->setText(max);
 }
 
-void GpuTab::setLevelValue(QString value)
+void GpuTab::setLevelValues(QString value, QString max)
 {
     ui->labelLevelValue->setText(value);
+    ui->labelLevelMax->setText(max);
+}
+
+void GpuTab::setFixedLevelLimits(int min, int max, int initial, int step)
+{
+    ui->spinBoxFixedLevel->setMinimum(min);
+    ui->spinBoxFixedLevel->setMaximum(max);
+    ui->spinBoxFixedLevel->setValue(initial);
+    ui->spinBoxFixedLevel->setSingleStep(step);
 }
 
 int GpuTab::getFixedLevel()

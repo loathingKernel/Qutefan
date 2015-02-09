@@ -16,11 +16,8 @@
     <verstretch>0</verstretch>
    </sizepolicy>
   </property>
-  <property name="windowTitle">
-   <string>Qutefan</string>
-  </property>
   <property name="windowIcon">
-   <iconset resource="qutefan.qrc">
+   <iconset resource="../qutefan.qrc">
     <normaloff>:/images/icons/blue.png</normaloff>:/images/icons/blue.png</iconset>
   </property>
   <widget class="QWidget" name="centralWidget">
@@ -92,7 +89,7 @@
      <x>0</x>
      <y>0</y>
      <width>226</width>
-     <height>20</height>
+     <height>21</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -115,7 +112,7 @@
  </widget>
  <layoutdefault spacing="6" margin="11"/>
  <resources>
-  <include location="qutefan.qrc"/>
+  <include location="../qutefan.qrc"/>
  </resources>
  <connections/>
 </ui>
