@@ -11,11 +11,13 @@ QuteFan::QuteFan(QWidget *parent) :
     timer = new QTimer(this);
     trayIcon = new QuteFanTrayIcon(this);
 
+#ifdef Q_OS_WIN
     nvapi = new QNvAPI();
-    if(nvapi->Available())
+    if(nvapi->isAvailable())
         initializeNvAPI();
     else
         QMessageBox::critical(this, "Error", "No supported hardware was found.");
+#endif
 
     storeGpuDefaults();
 

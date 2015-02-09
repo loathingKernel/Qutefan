@@ -231,7 +231,7 @@ NvAPI_Status QNvAPI::GPU_SetCoolerLevels(NvPhysicalGpuHandle hPhysicalGpu, NvU32
     return nvapi_status;
 }
 
-bool QNvAPI::Available(void)
+bool QNvAPI::isAvailable(void)
 {
     return  nvapi_QueryInterface &&
             nvapi_Initialize &&

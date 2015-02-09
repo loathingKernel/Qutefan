@@ -116,7 +116,7 @@ public:
 
     NvAPI_Status GPU_SetCoolerLevels(NvPhysicalGpuHandle, NvU32, NV_GPU_COOLER_LEVELS*);
 
-    bool Available(void);
+    bool isAvailable(void);
 
 private:
     typedef NvAPI_Status (__cdecl * QNVAPI_QUERYINTERFACE)                   (unsigned int);

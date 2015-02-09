@@ -8,7 +8,7 @@ QT       += core gui
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
-TARGET   = qutefan
+TARGET   = Qutefan
 TEMPLATE = app
 
 include(qutefan/qutefan.pri)
@@ -18,5 +18,6 @@ include(platforms/qnvctrl/qnvctrl.pri)
 RESOURCES += \
     qutefan.qrc
 
-RC_ICONS += \
-    images/qutefan.ico
+RC_FILE += \
+    qutefan.rc
+
