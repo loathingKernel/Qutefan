@@ -78,6 +78,7 @@ public:
 
     NvU32 gpuCount = 0;
     typedef struct {
+        NvAPI_Status status;
         NvPhysicalGpuHandle handle;
         NvAPI_ShortString name;
         NvU32 coolerTach;
@@ -169,9 +170,6 @@ private:
     QNVAPI_GPU_GETCOOLERSETTINGS            nvapi_GPU_GetCoolerSettings;
 
     QNVAPI_GPU_SETCOOLERLEVELS              nvapi_GPU_SetCoolerLevels;
-
-    bool                                    nvapi_initialized;
-    NvAPI_Status                            nvapi_status;
 };
 
 #endif // QNVAPI_H

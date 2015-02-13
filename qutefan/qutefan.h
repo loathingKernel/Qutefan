@@ -42,12 +42,8 @@ private:
     void setGpuDefaults(unsigned int);
 
     QNvAPI *nvapi;
-    NV_GPU_COOLER_LEVELS defaultCoolerLevels[QUTEFAN_MAX_PHYSICAL_GPUS];
 
     GpuTab *gpuTab[QUTEFAN_MAX_PHYSICAL_GPUS];
-    GpuTab::FanMode lastMode[QUTEFAN_MAX_PHYSICAL_GPUS] = {};
-    unsigned int maxTemp[QUTEFAN_MAX_PHYSICAL_GPUS] = {};
-    unsigned int maxLevel[QUTEFAN_MAX_PHYSICAL_GPUS] = {};
 
     QTimer *timer;
     int interval;

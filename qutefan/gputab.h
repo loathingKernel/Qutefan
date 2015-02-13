@@ -3,6 +3,9 @@
 
 #include <QWidget>
 
+#include "qnvapi.h"
+#include "qnvctrl.h"
+
 namespace Ui {
 class GpuTab;
 }
@@ -13,7 +16,14 @@ class GpuTab : public QWidget
 
 public:
     explicit GpuTab(QWidget *parent = 0);
+    explicit GpuTab(QNvAPI*, QNvAPI::NvGPU*, QWidget *parent = 0);
     ~GpuTab();
+
+    enum class AccessMode {
+        nvapi,
+        nvctrl,
+        amd
+    };
 
     enum class FanMode {
         Off = 0,
@@ -23,17 +33,21 @@ public:
         Graph
     };
 
-    void setTempValues(QString, QString);
-    void setLevelValues(QString, QString);
-
-    void setFixedLevelLimits(int, int, int, int);
-
-    int getFixedLevel();
-    int getLinearOffset();
-    FanMode getMode();
+    void setGPUDefaults();
+    void regulateFan();
 
 private:
+    GpuTab::FanMode getMode();
+
     Ui::GpuTab *ui;
+    AccessMode mode;
+    GpuTab::FanMode lastMode = FanMode::Off;
+
+    QNvAPI* nvapi;
+    QNvAPI::NvGPU* nvgpu;
+    NV_GPU_COOLER_LEVELS nvDefaultCoolerLevels;
+    NvS32 nvMaxTemp;
+    NvS32 nvMaxLevel;
 };
 
 #endif // GPUTAB_H
