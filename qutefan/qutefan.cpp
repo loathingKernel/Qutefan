@@ -32,6 +32,8 @@ QuteFan::QuteFan(QWidget *parent) :
     // Signals and slots
     connect(timer, SIGNAL(timeout()), this, SLOT(regulateFan()));
     connect(ui->actionQuit, SIGNAL(triggered()), qApp, SLOT(quit()));
+    connect(ui->actionAbout, SIGNAL(triggered()), this, SLOT(onActionAboutTriggered()));
+    connect(ui->actionAboutQt, SIGNAL(triggered()), this, SLOT(onActionAboutQtTriggered()));
     connect(ui->spinBoxInterval, SIGNAL(valueChanged(int)), this, SLOT(intervalChanged(int)));
 
     timer->start(ui->spinBoxInterval->text().toInt() * 1000);
@@ -56,6 +58,24 @@ void QuteFan::closeEvent(QCloseEvent *event)
         trayIcon->updateMenu();
         event->ignore();
     }
+}
+
+void QuteFan::onActionAboutTriggered()
+{
+    QString format =
+            "<h2>%1</h2>"
+            "<b>Version:</b> %2<br/>"
+            "<b>Author:</b> %3<br/>"
+            "<b>Github:</b> <a href=\"https://www.github.com/loathingkernel/qutefan\">Qutefan</a>";
+
+    QString txt = format.arg(qApp->applicationName(), qApp->applicationVersion(), qApp->organizationName());
+
+    QMessageBox::about(this, ui->actionAbout->text(), txt);
+}
+
+void QuteFan::onActionAboutQtTriggered()
+{
+    QMessageBox::aboutQt(this);
 }
 
 void QuteFan::regulateFan()

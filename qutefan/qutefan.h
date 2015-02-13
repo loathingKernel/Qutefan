@@ -31,6 +31,9 @@ protected:
     void closeEvent(QCloseEvent *event);
 
 private slots:
+    void onActionAboutTriggered();
+    void onActionAboutQtTriggered();
+
     void regulateFan();
     void intervalChanged(int);
 
