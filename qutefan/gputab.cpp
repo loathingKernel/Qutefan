@@ -29,7 +29,7 @@ GpuTab::GpuTab(QNvAPI *api, QNvAPI::NvGPU *gpu, QWidget *parent) :
 
     ui->spinBoxFixedLevel->setMinimum(nvgpu->coolerSettings.cooler[0].defaultMin);
     ui->spinBoxFixedLevel->setMaximum(nvgpu->coolerSettings.cooler[0].defaultMax);
-    ui->spinBoxFixedLevel->setValue(nvgpu->coolerSettings.cooler[0].defaultMin);
+    ui->spinBoxFixedLevel->setValue(nvgpu->coolerSettings.cooler[0].currentLevel);
     ui->spinBoxFixedLevel->setSingleStep(5);
 }
 
