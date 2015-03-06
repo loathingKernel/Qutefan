@@ -21,8 +21,8 @@ QuteFan::QuteFan(QWidget *parent) :
 
     // Dynamically add tabs for as many GPUs as were found.
     for(unsigned int i = 0; i < nvapi->gpuCount; i++) {
-        gpuTab[i] = new GpuTab(nvapi, &nvapi->gpu[i]);
-        ui->tabWidgetGpu->addTab(gpuTab[i], QString("%1").arg(nvapi->gpu[i].name));
+        gpuTabs.append(new GpuTab(nvapi, &nvapi->gpu[i]));
+        ui->tabWidgetGpu->addTab(gpuTabs[i], QString("%1").arg(nvapi->gpu[i].name));
     }
 
     // Resize window to the minimum possible and don't let it be resized.
@@ -42,12 +42,12 @@ QuteFan::QuteFan(QWidget *parent) :
 
 QuteFan::~QuteFan()
 {
-    for(unsigned int i = 0; i < nvapi->gpuCount; i++)
-        gpuTab[i]->setGPUDefaults();
+    foreach(GpuTab* tab, gpuTabs)
+        tab->setGPUDefaults();
     delete ui;
 }
 
-void QuteFan::closeEvent(QCloseEvent *event)
+void QuteFan::closeEvent(QCloseEvent* event)
 {
     if (trayIcon->isVisible()) {
         if(firstCloseToTray) {
@@ -80,8 +80,8 @@ void QuteFan::onActionAboutQtTriggered()
 
 void QuteFan::regulateFan()
 {
-    for(unsigned int i = 0; i < nvapi->gpuCount; i++)
-        gpuTab[i]->regulateFan();
+    foreach(GpuTab* tab, gpuTabs)
+        tab->regulateFan();
 }
 
 void QuteFan::intervalChanged(int value)

@@ -13,8 +13,6 @@
 #include "qnvapi.h"
 #include "qnvctrl.h"
 
-#define QUTEFAN_MAX_PHYSICAL_GPUS   16
-
 namespace Ui {
 class QuteFan;
 }
@@ -24,11 +22,11 @@ class QuteFan : public QMainWindow
     Q_OBJECT
 
 public:
-    explicit QuteFan(QWidget *parent = 0);
+    explicit QuteFan(QWidget* parent = 0);
     ~QuteFan();
 
 protected:
-    void closeEvent(QCloseEvent *event);
+    void closeEvent(QCloseEvent* event);
 
 private slots:
     void onActionAboutTriggered();
@@ -44,17 +42,17 @@ private:
     void getGpuDefaults();
     void setGpuDefaults(unsigned int);
 
-    QNvAPI *nvapi;
+    QNvAPI* nvapi;
 
-    GpuTab *gpuTab[QUTEFAN_MAX_PHYSICAL_GPUS];
+    QList<GpuTab*> gpuTabs;
 
-    QTimer *timer;
+    QTimer* timer;
     int interval;
 
-    QuteFanTrayIcon *trayIcon;
+    QuteFanTrayIcon* trayIcon;
     bool firstCloseToTray = true;
 
-    Ui::QuteFan *ui;
+    Ui::QuteFan* ui;
 };
 
 #endif // QUTEFAN_H

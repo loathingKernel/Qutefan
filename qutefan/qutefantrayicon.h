@@ -27,10 +27,10 @@ public slots:
     void activated(QSystemTrayIcon::ActivationReason);
 
 private:
-    QAction *actionShow;
-    QAction *actionHide;
-    QAction *actionQuit;
-    QMenu *menu;
+    QAction* actionShow;
+    QAction* actionHide;
+    QAction* actionQuit;
+    QMenu* menu;
 
     QMainWindow *main;
 };

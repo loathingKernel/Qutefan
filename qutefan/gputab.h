@@ -15,8 +15,8 @@ class GpuTab : public QWidget
     Q_OBJECT
 
 public:
-    explicit GpuTab(QWidget *parent = 0);
-    explicit GpuTab(QNvAPI*, QNvAPI::NvGPU*, QWidget *parent = 0);
+    explicit GpuTab(QWidget* parent = 0);
+    explicit GpuTab(QNvAPI*, QNvAPI::NvGPU*, QWidget* parent = 0);
     ~GpuTab();
 
     enum class AccessMode {
@@ -39,7 +39,7 @@ public:
 private:
     GpuTab::FanMode getMode();
 
-    Ui::GpuTab *ui;
+    Ui::GpuTab* ui;
     AccessMode mode;
     GpuTab::FanMode lastMode = FanMode::Off;
 

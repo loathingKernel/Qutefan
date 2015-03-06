@@ -1,7 +1,7 @@
 #include "gputab.h"
 #include "ui_gputab.h"
 
-GpuTab::GpuTab(QWidget *parent) :
+GpuTab::GpuTab(QWidget* parent) :
     QWidget(parent),
     ui(new Ui::GpuTab)
 {
@@ -14,7 +14,7 @@ GpuTab::GpuTab(QWidget *parent) :
 #endif
 }
 
-GpuTab::GpuTab(QNvAPI *api, QNvAPI::NvGPU *gpu, QWidget *parent) :
+GpuTab::GpuTab(QNvAPI* api, QNvAPI::NvGPU* gpu, QWidget* parent) :
     GpuTab(parent)
 {
     mode = AccessMode::nvapi;
