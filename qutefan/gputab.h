@@ -35,6 +35,7 @@ public:
 
     void setGPUDefaults();
     void regulateFan();
+    void displayStatus();
 
 private:
     GpuTab::FanMode getMode();
@@ -47,7 +48,7 @@ private:
     QNvAPI::NvGPU* nvgpu;
     NV_GPU_COOLER_LEVELS nvDefaultCoolerLevels;
     NvS32 nvMaxTemp;
-    NvS32 nvMaxLevel;
+    NvS32 nvMaxFan;
 };
 
 #endif // GPUTAB_H

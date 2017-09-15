@@ -17,6 +17,11 @@ GpuTab::GpuTab(QWidget* parent) :
 GpuTab::GpuTab(QNvAPI* api, QNvAPI::NvGPU* gpu, QWidget* parent) :
     GpuTab(parent)
 {
+    // Hide unfinished UI elements
+    ui->groupBoxOverclock->hide();
+    ui->radioButtonGraph->hide();
+    ui->pushButtonGraph->hide();
+
     mode = AccessMode::nvapi;
 
     nvapi = api;
@@ -60,8 +65,8 @@ void GpuTab::regulateFan()
     nvgpu->status = nvapi->GPU_GetThermalSettings(nvgpu->handle, 0, &nvgpu->thermalSettings);
     if(nvMaxTemp < nvgpu->thermalSettings.sensor[0].currentTemp)
         nvMaxTemp = nvgpu->thermalSettings.sensor[0].currentTemp;
-    ui->labelTempValue->setText(QString("%1°C").arg(nvgpu->thermalSettings.sensor[0].currentTemp));
-    ui->labelTempMax->setText(QString("%1°C").arg(nvMaxTemp));
+    ui->labelStatusTempCur->setText(QString("%1°C").arg(nvgpu->thermalSettings.sensor[0].currentTemp));
+    ui->labelStatusTempMax->setText(QString("%1°C").arg(nvMaxTemp));
 
 
     GpuTab::FanMode mode = getMode();
@@ -72,6 +77,8 @@ void GpuTab::regulateFan()
         NV_GPU_COOLER_LEVELS newCoolerLevels;
         newCoolerLevels.cooler[0].policy = 1;
         switch(mode) {
+        case GpuTab::FanMode::Off:
+            break;
         case GpuTab::FanMode::Quiet:
             newCoolerLevels.cooler[0].level = nvgpu->coolerSettings.cooler[0].defaultMin;
             break;
@@ -90,8 +97,20 @@ void GpuTab::regulateFan()
 
 
     nvgpu->status = nvapi->GPU_GetCoolerSettings(nvgpu->handle, 0, &nvgpu->coolerSettings);
-    if(nvMaxLevel < nvgpu->coolerSettings.cooler[0].currentLevel)
-        nvMaxLevel = nvgpu->coolerSettings.cooler[0].currentLevel;
-    ui->labelLevelValue->setText(QString("%1%").arg(nvgpu->coolerSettings.cooler[0].currentLevel));
-    ui->labelLevelMax->setText(QString("%1%").arg(nvMaxLevel));
+    if(nvMaxFan < nvgpu->coolerSettings.cooler[0].currentLevel)
+        nvMaxFan = nvgpu->coolerSettings.cooler[0].currentLevel;
+    ui->labelStatusFanCur->setText(QString("%1%").arg(nvgpu->coolerSettings.cooler[0].currentLevel));
+    ui->labelStatusFanMax->setText(QString("%1%").arg(nvMaxFan));
+}
+
+void GpuTab::displayStatus()
+{
+    nvgpu->status = nvapi->GPU_GetAllClocks(nvgpu->handle, &nvgpu->clocks);
+
+//    for(int i=0; i < NVAPI_MAX_GPU_CLOCKS * 9; i++ )
+//        qDebug("clock[%d] = %d", i , nvgpu->clocks.clock[i]);
+
+    ui->labelStatusCoreCur->setText(QString("%1Mhz").arg(nvgpu->clocks.clock[30]/2000.0f, 0, 'f', 1));
+    ui->labelStatusMemCur->setText(QString("%1Mhz").arg(nvgpu->clocks.clock[8]/2000.0f, 0, 'f', 1));
+    ui->labelStatusShaderCur->setText(QString("%1Mhz").arg(nvgpu->clocks.clock[30]/1000.0f, 0, 'f', 1));
 }

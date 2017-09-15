@@ -14,6 +14,7 @@ class QuteFanTrayIcon : public QSystemTrayIcon
     Q_OBJECT
 public:
     explicit QuteFanTrayIcon(QMainWindow *parent = 0);
+    ~QuteFanTrayIcon();
 
 signals:
 

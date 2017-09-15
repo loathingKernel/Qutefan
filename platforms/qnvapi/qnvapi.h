@@ -15,24 +15,17 @@
  *
 */
 
-#define NVAPI_MAX_COOLERS_PER_GPU   20
 #define NVAPI_MAX_USAGES_PER_GPU    33
-
-#define NV_GPU_USAGES_VER_1 MAKE_NVAPI_VERSION(NV_GPU_USAGES_V1,1)
-#define NV_GPU_USAGES_VER   NV_GPU_USAGES_VER_1
-
-#define NV_GPU_COOLER_SETTINGS_VER_2    MAKE_NVAPI_VERSION(NV_GPU_COOLER_SETTINGS_V2,2)
-#define NV_GPU_COOLER_SETTINGS_VER      NV_GPU_COOLER_SETTINGS_VER_2
-
-#define NV_GPU_COOLER_LEVELS_VER_1  MAKE_NVAPI_VERSION(NV_GPU_COOLER_LEVELS_V1,1)
-#define NV_GPU_COOLER_LEVELS_VER    NV_GPU_COOLER_LEVELS_VER_1
-
 typedef struct {
     NvU32 version;
     NvU32 usage[NVAPI_MAX_USAGES_PER_GPU];
 } NV_GPU_USAGES_V1;
+#define NV_GPU_USAGES_VER_1 MAKE_NVAPI_VERSION(NV_GPU_USAGES_V1,1)
 typedef NV_GPU_USAGES_V1    NV_GPU_USAGES;
+#define NV_GPU_USAGES_VER   NV_GPU_USAGES_VER_1
 
+
+#define NVAPI_MAX_COOLERS_PER_GPU   20
 typedef struct {
     NvU32 version;
     NvU32 count;
@@ -51,7 +44,10 @@ typedef struct {
         NvS32 active;
     } cooler[NVAPI_MAX_COOLERS_PER_GPU];
 } NV_GPU_COOLER_SETTINGS_V2;
-typedef NV_GPU_COOLER_SETTINGS_V2   NV_GPU_COOLER_SETTINGS;
+#define NV_GPU_COOLER_SETTINGS_VER_2    MAKE_NVAPI_VERSION(NV_GPU_COOLER_SETTINGS_V2,2)
+typedef NV_GPU_COOLER_SETTINGS_V2       NV_GPU_COOLER_SETTINGS;
+#define NV_GPU_COOLER_SETTINGS_VER      NV_GPU_COOLER_SETTINGS_VER_2
+
 
 typedef struct {
     NvU32 version;
@@ -60,14 +56,25 @@ typedef struct {
         NvS32 policy;
     } cooler[NVAPI_MAX_COOLERS_PER_GPU];
 } NV_GPU_COOLER_LEVELS_V1;
-typedef NV_GPU_COOLER_LEVELS_V1 NV_GPU_COOLER_LEVELS;
+#define NV_GPU_COOLER_LEVELS_VER_1  MAKE_NVAPI_VERSION(NV_GPU_COOLER_LEVELS_V1,1)
+typedef NV_GPU_COOLER_LEVELS_V1     NV_GPU_COOLER_LEVELS;
+#define NV_GPU_COOLER_LEVELS_VER    NV_GPU_COOLER_LEVELS_VER_1
+
+
+typedef struct {
+    NvU32 version;
+    NvU32 clock[NVAPI_MAX_GPU_CLOCKS * 9];
+} NV_GPU_CLOCKS_V2;
+#define NV_GPU_CLOCKS_VER_2 MAKE_NVAPI_VERSION(NV_GPU_CLOCKS_V2,2)
+typedef NV_GPU_CLOCKS_V2    NV_GPU_CLOCKS;
+#define NV_GPU_CLOCKS_VER   NV_GPU_CLOCKS_VER_2
 
 
 class QNvAPI : public QLibrary
 {
 public:
 
-#pragma warning(disable : 4351)
+//#pragma warning(disable : 4351)
     NvAPI_Status status = NVAPI_OK;
     NvAPI_ShortString version = {};
 
@@ -85,6 +92,7 @@ public:
         NV_GPU_THERMAL_SETTINGS thermalSettings;
         NV_GPU_COOLER_SETTINGS coolerSettings;
         NV_GPU_COOLER_LEVELS coolerLevels;
+        NV_GPU_CLOCKS clocks;
     } NvGPU;
     NvGPU gpu[NVAPI_MAX_PHYSICAL_GPUS] = {};
 
@@ -106,7 +114,7 @@ public:
     NvAPI_Status GPU_GetFullName(NvPhysicalGpuHandle, NvAPI_ShortString);
     NvAPI_Status GPU_GetEDID(NvPhysicalGpuHandle, NvU32, NV_EDID*);
     NvAPI_Status GPU_GetTachReading(NvPhysicalGpuHandle, NvU32*);
-    NvAPI_Status GPU_GetAllClockFrequencies(NvPhysicalGpuHandle, NV_GPU_CLOCK_FREQUENCIES*);
+    NvAPI_Status GPU_GetAllClocks(NvPhysicalGpuHandle, NV_GPU_CLOCKS*);
     NvAPI_Status GPU_GetPstates20(NvPhysicalGpuHandle, NV_GPU_PERF_PSTATES20_INFO*);
     NvAPI_Status GPU_GetMemoryInfo(NvPhysicalGpuHandle, NV_DISPLAY_DRIVER_MEMORY_INFO*);
     NvAPI_Status GPU_GetPCIIdentifiers(NvPhysicalGpuHandle, NvU32*, NvU32*, NvU32*, NvU32*);
@@ -135,7 +143,7 @@ private:
     typedef NvAPI_Status (__cdecl * QNVAPI_GPU_GETFULLNAME)                  (NvPhysicalGpuHandle, NvAPI_ShortString);
     typedef NvAPI_Status (__cdecl * QNVAPI_GPU_GETEDID)                      (NvPhysicalGpuHandle, NvU32, NV_EDID*);
     typedef NvAPI_Status (__cdecl * QNVAPI_GPU_GETTACHREADING)               (NvPhysicalGpuHandle, NvU32*);
-    typedef NvAPI_Status (__cdecl * QNVAPI_GPU_GETALLCLOCKFREQUENCIES)       (NvPhysicalGpuHandle, NV_GPU_CLOCK_FREQUENCIES*);
+    typedef NvAPI_Status (__cdecl * QNVAPI_GPU_GETALLCLOCKS)                 (NvPhysicalGpuHandle, NV_GPU_CLOCKS*);
     typedef NvAPI_Status (__cdecl * QNVAPI_GPU_GETPSTATES20)                 (NvPhysicalGpuHandle, NV_GPU_PERF_PSTATES20_INFO*);
     typedef NvAPI_Status (__cdecl * QNVAPI_GPU_GETMEMORYINFO)                (NvPhysicalGpuHandle, NV_DISPLAY_DRIVER_MEMORY_INFO*);
     typedef NvAPI_Status (__cdecl * QNVAPI_GPU_GETPCIIDENTIFIERS)            (NvPhysicalGpuHandle, NvU32*, NvU32*, NvU32*, NvU32*);
@@ -161,7 +169,7 @@ private:
     QNVAPI_GPU_GETFULLNAME                  nvapi_GPU_GetFullName;
     QNVAPI_GPU_GETEDID                      nvapi_GPU_GetEDID;
     QNVAPI_GPU_GETTACHREADING               nvapi_GPU_GetTachReading;
-    QNVAPI_GPU_GETALLCLOCKFREQUENCIES       nvapi_GPU_GetAllClockFrequencies;
+    QNVAPI_GPU_GETALLCLOCKS                 nvapi_GPU_GetAllClocks;
     QNVAPI_GPU_GETPSTATES20                 nvapi_GPU_GetPstates20;
     QNVAPI_GPU_GETMEMORYINFO                nvapi_GPU_GetMemoryInfo;
     QNVAPI_GPU_GETPCIIDENTIFIERS            nvapi_GPU_GetPCIIdentifiers;

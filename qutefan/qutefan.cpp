@@ -20,9 +20,9 @@ QuteFan::QuteFan(QWidget *parent) :
 #endif
 
     // Dynamically add tabs for as many GPUs as were found.
-    for(unsigned int i = 0; i < nvapi->gpuCount; i++) {
+    for(uint i = 0; i < nvapi->gpuCount; i++) {
         gpuTabs.append(new GpuTab(nvapi, &nvapi->gpu[i]));
-        ui->tabWidgetGpu->addTab(gpuTabs[i], QString("%1").arg(nvapi->gpu[i].name));
+        ui->tabWidgetGpu->addTab(gpuTabs[static_cast<int>(i)], QString("%1").arg(nvapi->gpu[i].name));
     }
 
     // Resize window to the minimum possible and don't let it be resized.
@@ -80,8 +80,10 @@ void QuteFan::onActionAboutQtTriggered()
 
 void QuteFan::regulateFan()
 {
-    foreach(GpuTab* tab, gpuTabs)
+    foreach(GpuTab* tab, gpuTabs) {
         tab->regulateFan();
+        tab->displayStatus();
+    }
 }
 
 void QuteFan::intervalChanged(int value)

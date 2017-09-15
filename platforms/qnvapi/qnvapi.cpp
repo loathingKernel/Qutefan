@@ -1,6 +1,6 @@
 #include "qnvapi.h"
 
-QMutex* nvapi_lock = new QMutex(QMutex::Recursive);
+static QMutex* nvapi_lock = new QMutex(QMutex::Recursive);
 
 QNvAPI::QNvAPI()
     : QLibrary("nvapi"),
@@ -17,7 +17,7 @@ QNvAPI::QNvAPI()
       nvapi_GPU_GetFullName(NULL),
       nvapi_GPU_GetEDID(NULL),
       nvapi_GPU_GetTachReading(NULL),
-      nvapi_GPU_GetAllClockFrequencies(NULL),
+      nvapi_GPU_GetAllClocks(NULL),
       nvapi_GPU_GetPstates20(NULL),
       nvapi_GPU_GetMemoryInfo(NULL),
       nvapi_GPU_GetPCIIdentifiers(NULL),
@@ -27,36 +27,36 @@ QNvAPI::QNvAPI()
 {
     QMutexLocker locker(nvapi_lock);
 
-    nvapi_QueryInterface = (QNVAPI_QUERYINTERFACE)resolve("nvapi_QueryInterface");
+    nvapi_QueryInterface = reinterpret_cast<QNVAPI_QUERYINTERFACE>(resolve("nvapi_QueryInterface"));
 
     if(!nvapi_QueryInterface) {
         status = NVAPI_LIBRARY_NOT_FOUND;
         qDebug("QNvAPI failed to initialize NvAPI_QueryInterface()");
     } else {
-        nvapi_Initialize                        = (QNVAPI_INITIALIZE)                       nvapi_QueryInterface(0x0150E828);
+        nvapi_Initialize                        = reinterpret_cast<QNVAPI_INITIALIZE>                       (nvapi_QueryInterface(0x0150E828));
 
-        nvapi_EnumNvidiaDisplayHandle           = (QNVAPI_ENUMNVIDIADISPLAYHANDLE)          nvapi_QueryInterface(0x9ABDD40D);
-        nvapi_EnumPhysicalGPUs                  = (QNVAPI_ENUMPHYSICALGPUS)                 nvapi_QueryInterface(0xE5AC921F);
+        nvapi_EnumNvidiaDisplayHandle           = reinterpret_cast<QNVAPI_ENUMNVIDIADISPLAYHANDLE>          (nvapi_QueryInterface(0x9ABDD40D));
+        nvapi_EnumPhysicalGPUs                  = reinterpret_cast<QNVAPI_ENUMPHYSICALGPUS>                 (nvapi_QueryInterface(0xE5AC921F));
 
-        nvapi_GetInterfaceVersionString         = (QNVAPI_GETINTERFACEVERSIONSTRING)        nvapi_QueryInterface(0x01053FA5);
-        nvapi_GetDisplayDriverVersion           = (QNVAPI_GETDISPLAYDRIVERVERSION)          nvapi_QueryInterface(0xF951A4D1);
-        nvapi_GetPhysicalGPUsFromDisplay        = (QNVAPI_GETPHYSICALGPUSFROMDISPLAY)       nvapi_QueryInterface(0x34EF9506);
-        nvapi_GetAssociatedNvidiaDisplayHandle  = (QNVAPI_GETASSOCIATEDNVIDIADISPLAYHANDLE) nvapi_QueryInterface(0x35C29134);
-        nvapi_GetAssociatedDisplayOutputId      = (QNVAPI_GETASSOCIATEDDISPLAYOUTPUTID)     nvapi_QueryInterface(0xD995937E);
+        nvapi_GetInterfaceVersionString         = reinterpret_cast<QNVAPI_GETINTERFACEVERSIONSTRING>        (nvapi_QueryInterface(0x01053FA5));
+        nvapi_GetDisplayDriverVersion           = reinterpret_cast<QNVAPI_GETDISPLAYDRIVERVERSION>          (nvapi_QueryInterface(0xF951A4D1));
+        nvapi_GetPhysicalGPUsFromDisplay        = reinterpret_cast<QNVAPI_GETPHYSICALGPUSFROMDISPLAY>       (nvapi_QueryInterface(0x34EF9506));
+        nvapi_GetAssociatedNvidiaDisplayHandle  = reinterpret_cast<QNVAPI_GETASSOCIATEDNVIDIADISPLAYHANDLE> (nvapi_QueryInterface(0x35C29134));
+        nvapi_GetAssociatedDisplayOutputId      = reinterpret_cast<QNVAPI_GETASSOCIATEDDISPLAYOUTPUTID>     (nvapi_QueryInterface(0xD995937E));
 
-        nvapi_GPU_GetThermalSettings            = (QNVAPI_GPU_GETTHERMALSETTINGS)           nvapi_QueryInterface(0xE3640A56);
-        nvapi_GPU_GetFullName                   = (QNVAPI_GPU_GETFULLNAME)                  nvapi_QueryInterface(0xCEEE8E9F);
-        nvapi_GPU_GetEDID                       = (QNVAPI_GPU_GETEDID)                      nvapi_QueryInterface(0x37D32E69);
-        nvapi_GPU_GetTachReading                = (QNVAPI_GPU_GETTACHREADING)               nvapi_QueryInterface(0x5F608315);
-        nvapi_GPU_GetAllClockFrequencies        = (QNVAPI_GPU_GETALLCLOCKFREQUENCIES)       nvapi_QueryInterface(0x1BD69F49);
-        nvapi_GPU_GetPstates20                  = (QNVAPI_GPU_GETPSTATES20)                 nvapi_QueryInterface(0x60DED2ED);
-        nvapi_GPU_GetMemoryInfo                 = (QNVAPI_GPU_GETMEMORYINFO)                nvapi_QueryInterface(0x774AA982);
-        nvapi_GPU_GetPCIIdentifiers             = (QNVAPI_GPU_GETPCIIDENTIFIERS)            nvapi_QueryInterface(0x2DDFB66E);
+        nvapi_GPU_GetThermalSettings            = reinterpret_cast<QNVAPI_GPU_GETTHERMALSETTINGS>           (nvapi_QueryInterface(0xE3640A56));
+        nvapi_GPU_GetFullName                   = reinterpret_cast<QNVAPI_GPU_GETFULLNAME>                  (nvapi_QueryInterface(0xCEEE8E9F));
+        nvapi_GPU_GetEDID                       = reinterpret_cast<QNVAPI_GPU_GETEDID>                      (nvapi_QueryInterface(0x37D32E69));
+        nvapi_GPU_GetTachReading                = reinterpret_cast<QNVAPI_GPU_GETTACHREADING>               (nvapi_QueryInterface(0x5F608315));
+        nvapi_GPU_GetAllClocks                  = reinterpret_cast<QNVAPI_GPU_GETALLCLOCKS>                 (nvapi_QueryInterface(0x1BD69F49));
+        nvapi_GPU_GetPstates20                  = reinterpret_cast<QNVAPI_GPU_GETPSTATES20>                 (nvapi_QueryInterface(0x60DED2ED));
+        nvapi_GPU_GetMemoryInfo                 = reinterpret_cast<QNVAPI_GPU_GETMEMORYINFO>                (nvapi_QueryInterface(0x774AA982));
+        nvapi_GPU_GetPCIIdentifiers             = reinterpret_cast<QNVAPI_GPU_GETPCIIDENTIFIERS>            (nvapi_QueryInterface(0x2DDFB66E));
 
-        nvapi_GPU_GetUsages                     = (QNVAPI_GPU_GETUSAGES)                    nvapi_QueryInterface(0x189A1FDF);
-        nvapi_GPU_GetCoolerSettings             = (QNVAPI_GPU_GETCOOLERSETTINGS)            nvapi_QueryInterface(0xDA141340);
+        nvapi_GPU_GetUsages                     = reinterpret_cast<QNVAPI_GPU_GETUSAGES>                    (nvapi_QueryInterface(0x189A1FDF));
+        nvapi_GPU_GetCoolerSettings             = reinterpret_cast<QNVAPI_GPU_GETCOOLERSETTINGS>            (nvapi_QueryInterface(0xDA141340));
 
-        nvapi_GPU_SetCoolerLevels               = (QNVAPI_GPU_SETCOOLERLEVELS)              nvapi_QueryInterface(0x891FA0AE);
+        nvapi_GPU_SetCoolerLevels               = reinterpret_cast<QNVAPI_GPU_SETCOOLERLEVELS>              (nvapi_QueryInterface(0x891FA0AE));
     }
 }
 
@@ -168,12 +168,12 @@ NvAPI_Status QNvAPI::GPU_GetTachReading(NvPhysicalGpuHandle hPhysicalGpu, NvU32*
     return status;
 }
 
-NvAPI_Status QNvAPI::GPU_GetAllClockFrequencies(__in NvPhysicalGpuHandle hPhysicalGpu, __inout NV_GPU_CLOCK_FREQUENCIES* pClkFreqs)
+NvAPI_Status QNvAPI::GPU_GetAllClocks(__in NvPhysicalGpuHandle hPhysicalGpu, __inout NV_GPU_CLOCKS* pClkFreqs)
 {
-    pClkFreqs->version = NV_GPU_CLOCK_FREQUENCIES_VER;
-    status = nvapi_GPU_GetAllClockFrequencies(hPhysicalGpu, pClkFreqs);
+    pClkFreqs->version =  NV_GPU_CLOCKS_VER;
+    status = nvapi_GPU_GetAllClocks(hPhysicalGpu, pClkFreqs);
     if(status != NVAPI_OK)
-        qDebug("NvAPI_GPU_GetAllClockFrequencies() failed with status %d", status);
+        qDebug("NvAPI_GPU_GetAllClocks() failed with status %d", status);
     return status;
 }
 
@@ -245,7 +245,7 @@ bool QNvAPI::isAvailable(void)
             nvapi_GPU_GetFullName &&
             nvapi_GPU_GetEDID &&
             nvapi_GPU_GetTachReading &&
-            nvapi_GPU_GetAllClockFrequencies &&
+            nvapi_GPU_GetAllClocks &&
             nvapi_GPU_GetPstates20 &&
             nvapi_GPU_GetMemoryInfo &&
             nvapi_GPU_GetPCIIdentifiers &&

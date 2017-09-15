@@ -30,6 +30,11 @@ QuteFanTrayIcon::QuteFanTrayIcon(QMainWindow *parent) :
     QTimer::singleShot(0, this, SLOT(updateMenu()));
 }
 
+QuteFanTrayIcon::~QuteFanTrayIcon()
+{
+
+}
+
 void QuteFanTrayIcon::updateMenu()
 {
     actionShow->setVisible(!main->isVisible());
@@ -67,6 +72,8 @@ void QuteFanTrayIcon::activated(QSystemTrayIcon::ActivationReason reason)
             hideWindow();
         else
             showWindow();
+        break;
+    default:
         break;
     }
 
