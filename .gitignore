@@ -1,5 +1,5 @@
 Thumbs.db
-platforms/*/include
+qutefan/platforms/*/include
 
 # C++ objects and libs
 *.slo
