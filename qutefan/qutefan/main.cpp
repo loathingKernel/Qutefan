@@ -15,7 +15,6 @@ int main(int argc, char *argv[])
     a.setFont(f);
 
     QuteFan w;
-    w.setWindowTitle(a.applicationName());
     w.show();
 
     return a.exec();

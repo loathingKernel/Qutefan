@@ -1,7 +1,6 @@
 #include "qutefantrayicon.h"
 
-QuteFanTrayIcon::QuteFanTrayIcon(QMainWindow *parent) :
-    QSystemTrayIcon(parent)
+QuteFanTrayIcon::QuteFanTrayIcon(QMainWindow *parent) : QSystemTrayIcon(parent)
 {
     main = parent;
 
@@ -22,7 +21,7 @@ QuteFanTrayIcon::QuteFanTrayIcon(QMainWindow *parent) :
 
     setContextMenu(menu);
     setIcon(parent->windowIcon());
-    setToolTip(qApp->applicationName());
+    setToolTip(parent->windowTitle());
 
     connect(this, SIGNAL(activated(QSystemTrayIcon::ActivationReason)),
             this, SLOT(activated(QSystemTrayIcon::ActivationReason)));
@@ -43,7 +42,7 @@ void QuteFanTrayIcon::updateMenu()
 
 void QuteFanTrayIcon::updateTooltip(QString append)
 {
-    setToolTip(qApp->applicationName() + " " + append);
+    setToolTip(main->windowTitle() + " " + append);
 }
 
 void QuteFanTrayIcon::showWindow()
@@ -64,14 +63,11 @@ void QuteFanTrayIcon::activated(QSystemTrayIcon::ActivationReason reason)
 {
     switch (reason) {
     case QSystemTrayIcon::Trigger:
-        if(main->isMinimized())
-            main->showNormal();
+        if(main->isMinimized()) main->showNormal();
         break;
     case QSystemTrayIcon::DoubleClick:
-        if(main->isVisible())
-            hideWindow();
-        else
-            showWindow();
+        if(main->isVisible()) hideWindow();
+        else showWindow();
         break;
     default:
         break;

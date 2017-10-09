@@ -1,21 +1,12 @@
 #include "gputab.h"
 #include "ui_gputab.h"
 
-GpuTab::GpuTab(QWidget* parent) :
-    QWidget(parent),
-    ui(new Ui::GpuTab)
+GpuTab::GpuTab(QWidget* parent) : QWidget(parent), ui(new Ui::GpuTab)
 {
     ui->setupUi(this);
-
-#ifdef Q_OS_LINUX
-    QString groupBoxStyle("QGroupBox {border: 1px solid rgba(0, 0, 0, .3); border-radius: 2px; margin-top: 0.5em;}"
-                          "QGroupBox::title {subcontrol-origin: margin; left: 10px; padding: 0 3px 0 3px;}");
-    ui->groupBoxReadings->setStyleSheet(groupBoxStyle);
-#endif
 }
 
-GpuTab::GpuTab(QNvAPI* api, QNvAPI::NvGPU* gpu, QWidget* parent) :
-    GpuTab(parent)
+GpuTab::GpuTab(QNvAPI* api, QNvAPI::NvGPU* gpu, QWidget* parent) : GpuTab(parent)
 {
     // Hide unfinished UI elements
     ui->groupBoxOverclock->hide();
@@ -106,9 +97,6 @@ void GpuTab::regulateFan()
 void GpuTab::displayStatus()
 {
     nvgpu->status = nvapi->GPU_GetAllClocks(nvgpu->handle, &nvgpu->clocks);
-
-//    for(int i=0; i < NVAPI_MAX_GPU_CLOCKS * 9; i++ )
-//        qDebug("clock[%d] = %d", i , nvgpu->clocks.clock[i]);
 
     ui->labelStatusCoreCur->setText(QString("%1Mhz").arg(nvgpu->clocks.clock[30]/2000.0f, 0, 'f', 1));
     ui->labelStatusMemCur->setText(QString("%1Mhz").arg(nvgpu->clocks.clock[8]/2000.0f, 0, 'f', 1));

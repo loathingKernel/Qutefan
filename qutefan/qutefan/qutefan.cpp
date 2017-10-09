@@ -2,11 +2,10 @@
 #include "ui_qutefan.h"
 
 
-QuteFan::QuteFan(QWidget *parent) :
-    QMainWindow(parent),
-    ui(new Ui::QuteFan)
+QuteFan::QuteFan(QWidget *parent) : QMainWindow(parent), ui(new Ui::QuteFan)
 {
     ui->setupUi(this);
+    setWindowTitle(qApp->applicationName());
 
     timer = new QTimer(this);
     trayIcon = new QuteFanTrayIcon(this);
@@ -100,7 +99,7 @@ void QuteFan::initializeNvAPI()
     qDebug("NvAPI version: %s", nvapi->version);
 
     nvapi->EnumPhysicalGPUs();
-    qDebug("Total number of GPU's = %u", nvapi->gpuCount);
+    qDebug("Total number of GPU's = %lu", nvapi->gpuCount);
 
     for(unsigned int i = 0; i < nvapi->gpuCount; i++)
         nvapi->GPU_GetFullName(nvapi->gpu[i].handle, nvapi->gpu[i].name);

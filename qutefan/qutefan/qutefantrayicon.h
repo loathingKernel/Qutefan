@@ -16,12 +16,11 @@ public:
     explicit QuteFanTrayIcon(QMainWindow *parent = 0);
     ~QuteFanTrayIcon();
 
-signals:
-
 public slots:
     void updateMenu();
     void updateTooltip(QString);
 
+private slots:
     void showWindow();
     void hideWindow();
 
@@ -33,7 +32,7 @@ private:
     QAction* actionQuit;
     QMenu* menu;
 
-    QMainWindow *main;
+    QMainWindow* main;
 };
 
 #endif // QUTEFANTRAYICON_H

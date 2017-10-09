@@ -1,0 +1,39 @@
+version: 0.1.0.{branch}.{build}
+
+environment:
+  matrix:
+  # MSVC x86
+  - name: win32
+    platform: x86
+    qt: 5.7\msvc2015
+    suffix: msvc2015
+
+  # MSVC x64
+  - name: win64
+    platform: amd64
+    qt: 5.7\msvc2015_64
+    suffix: msvc2015
+
+  # MinGW
+  - name: win32
+    platform: mingw
+    qt: 5.7\mingw53_32
+    suffix: mingw
+
+init:
+  - if %platform%==mingw set PATH=%PATH:C:\Program Files\Git\usr\bin;=%
+  - if %platform%==mingw set PATH=C:\Qt\Tools\mingw530_32\bin;%PATH%
+  - set PATH=C:\Qt\%qt%\bin;%PATH%
+  - if not %platform%==mingw call "C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\vcvarsall.bat" %platform%
+  - if not %platform%==mingw (set spec=win32-msvc2015) else (set spec=win32-g++)
+
+before_build:
+  - md build-%platform%
+
+build_script:
+  - cd build-%platform%
+  - qmake ..\redshiftqt\RedShiftQt.pro -spec %spec%
+  - if not %platform%==mingw (nmake) else (mingw32-make)
+  
+artifacts:
+- path: build-%platform%\release\RedShiftQt.exe
