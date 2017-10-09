@@ -115,7 +115,7 @@ public:
     NvAPI_Status GPU_GetEDID(NvPhysicalGpuHandle, NvU32, NV_EDID*);
     NvAPI_Status GPU_GetTachReading(NvPhysicalGpuHandle, NvU32*);
     NvAPI_Status GPU_GetAllClocks(NvPhysicalGpuHandle, NV_GPU_CLOCKS*);
-    NvAPI_Status GPU_GetPstates20(NvPhysicalGpuHandle, NV_GPU_PERF_PSTATES20_INFO*);
+    NvAPI_Status GPU_GetDynamicPstatesInfoEx(NvPhysicalGpuHandle, NV_GPU_DYNAMIC_PSTATES_INFO_EX*);
     NvAPI_Status GPU_GetMemoryInfo(NvPhysicalGpuHandle, NV_DISPLAY_DRIVER_MEMORY_INFO*);
     NvAPI_Status GPU_GetPCIIdentifiers(NvPhysicalGpuHandle, NvU32*, NvU32*, NvU32*, NvU32*);
 
@@ -128,55 +128,50 @@ public:
 
 private:
     typedef NvAPI_Status (__cdecl * QNVAPI_QUERYINTERFACE)                   (unsigned int);
-    typedef NvAPI_Status (__cdecl * QNVAPI_INITIALIZE)                       (void);
-
-    typedef NvAPI_Status (__cdecl * QNVAPI_ENUMNVIDIADISPLAYHANDLE)          (NvU32, NvDisplayHandle*);
-    typedef NvAPI_Status (__cdecl * QNVAPI_ENUMPHYSICALGPUS)                 (NvPhysicalGpuHandle[NVAPI_MAX_PHYSICAL_GPUS], NvU32*);
-
-    typedef NvAPI_Status (__cdecl * QNVAPI_GETINTERFACEVERSIONSTRING)        (NvAPI_ShortString);
-    typedef NvAPI_Status (__cdecl * QNVAPI_GETDISPLAYDRIVERVERSION)          (NvDisplayHandle, NV_DISPLAY_DRIVER_VERSION*);
-    typedef NvAPI_Status (__cdecl * QNVAPI_GETPHYSICALGPUSFROMDISPLAY)       (NvDisplayHandle, NvPhysicalGpuHandle[NVAPI_MAX_PHYSICAL_GPUS], NvU32*);
-    typedef NvAPI_Status (__cdecl * QNVAPI_GETASSOCIATEDNVIDIADISPLAYHANDLE) (const char*,  NvDisplayHandle*);
-    typedef NvAPI_Status (__cdecl * QNVAPI_GETASSOCIATEDDISPLAYOUTPUTID)     (NvDisplayHandle, NvU32*);
-
-    typedef NvAPI_Status (__cdecl * QNVAPI_GPU_GETTHERMALSETTINGS)           (NvPhysicalGpuHandle, NvU32, NV_GPU_THERMAL_SETTINGS*);
-    typedef NvAPI_Status (__cdecl * QNVAPI_GPU_GETFULLNAME)                  (NvPhysicalGpuHandle, NvAPI_ShortString);
-    typedef NvAPI_Status (__cdecl * QNVAPI_GPU_GETEDID)                      (NvPhysicalGpuHandle, NvU32, NV_EDID*);
-    typedef NvAPI_Status (__cdecl * QNVAPI_GPU_GETTACHREADING)               (NvPhysicalGpuHandle, NvU32*);
-    typedef NvAPI_Status (__cdecl * QNVAPI_GPU_GETALLCLOCKS)                 (NvPhysicalGpuHandle, NV_GPU_CLOCKS*);
-    typedef NvAPI_Status (__cdecl * QNVAPI_GPU_GETPSTATES20)                 (NvPhysicalGpuHandle, NV_GPU_PERF_PSTATES20_INFO*);
-    typedef NvAPI_Status (__cdecl * QNVAPI_GPU_GETMEMORYINFO)                (NvPhysicalGpuHandle, NV_DISPLAY_DRIVER_MEMORY_INFO*);
-    typedef NvAPI_Status (__cdecl * QNVAPI_GPU_GETPCIIDENTIFIERS)            (NvPhysicalGpuHandle, NvU32*, NvU32*, NvU32*, NvU32*);
-
-    typedef NvAPI_Status (__cdecl * QNVAPI_GPU_GETUSAGES)                    (NvPhysicalGpuHandle, NV_GPU_USAGES*);
-    typedef NvAPI_Status (__cdecl * QNVAPI_GPU_GETCOOLERSETTINGS)            (NvPhysicalGpuHandle, NvU32, NV_GPU_COOLER_SETTINGS*);
-
-    typedef NvAPI_Status (__cdecl * QNVAPI_GPU_SETCOOLERLEVELS)              (NvPhysicalGpuHandle, NvU32, NV_GPU_COOLER_LEVELS*);
-
     QNVAPI_QUERYINTERFACE                   nvapi_QueryInterface;
+
+    typedef NvAPI_Status (__cdecl * QNVAPI_INITIALIZE)                       (void);
     QNVAPI_INITIALIZE                       nvapi_Initialize;
 
+    typedef NvAPI_Status (__cdecl * QNVAPI_ENUMNVIDIADISPLAYHANDLE)          (NvU32, NvDisplayHandle*);
     QNVAPI_ENUMNVIDIADISPLAYHANDLE          nvapi_EnumNvidiaDisplayHandle;
+    typedef NvAPI_Status (__cdecl * QNVAPI_ENUMPHYSICALGPUS)                 (NvPhysicalGpuHandle[NVAPI_MAX_PHYSICAL_GPUS], NvU32*);
     QNVAPI_ENUMPHYSICALGPUS                 nvapi_EnumPhysicalGPUs;
 
+    typedef NvAPI_Status (__cdecl * QNVAPI_GETINTERFACEVERSIONSTRING)        (NvAPI_ShortString);
     QNVAPI_GETINTERFACEVERSIONSTRING        nvapi_GetInterfaceVersionString;
+    typedef NvAPI_Status (__cdecl * QNVAPI_GETDISPLAYDRIVERVERSION)          (NvDisplayHandle, NV_DISPLAY_DRIVER_VERSION*);
     QNVAPI_GETDISPLAYDRIVERVERSION          nvapi_GetDisplayDriverVersion;
+    typedef NvAPI_Status (__cdecl * QNVAPI_GETPHYSICALGPUSFROMDISPLAY)       (NvDisplayHandle, NvPhysicalGpuHandle[NVAPI_MAX_PHYSICAL_GPUS], NvU32*);
     QNVAPI_GETPHYSICALGPUSFROMDISPLAY       nvapi_GetPhysicalGPUsFromDisplay;
+    typedef NvAPI_Status (__cdecl * QNVAPI_GETASSOCIATEDNVIDIADISPLAYHANDLE) (const char*,  NvDisplayHandle*);
     QNVAPI_GETASSOCIATEDNVIDIADISPLAYHANDLE nvapi_GetAssociatedNvidiaDisplayHandle;
+    typedef NvAPI_Status (__cdecl * QNVAPI_GETASSOCIATEDDISPLAYOUTPUTID)     (NvDisplayHandle, NvU32*);
     QNVAPI_GETASSOCIATEDDISPLAYOUTPUTID     nvapi_GetAssociatedDisplayOutputId;
 
+    typedef NvAPI_Status (__cdecl * QNVAPI_GPU_GETTHERMALSETTINGS)           (NvPhysicalGpuHandle, NvU32, NV_GPU_THERMAL_SETTINGS*);
     QNVAPI_GPU_GETTHERMALSETTINGS           nvapi_GPU_GetThermalSettings;
+    typedef NvAPI_Status (__cdecl * QNVAPI_GPU_GETFULLNAME)                  (NvPhysicalGpuHandle, NvAPI_ShortString);
     QNVAPI_GPU_GETFULLNAME                  nvapi_GPU_GetFullName;
+    typedef NvAPI_Status (__cdecl * QNVAPI_GPU_GETEDID)                      (NvPhysicalGpuHandle, NvU32, NV_EDID*);
     QNVAPI_GPU_GETEDID                      nvapi_GPU_GetEDID;
+    typedef NvAPI_Status (__cdecl * QNVAPI_GPU_GETTACHREADING)               (NvPhysicalGpuHandle, NvU32*);
     QNVAPI_GPU_GETTACHREADING               nvapi_GPU_GetTachReading;
+    typedef NvAPI_Status (__cdecl * QNVAPI_GPU_GETALLCLOCKS)                 (NvPhysicalGpuHandle, NV_GPU_CLOCKS*);
     QNVAPI_GPU_GETALLCLOCKS                 nvapi_GPU_GetAllClocks;
-    QNVAPI_GPU_GETPSTATES20                 nvapi_GPU_GetPstates20;
+    typedef NvAPI_Status (__cdecl * QNVAPI_GPU_GETDYNAMICPSTATESINFOEX)      (NvPhysicalGpuHandle, NV_GPU_DYNAMIC_PSTATES_INFO_EX*);
+    QNVAPI_GPU_GETDYNAMICPSTATESINFOEX      nvapi_GPU_GetDynamicPstatesInfoEx;
+    typedef NvAPI_Status (__cdecl * QNVAPI_GPU_GETMEMORYINFO)                (NvPhysicalGpuHandle, NV_DISPLAY_DRIVER_MEMORY_INFO*);
     QNVAPI_GPU_GETMEMORYINFO                nvapi_GPU_GetMemoryInfo;
+    typedef NvAPI_Status (__cdecl * QNVAPI_GPU_GETPCIIDENTIFIERS)            (NvPhysicalGpuHandle, NvU32*, NvU32*, NvU32*, NvU32*);
     QNVAPI_GPU_GETPCIIDENTIFIERS            nvapi_GPU_GetPCIIdentifiers;
 
+    typedef NvAPI_Status (__cdecl * QNVAPI_GPU_GETUSAGES)                    (NvPhysicalGpuHandle, NV_GPU_USAGES*);
     QNVAPI_GPU_GETUSAGES                    nvapi_GPU_GetUsages;
-    QNVAPI_GPU_GETCOOLERSETTINGS            nvapi_GPU_GetCoolerSettings;
 
+    typedef NvAPI_Status (__cdecl * QNVAPI_GPU_GETCOOLERSETTINGS)            (NvPhysicalGpuHandle, NvU32, NV_GPU_COOLER_SETTINGS*);
+    QNVAPI_GPU_GETCOOLERSETTINGS            nvapi_GPU_GetCoolerSettings;
+    typedef NvAPI_Status (__cdecl * QNVAPI_GPU_SETCOOLERLEVELS)              (NvPhysicalGpuHandle, NvU32, NV_GPU_COOLER_LEVELS*);
     QNVAPI_GPU_SETCOOLERLEVELS              nvapi_GPU_SetCoolerLevels;
 };
 
