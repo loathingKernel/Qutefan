@@ -10,7 +10,7 @@ QuteFan::QuteFan(QWidget *parent) : QMainWindow(parent), ui(new Ui::QuteFan)
     timer = new QTimer(this);
     trayIcon = new QuteFanTrayIcon(this);
 
-#ifdef Q_OS_WIN
+#if defined(Q_OS_WIN)
     nvapi = new QNvAPI();
     if(nvapi->isAvailable())
         initializeNvAPI();

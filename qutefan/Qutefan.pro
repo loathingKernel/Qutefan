@@ -16,8 +16,12 @@ win32-g++ {
 }
 
 include(qutefan/qutefan.pri)
-include(platforms/qnvapi/qnvapi.pri)
-include(platforms/qnvctrl/qnvctrl.pri)
+win32 {
+	include(platforms/qnvapi/qnvapi.pri)
+}
+unix {
+	include(platforms/qnvctrl/qnvctrl.pri)
+}
 
 RESOURCES += \
     qutefan.qrc
@@ -25,3 +29,5 @@ RESOURCES += \
 RC_FILE += \
     qutefan.rc
 
+QMAKE_CXXFLAGS += \
+	-std=c++11

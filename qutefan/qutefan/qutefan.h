@@ -7,11 +7,15 @@
 #include <QIcon>
 #include <QSystemTrayIcon>
 #include <QCloseEvent>
+
 #include "gputab.h"
 #include "qutefantrayicon.h"
 
-#include "qnvapi.h"
-#include "qnvctrl.h"
+#if defined(Q_OS_WIN)
+    #include "qnvapi.h"
+#elif defined(Q_OS_LINUX)
+    #include "qnvctrl.h"
+#endif
 
 namespace Ui {
 class QuteFan;
@@ -42,7 +46,11 @@ private:
     void getGpuDefaults();
     void setGpuDefaults(unsigned int);
 
+#if defined(Q_OS_WIN)
     QNvAPI* nvapi;
+#elif defined(Q_OS_LINUX)
+    QNVCtrl* nvctrl;
+#endif
 
     QList<GpuTab*> gpuTabs;
 

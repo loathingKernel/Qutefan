@@ -2,4 +2,5 @@
 
 QNVCtrl::QNVCtrl()
 {
+
 }

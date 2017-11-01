@@ -16,7 +16,11 @@ class GpuTab : public QWidget
 
 public:
     explicit GpuTab(QWidget* parent = 0);
+#if defined(Q_OS_WIN)
     explicit GpuTab(QNvAPI*, QNvAPI::NvGPU*, QWidget* parent = 0);
+#elif defined(Q_OS_LINUX)
+    explicit GpuTab(QNVCtrl*, QNVCtrl::NvGPU*, QWidget* parent = 0);
+#endif
     ~GpuTab();
 
     enum class AccessMode {
@@ -44,11 +48,16 @@ private:
     AccessMode mode;
     GpuTab::FanMode lastMode = FanMode::Off;
 
+#if defined(Q_OS_WIN)
     QNvAPI* nvapi;
     QNvAPI::NvGPU* nvgpu;
     NV_GPU_COOLER_LEVELS nvDefaultCoolerLevels;
     NvS32 nvMaxTemp;
-    NvS32 nvMaxFan;
+    NvS32 nvMaxLevel;
+#elif defined(Q_OS_LINUX)
+    QNVCtrl* nvapi;
+    QNVCtrl::NvGPU* nvgpu;
+#endif
 };
 
 #endif // GPUTAB_H
