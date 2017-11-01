@@ -3,8 +3,11 @@
 
 #include <QWidget>
 
-#include "qnvapi.h"
-#include "qnvctrl.h"
+#if defined(Q_OS_WIN)
+    #include "qnvapi.h"
+#elif defined(Q_OS_LINUX)
+    #include "qnvctrl.h"
+#endif
 
 namespace Ui {
 class GpuTab;
