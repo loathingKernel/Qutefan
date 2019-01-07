@@ -13,7 +13,7 @@ class QuteFanTrayIcon : public QSystemTrayIcon
 {
     Q_OBJECT
 public:
-    explicit QuteFanTrayIcon(QMainWindow *parent = 0);
+    explicit QuteFanTrayIcon(QMainWindow *parent = nullptr);
     ~QuteFanTrayIcon();
 
 public slots:

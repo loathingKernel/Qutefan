@@ -3,12 +3,6 @@
 
 #include <QWidget>
 
-#if defined(Q_OS_WIN)
-    #include "qnvapi.h"
-#elif defined(Q_OS_LINUX)
-    #include "qnvctrl.h"
-#endif
-
 namespace Ui {
 class GpuTab;
 }
@@ -18,19 +12,8 @@ class GpuTab : public QWidget
     Q_OBJECT
 
 public:
-    explicit GpuTab(QWidget* parent = 0);
-#if defined(Q_OS_WIN)
-    explicit GpuTab(QNvAPI*, QNvAPI::NvGPU*, QWidget* parent = 0);
-#elif defined(Q_OS_LINUX)
-    explicit GpuTab(QNVCtrl*, QNVCtrl::NvGPU*, QWidget* parent = 0);
-#endif
+    explicit GpuTab(QWidget* parent = nullptr);
     ~GpuTab();
-
-    enum class AccessMode {
-        nvapi,
-        nvctrl,
-        amd
-    };
 
     enum class FanMode {
         Off = 0,
@@ -40,27 +23,17 @@ public:
         Graph
     };
 
-    void setGPUDefaults();
-    void regulateFan();
-    void displayStatus();
-
-private:
     GpuTab::FanMode getMode();
+    GpuTab::FanMode last_mode = FanMode::Off;
 
     Ui::GpuTab* ui;
-    AccessMode mode;
-    GpuTab::FanMode lastMode = FanMode::Off;
 
-#if defined(Q_OS_WIN)
-    QNvAPI* nvapi;
-    QNvAPI::NvGPU* nvgpu;
-    NV_GPU_COOLER_LEVELS nvDefaultCoolerLevels;
-    NvS32 nvMaxTemp;
-    NvS32 nvMaxLevel;
-#elif defined(Q_OS_LINUX)
-    QNVCtrl* nvapi;
-    QNVCtrl::NvGPU* nvgpu;
-#endif
+    virtual void setGPUDefaults() = 0;
+    virtual void regulateFan() = 0;
+    virtual void displayStatus() = 0;
+
+public slots:
+    virtual void resetMax() = 0;
 };
 
 #endif // GPUTAB_H

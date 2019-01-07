@@ -11,17 +11,19 @@ QuteFan::QuteFan(QWidget *parent) : QMainWindow(parent), ui(new Ui::QuteFan)
     trayIcon = new QuteFanTrayIcon(this);
 
 #if defined(Q_OS_WIN)
-    nvapi = new QNvAPI();
-    if(nvapi->isAvailable())
-        initializeNvAPI();
+    api = new QuteFanNvAPI();
+#elif defined(Q_OS_LINUX)
+    api = new QuteFanNVCtrl();
+#endif
+    if(api->available())
+        api->initialize();
     else
         QMessageBox::critical(this, "Error", "No supported hardware was found.");
-#endif
 
     // Dynamically add tabs for as many GPUs as were found.
-    for(uint i = 0; i < nvapi->gpuCount; i++) {
-        gpuTabs.append(new GpuTab(nvapi, &nvapi->gpu[i]));
-        ui->tabWidgetGpu->addTab(gpuTabs[static_cast<int>(i)], QString("%1").arg(nvapi->gpu[i].name));
+    for(uint i = 0; i < api->gpuCount; i++) {
+        gpuTabs.append(new GpuTabNvAPI(api, &api->gpu[i]));
+        ui->tabWidgetGpu->addTab(gpuTabs[static_cast<int>(i)], QString("%1").arg(api->gpu[i].name));
     }
 
     // Resize window to the minimum possible and don't let it be resized.
@@ -90,23 +92,3 @@ void QuteFan::intervalChanged(int value)
     timer->stop();
     timer->start(value * 1000);
 }
-
-void QuteFan::initializeNvAPI()
-{
-    nvapi->Initialize();
-
-    nvapi->GetInterfaceVersionString(nvapi->version);
-    qDebug("NvAPI version: %s", nvapi->version);
-
-    nvapi->EnumPhysicalGPUs();
-    qDebug("Total number of GPU's = %lu", nvapi->gpuCount);
-
-    for(unsigned int i = 0; i < nvapi->gpuCount; i++)
-        nvapi->GPU_GetFullName(nvapi->gpu[i].handle, nvapi->gpu[i].name);
-}
-
-void QuteFan::initializeNVCtrl()
-{
-
-}
-

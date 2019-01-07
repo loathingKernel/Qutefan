@@ -73,36 +73,12 @@ typedef NV_GPU_CLOCKS_V2    NV_GPU_CLOCKS;
 class QNvAPI : public QLibrary
 {
 public:
-
-//#pragma warning(disable : 4351)
-    NvAPI_Status status = NVAPI_OK;
-    NvAPI_ShortString version = {};
-
-    NV_DISPLAY_DRIVER_VERSION driverVersion = {};
-
-    NvU32 displayCount = 0;
-    NvDisplayHandle displayHandle[NVAPI_MAX_PHYSICAL_GPUS*NVAPI_MAX_DISPLAY_HEADS] = {};
-
-    NvU32 gpuCount = 0;
-    typedef struct {
-        NvAPI_Status status;
-        NvPhysicalGpuHandle handle;
-        NvAPI_ShortString name;
-        NvU32 coolerTach;
-        NV_GPU_THERMAL_SETTINGS thermalSettings;
-        NV_GPU_COOLER_SETTINGS coolerSettings;
-        NV_GPU_COOLER_LEVELS coolerLevels;
-        NV_GPU_CLOCKS clocks;
-    } NvGPU;
-    NvGPU gpu[NVAPI_MAX_PHYSICAL_GPUS] = {};
-
     QNvAPI(void);
 
     NvAPI_Status Initialize(void);
 
     NvAPI_Status EnumNvidiaDisplayHandle(NvU32, NvDisplayHandle*);
     NvAPI_Status EnumPhysicalGPUs(NvPhysicalGpuHandle[NVAPI_MAX_PHYSICAL_GPUS], NvU32*);
-    NvAPI_Status EnumPhysicalGPUs();
 
     NvAPI_Status GetInterfaceVersionString(NvAPI_ShortString);
     NvAPI_Status GetDisplayDriverVersion(NvDisplayHandle, NV_DISPLAY_DRIVER_VERSION*);

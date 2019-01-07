@@ -4,34 +4,34 @@ static QMutex* nvapi_lock = new QMutex(QMutex::Recursive);
 
 QNvAPI::QNvAPI()
     : QLibrary("nvapi"),
-      nvapi_QueryInterface(NULL),
-      nvapi_Initialize(NULL),
-      nvapi_EnumNvidiaDisplayHandle(NULL),
-      nvapi_EnumPhysicalGPUs(NULL),
-      nvapi_GetInterfaceVersionString(NULL),
-      nvapi_GetDisplayDriverVersion(NULL),
-      nvapi_GetPhysicalGPUsFromDisplay(NULL),
-      nvapi_GetAssociatedNvidiaDisplayHandle(NULL),
-      nvapi_GetAssociatedDisplayOutputId(NULL),
-      nvapi_GPU_GetThermalSettings(NULL),
-      nvapi_GPU_GetFullName(NULL),
-      nvapi_GPU_GetEDID(NULL),
-      nvapi_GPU_GetTachReading(NULL),
-      nvapi_GPU_GetAllClocks(NULL),
-      nvapi_GPU_GetDynamicPstatesInfoEx(NULL),
-      nvapi_GPU_GetMemoryInfo(NULL),
-      nvapi_GPU_GetPCIIdentifiers(NULL),
-      nvapi_GPU_GetUsages(NULL),
-      nvapi_GPU_GetCoolerSettings(NULL),
-      nvapi_GPU_SetCoolerLevels(NULL)
+      nvapi_QueryInterface(nullptr),
+      nvapi_Initialize(nullptr),
+      nvapi_EnumNvidiaDisplayHandle(nullptr),
+      nvapi_EnumPhysicalGPUs(nullptr),
+      nvapi_GetInterfaceVersionString(nullptr),
+      nvapi_GetDisplayDriverVersion(nullptr),
+      nvapi_GetPhysicalGPUsFromDisplay(nullptr),
+      nvapi_GetAssociatedNvidiaDisplayHandle(nullptr),
+      nvapi_GetAssociatedDisplayOutputId(nullptr),
+      nvapi_GPU_GetThermalSettings(nullptr),
+      nvapi_GPU_GetFullName(nullptr),
+      nvapi_GPU_GetEDID(nullptr),
+      nvapi_GPU_GetTachReading(nullptr),
+      nvapi_GPU_GetAllClocks(nullptr),
+      nvapi_GPU_GetDynamicPstatesInfoEx(nullptr),
+      nvapi_GPU_GetMemoryInfo(nullptr),
+      nvapi_GPU_GetPCIIdentifiers(nullptr),
+      nvapi_GPU_GetUsages(nullptr),
+      nvapi_GPU_GetCoolerSettings(nullptr),
+      nvapi_GPU_SetCoolerLevels(nullptr)
 {
     QMutexLocker locker(nvapi_lock);
 
     nvapi_QueryInterface = reinterpret_cast<QNVAPI_QUERYINTERFACE>(resolve("nvapi_QueryInterface"));
 
     if(!nvapi_QueryInterface) {
-        status = NVAPI_LIBRARY_NOT_FOUND;
-        qDebug("QNvAPI failed to initialize NvAPI_QueryInterface()");
+        NvAPI_Status status = NVAPI_LIBRARY_NOT_FOUND;
+        qDebug("NvAPI_QueryInterface() failed with status %d", status);
     } else {
         nvapi_Initialize                        = reinterpret_cast<QNVAPI_INITIALIZE>                       (nvapi_QueryInterface(0x0150E828));
 
@@ -62,7 +62,7 @@ QNvAPI::QNvAPI()
 
 NvAPI_Status QNvAPI::Initialize(void)
 {
-    status = nvapi_Initialize();
+    NvAPI_Status status = nvapi_Initialize();
     if(status != NVAPI_OK)
         qDebug("NvAPI_Initialize() failed with status %d", status);
     return status;
@@ -70,7 +70,7 @@ NvAPI_Status QNvAPI::Initialize(void)
 
 NvAPI_Status QNvAPI::EnumNvidiaDisplayHandle(NvU32 thisEnum, NvDisplayHandle* pNvDispHandle)
 {
-    status = nvapi_EnumNvidiaDisplayHandle(thisEnum, pNvDispHandle);
+    NvAPI_Status status = nvapi_EnumNvidiaDisplayHandle(thisEnum, pNvDispHandle);
     if(status != NVAPI_OK)
         qDebug("NvAPI_EnumNvidiaDisplayHandle() failed with status %d", status);
     return status;
@@ -78,25 +78,15 @@ NvAPI_Status QNvAPI::EnumNvidiaDisplayHandle(NvU32 thisEnum, NvDisplayHandle* pN
 
 NvAPI_Status QNvAPI::EnumPhysicalGPUs(NvPhysicalGpuHandle nvGPUHandle[NVAPI_MAX_PHYSICAL_GPUS], NvU32* pGpuCount)
 {
-    status = nvapi_EnumPhysicalGPUs(nvGPUHandle, pGpuCount);
+    NvAPI_Status status = nvapi_EnumPhysicalGPUs(nvGPUHandle, pGpuCount);
     if(status != NVAPI_OK)
         qDebug("NvAPI_EnumPhysicalGPUs() failed with status %d", status);
     return status;
 }
 
-NvAPI_Status QNvAPI::EnumPhysicalGPUs()
-{
-    NvPhysicalGpuHandle handle[NVAPI_MAX_PHYSICAL_GPUS];
-
-    status = EnumPhysicalGPUs(handle, &gpuCount);
-    for(unsigned int i = 0; i < gpuCount; i++)
-        gpu[i].handle = handle[i];
-    return status;
-}
-
 NvAPI_Status QNvAPI::GetInterfaceVersionString(NvAPI_ShortString szDesc)
 {
-    status = nvapi_GetInterfaceVersionString(szDesc);
+    NvAPI_Status status = nvapi_GetInterfaceVersionString(szDesc);
     if(status != NVAPI_OK)
         qDebug("NvAPI_GetInterfaceVersionString() failed with status %d", status);
     return status;
@@ -105,7 +95,7 @@ NvAPI_Status QNvAPI::GetInterfaceVersionString(NvAPI_ShortString szDesc)
 NvAPI_Status QNvAPI::GetDisplayDriverVersion(NvDisplayHandle hNvDisplay, NV_DISPLAY_DRIVER_VERSION* pVersion)
 {
     pVersion->version = NV_DISPLAY_DRIVER_VERSION_VER;
-    status = nvapi_GetDisplayDriverVersion(hNvDisplay, pVersion);
+    NvAPI_Status status = nvapi_GetDisplayDriverVersion(hNvDisplay, pVersion);
     if(status != NVAPI_OK)
         qDebug("NvAPI_GetDisplayDriverVersion() failed with status %d", status);
     return status;
@@ -113,7 +103,7 @@ NvAPI_Status QNvAPI::GetDisplayDriverVersion(NvDisplayHandle hNvDisplay, NV_DISP
 
 NvAPI_Status QNvAPI::GetPhysicalGPUsFromDisplay(NvDisplayHandle hNvDisp, NvPhysicalGpuHandle nvGPUHandle[NVAPI_MAX_PHYSICAL_GPUS], NvU32* pGpuCount)
 {
-    status = nvapi_GetPhysicalGPUsFromDisplay(hNvDisp, nvGPUHandle, pGpuCount);
+    NvAPI_Status status = nvapi_GetPhysicalGPUsFromDisplay(hNvDisp, nvGPUHandle, pGpuCount);
     if(status != NVAPI_OK)
         qDebug("NvAPI_GetPhysicalGPUsFromDisplay() failed with status %d", status);
     return status;
@@ -121,7 +111,7 @@ NvAPI_Status QNvAPI::GetPhysicalGPUsFromDisplay(NvDisplayHandle hNvDisp, NvPhysi
 
 NvAPI_Status QNvAPI::GetAssociatedNvidiaDisplayHandle(const char* szDisplayName, NvDisplayHandle* pNvDispHandle)
 {
-    status = nvapi_GetAssociatedNvidiaDisplayHandle(szDisplayName, pNvDispHandle);
+    NvAPI_Status status = nvapi_GetAssociatedNvidiaDisplayHandle(szDisplayName, pNvDispHandle);
     if(status != NVAPI_OK)
         qDebug("NvAPI_GetAssociatedNvidiaDisplayHandle() failed with status %d", status);
     return status;
@@ -129,7 +119,7 @@ NvAPI_Status QNvAPI::GetAssociatedNvidiaDisplayHandle(const char* szDisplayName,
 
 NvAPI_Status QNvAPI::GetAssociatedDisplayOutputId(NvDisplayHandle hNvDisplay, NvU32* pOutputId)
 {
-    status = nvapi_GetAssociatedDisplayOutputId(hNvDisplay, pOutputId);
+    NvAPI_Status  status = nvapi_GetAssociatedDisplayOutputId(hNvDisplay, pOutputId);
     if(status != NVAPI_OK)
         qDebug("NvAPI_GetAssociatedDisplayOutputId() failed with status %d", status);
     return status;
@@ -138,7 +128,7 @@ NvAPI_Status QNvAPI::GetAssociatedDisplayOutputId(NvDisplayHandle hNvDisplay, Nv
 NvAPI_Status QNvAPI::GPU_GetThermalSettings(NvPhysicalGpuHandle hPhysicalGpu, NvU32 sensorIndex, NV_GPU_THERMAL_SETTINGS* pThermalSettings)
 {
     pThermalSettings->version = NV_GPU_THERMAL_SETTINGS_VER;
-    status = nvapi_GPU_GetThermalSettings(hPhysicalGpu, sensorIndex, pThermalSettings);
+    NvAPI_Status status = nvapi_GPU_GetThermalSettings(hPhysicalGpu, sensorIndex, pThermalSettings);
     if(status != NVAPI_OK)
         qDebug("NvAPI_GPU_GetThermalSettings() failed with status %d", status);
     return status;
@@ -146,7 +136,7 @@ NvAPI_Status QNvAPI::GPU_GetThermalSettings(NvPhysicalGpuHandle hPhysicalGpu, Nv
 
 NvAPI_Status QNvAPI::GPU_GetFullName(NvPhysicalGpuHandle hPhysicalGpu, NvAPI_ShortString szName)
 {
-    status = nvapi_GPU_GetFullName(hPhysicalGpu, szName);
+    NvAPI_Status status = nvapi_GPU_GetFullName(hPhysicalGpu, szName);
     if(status != NVAPI_OK)
         qDebug("NvAPI_GPU_GetFullName() failed with status %d", status);
     return status;
@@ -154,7 +144,7 @@ NvAPI_Status QNvAPI::GPU_GetFullName(NvPhysicalGpuHandle hPhysicalGpu, NvAPI_Sho
 
 NvAPI_Status QNvAPI::GPU_GetEDID(NvPhysicalGpuHandle hPhysicalGpu, NvU32 displayOutputId, NV_EDID* pEDID)
 {
-    status = nvapi_GPU_GetEDID(hPhysicalGpu, displayOutputId, pEDID);
+    NvAPI_Status status = nvapi_GPU_GetEDID(hPhysicalGpu, displayOutputId, pEDID);
     if(status != NVAPI_OK)
         qDebug("NvAPI_GPU_GetEDID() failed with status %d", status);
     return status;
@@ -162,7 +152,7 @@ NvAPI_Status QNvAPI::GPU_GetEDID(NvPhysicalGpuHandle hPhysicalGpu, NvU32 display
 
 NvAPI_Status QNvAPI::GPU_GetTachReading(NvPhysicalGpuHandle hPhysicalGpu, NvU32* pValue)
 {
-    status = nvapi_GPU_GetTachReading(hPhysicalGpu, pValue);
+    NvAPI_Status status = nvapi_GPU_GetTachReading(hPhysicalGpu, pValue);
     if(status != NVAPI_OK)
         qDebug("NvAPI_GPU_GetTachReading() failed with status %d", status);
     return status;
@@ -171,7 +161,7 @@ NvAPI_Status QNvAPI::GPU_GetTachReading(NvPhysicalGpuHandle hPhysicalGpu, NvU32*
 NvAPI_Status QNvAPI::GPU_GetAllClocks(__in NvPhysicalGpuHandle hPhysicalGpu, __inout NV_GPU_CLOCKS* pClkFreqs)
 {
     pClkFreqs->version =  NV_GPU_CLOCKS_VER;
-    status = nvapi_GPU_GetAllClocks(hPhysicalGpu, pClkFreqs);
+    NvAPI_Status status = nvapi_GPU_GetAllClocks(hPhysicalGpu, pClkFreqs);
     if(status != NVAPI_OK)
         qDebug("NvAPI_GPU_GetAllClocks() failed with status %d", status);
     return status;
@@ -180,7 +170,7 @@ NvAPI_Status QNvAPI::GPU_GetAllClocks(__in NvPhysicalGpuHandle hPhysicalGpu, __i
 NvAPI_Status QNvAPI::GPU_GetDynamicPstatesInfoEx(__in NvPhysicalGpuHandle hPhysicalGpu, __inout NV_GPU_DYNAMIC_PSTATES_INFO_EX* pDynamicPstatesInfoEx)
 {
     pDynamicPstatesInfoEx->version = NV_GPU_PERF_PSTATES20_INFO_VER;
-    status = nvapi_GPU_GetDynamicPstatesInfoEx(hPhysicalGpu, pDynamicPstatesInfoEx);
+    NvAPI_Status status = nvapi_GPU_GetDynamicPstatesInfoEx(hPhysicalGpu, pDynamicPstatesInfoEx);
     if(status != NVAPI_OK)
         qDebug("NvAPI_GPU_GetDynamicPstatesInfoEx() failed with status %d", status);
     return status;
@@ -189,7 +179,7 @@ NvAPI_Status QNvAPI::GPU_GetDynamicPstatesInfoEx(__in NvPhysicalGpuHandle hPhysi
 NvAPI_Status QNvAPI::GPU_GetMemoryInfo(NvPhysicalGpuHandle hPhysicalGpu, NV_DISPLAY_DRIVER_MEMORY_INFO* pMemoryInfo)
 {
     pMemoryInfo->version = NV_DISPLAY_DRIVER_MEMORY_INFO_VER;
-    status = nvapi_GPU_GetMemoryInfo(hPhysicalGpu, pMemoryInfo);
+    NvAPI_Status status = nvapi_GPU_GetMemoryInfo(hPhysicalGpu, pMemoryInfo);
     if(status != NVAPI_OK)
         qDebug("NvAPI_GPU_GetMemoryInfo() failed with status %d", status);
     return status;
@@ -197,7 +187,7 @@ NvAPI_Status QNvAPI::GPU_GetMemoryInfo(NvPhysicalGpuHandle hPhysicalGpu, NV_DISP
 
 NvAPI_Status QNvAPI::GPU_GetPCIIdentifiers(NvPhysicalGpuHandle hPhysicalGpu, NvU32* pDeviceId, NvU32* pSubSystemId, NvU32* pRevisionId, NvU32* pExtDeviceId)
 {
-    status = nvapi_GPU_GetPCIIdentifiers(hPhysicalGpu, pDeviceId, pSubSystemId, pRevisionId, pExtDeviceId);
+    NvAPI_Status status = nvapi_GPU_GetPCIIdentifiers(hPhysicalGpu, pDeviceId, pSubSystemId, pRevisionId, pExtDeviceId);
     if(status != NVAPI_OK)
         qDebug("NvAPI_GPU_GetPCIIdentifiers() failed with status %d", status);
     return status;
@@ -206,7 +196,7 @@ NvAPI_Status QNvAPI::GPU_GetPCIIdentifiers(NvPhysicalGpuHandle hPhysicalGpu, NvU
 NvAPI_Status QNvAPI::GPU_GetUsages(NvPhysicalGpuHandle hPhysicalGpu, NV_GPU_USAGES* pGpuUsages)
 {
     pGpuUsages->version = NV_GPU_USAGES_VER;
-    status = nvapi_GPU_GetUsages(hPhysicalGpu, pGpuUsages);
+    NvAPI_Status status = nvapi_GPU_GetUsages(hPhysicalGpu, pGpuUsages);
     if(status != NVAPI_OK)
         qDebug("NvAPI_GPU_GetUsages() failed with status %d", status);
     return status;
@@ -215,7 +205,7 @@ NvAPI_Status QNvAPI::GPU_GetUsages(NvPhysicalGpuHandle hPhysicalGpu, NV_GPU_USAG
 NvAPI_Status QNvAPI::GPU_GetCoolerSettings(NvPhysicalGpuHandle hPhysicalGpu, NvU32 coolerIndex, NV_GPU_COOLER_SETTINGS* pCoolerSettings)
 {
     pCoolerSettings->version = NV_GPU_COOLER_SETTINGS_VER;
-    status = nvapi_GPU_GetCoolerSettings(hPhysicalGpu, coolerIndex, pCoolerSettings);
+    NvAPI_Status status = nvapi_GPU_GetCoolerSettings(hPhysicalGpu, coolerIndex, pCoolerSettings);
     if(status != NVAPI_OK)
         qDebug("NvAPI_GPU_GetCoolerSettings() failed with status %d", status);
     return status;
@@ -224,7 +214,7 @@ NvAPI_Status QNvAPI::GPU_GetCoolerSettings(NvPhysicalGpuHandle hPhysicalGpu, NvU
 NvAPI_Status QNvAPI::GPU_SetCoolerLevels(NvPhysicalGpuHandle hPhysicalGpu, NvU32 coolerIndex, NV_GPU_COOLER_LEVELS* pCoolerLevels)
 {
     pCoolerLevels->version = NV_GPU_COOLER_LEVELS_VER;
-    status = nvapi_GPU_SetCoolerLevels(hPhysicalGpu, coolerIndex, pCoolerLevels);
+    NvAPI_Status status = nvapi_GPU_SetCoolerLevels(hPhysicalGpu, coolerIndex, pCoolerLevels);
     if(status != NVAPI_OK)
         qDebug("NvAPI_GPU_SetCoolerLevels() failed with status %d", status);
     return status;

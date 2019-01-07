@@ -8,13 +8,13 @@
 #include <QSystemTrayIcon>
 #include <QCloseEvent>
 
-#include "gputab.h"
 #include "qutefantrayicon.h"
 
 #if defined(Q_OS_WIN)
-    #include "qnvapi.h"
+#include "gputab_nvapi.h"
+#include "qutefan_nvapi.h"
 #elif defined(Q_OS_LINUX)
-    #include "qnvctrl.h"
+#include "gputab_nvctrl.h"
 #endif
 
 namespace Ui {
@@ -26,7 +26,7 @@ class QuteFan : public QMainWindow
     Q_OBJECT
 
 public:
-    explicit QuteFan(QWidget* parent = 0);
+    explicit QuteFan(QWidget* parent = nullptr);
     ~QuteFan();
 
 protected:
@@ -40,17 +40,10 @@ private slots:
     void intervalChanged(int);
 
 private:
-    void initializeNvAPI();
-    void initializeNVCtrl();
-
     void getGpuDefaults();
     void setGpuDefaults(unsigned int);
 
-#if defined(Q_OS_WIN)
-    QNvAPI* nvapi;
-#elif defined(Q_OS_LINUX)
-    QNVCtrl* nvctrl;
-#endif
+    QuteFanNvAPI* api;
 
     QList<GpuTab*> gpuTabs;
 
