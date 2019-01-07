@@ -3,12 +3,13 @@
 
 #include "qnvctrl.h"
 
-
-class QuteFanNVCtrl: public QuteFanAPI
+class QuteFanNVCtrl
 {
 public:
     QuteFanNVCtrl();
-    bool isAvailable();
+    ~QuteFanNVCtrl();
+
+    bool available();
     void initialize();
 };
 

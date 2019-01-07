@@ -11,9 +11,10 @@
 #include "qutefantrayicon.h"
 
 #if defined(Q_OS_WIN)
-#include "gputab_nvapi.h"
 #include "qutefan_nvapi.h"
+#include "gputab_nvapi.h"
 #elif defined(Q_OS_LINUX)
+#include "qutefan_nvctrl.h"
 #include "gputab_nvctrl.h"
 #endif
 
@@ -43,7 +44,11 @@ private:
     void getGpuDefaults();
     void setGpuDefaults(unsigned int);
 
-    QuteFanNvAPI* api;
+#if defined(Q_OS_WIN)
+    QuteFanNvAPI* nvapi;
+#elif defined(Q_OS_LINUX)
+    QuteFanNVCtrl* nvctrl;
+#endif
 
     QList<GpuTab*> gpuTabs;
 

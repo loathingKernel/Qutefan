@@ -1,7 +1,6 @@
 #include "gputab_nvapi.h"
 #include "ui_gputab.h"
 
-
 GpuTabNvAPI::GpuTabNvAPI(QuteFanNvAPI* _api, QuteFanNvAPI::NvGPU* _gpu, QWidget* parent) : GpuTab(parent)
 {
     api = _api;
@@ -17,8 +16,8 @@ GpuTabNvAPI::GpuTabNvAPI(QuteFanNvAPI* _api, QuteFanNvAPI::NvGPU* _gpu, QWidget*
     ui->spinBoxFixedLevel->setValue(gpu->coolerSettings.cooler[0].currentLevel);
 }
 
-GpuTabNvAPI::~GpuTabNvAPI(){
-    delete ui;
+GpuTabNvAPI::~GpuTabNvAPI()
+{
 }
 
 void GpuTabNvAPI::setGPUDefaults()

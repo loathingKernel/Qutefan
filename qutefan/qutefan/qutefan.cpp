@@ -11,20 +11,23 @@ QuteFan::QuteFan(QWidget *parent) : QMainWindow(parent), ui(new Ui::QuteFan)
     trayIcon = new QuteFanTrayIcon(this);
 
 #if defined(Q_OS_WIN)
-    api = new QuteFanNvAPI();
+    nvapi = new QuteFanNvAPI();
+    if(nvapi->available()) {
+        nvapi->initialize();
+        // Dynamically add tabs for as many GPUs as were found.
+        for(int i = gpuTabs.count(); i < nvapi->gpuCount; i++) {
+            gpuTabs.append(new GpuTabNvAPI(nvapi, &nvapi->gpu[i]));
+            ui->tabWidgetGpu->addTab(gpuTabs[static_cast<int>(i)], QString("%1").arg(nvapi->gpu[i].name));
+        }
+    }
 #elif defined(Q_OS_LINUX)
-    api = new QuteFanNVCtrl();
+    nvctrl = new QuteFanNVCtrl();
+    if(nvctrl->available())
+        nvctrl->initialize();
 #endif
-    if(api->available())
-        api->initialize();
     else
         QMessageBox::critical(this, "Error", "No supported hardware was found.");
 
-    // Dynamically add tabs for as many GPUs as were found.
-    for(uint i = 0; i < api->gpuCount; i++) {
-        gpuTabs.append(new GpuTabNvAPI(api, &api->gpu[i]));
-        ui->tabWidgetGpu->addTab(gpuTabs[static_cast<int>(i)], QString("%1").arg(api->gpu[i].name));
-    }
 
     // Resize window to the minimum possible and don't let it be resized.
     this->resize(minimumSizeHint());
