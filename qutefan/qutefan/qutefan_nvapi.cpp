@@ -17,17 +17,17 @@ bool QuteFanNvAPI::available()
 
 void QuteFanNvAPI::initialize()
 {
+    NvPhysicalGpuHandle handle[NVAPI_MAX_PHYSICAL_GPUS];
+
     nvapi->Initialize();
 
     nvapi->GetInterfaceVersionString(version);
     qDebug("NvAPI version: %s", version);
 
-    NvPhysicalGpuHandle handle[NVAPI_MAX_PHYSICAL_GPUS];
-    nvapi->EnumPhysicalGPUs(handle, &gpuCount);
-    for(unsigned int i = 0; i < gpuCount; i++)
+    nvapi->EnumPhysicalGPUs(handle, &num_gpus);
+    for(int i = 0; i < num_gpus; i++) {
         gpu[i].handle = handle[i];
-    qDebug("Total number of GPU's = %lu", gpuCount);
-
-    for(unsigned int i = 0; i < gpuCount; i++)
         nvapi->GPU_GetFullName(gpu[i].handle, gpu[i].name);
+    }
+    qDebug("Total number of GPU's = %lu", num_gpus);
 }

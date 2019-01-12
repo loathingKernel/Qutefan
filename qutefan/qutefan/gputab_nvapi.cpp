@@ -1,12 +1,13 @@
-#include "gputab_nvapi.h"
 #include "ui_gputab.h"
+#include "gputab_nvapi.h"
 
 GpuTabNvAPI::GpuTabNvAPI(QuteFanNvAPI* _api, QuteFanNvAPI::NvGPU* _gpu, QWidget* parent) : GpuTab(parent)
 {
     api = _api;
     gpu = _gpu;
+    nvapi = api->nvapi;
 
-    gpu->status = api->nvapi->GPU_GetCoolerSettings(gpu->handle, 0, &gpu->coolerSettings);
+    gpu->status = nvapi->GPU_GetCoolerSettings(gpu->handle, 0, &gpu->coolerSettings);
     default_cooler_levels.cooler[0].level = gpu->coolerSettings.cooler[0].currentLevel;
     default_cooler_levels.cooler[0].policy = gpu->coolerSettings.cooler[0].currentPolicy;
     qDebug("Saved defaults");
@@ -22,20 +23,20 @@ GpuTabNvAPI::~GpuTabNvAPI()
 
 void GpuTabNvAPI::setGPUDefaults()
 {
-    gpu->status = api->nvapi->GPU_SetCoolerLevels(gpu->handle, 0, &default_cooler_levels);
+    gpu->status = nvapi->GPU_SetCoolerLevels(gpu->handle, 0, &default_cooler_levels);
     qDebug("Restored defaults for GPU");
 }
 
 void GpuTabNvAPI::regulateFan()
 {
-    gpu->status = api->nvapi->GPU_GetThermalSettings(gpu->handle, 0, &gpu->thermalSettings);
+    gpu->status = nvapi->GPU_GetThermalSettings(gpu->handle, 0, &gpu->thermalSettings);
     if(max_temp < gpu->thermalSettings.sensor[0].currentTemp)
         max_temp = gpu->thermalSettings.sensor[0].currentTemp;
     ui->labelStatusTempCur->setText(QString("%1°C").arg(gpu->thermalSettings.sensor[0].currentTemp));
     ui->labelStatusTempMax->setText(QString("%1°C").arg(max_temp));
 
 
-    GpuTabNvAPI::FanMode mode = getMode();
+    GpuTab::FanMode mode = getMode();
     if(mode == GpuTab::FanMode::Off) {
         if(mode != last_mode)
             setGPUDefaults();
@@ -57,12 +58,12 @@ void GpuTabNvAPI::regulateFan()
         case GpuTab::FanMode::Graph:
             break;
         }
-        gpu->status = api->nvapi->GPU_SetCoolerLevels(gpu->handle, 0, &newCoolerLevels);
+        gpu->status = nvapi->GPU_SetCoolerLevels(gpu->handle, 0, &newCoolerLevels);
     }
     last_mode = mode;
 
 
-    gpu->status = api->nvapi->GPU_GetCoolerSettings(gpu->handle, 0, &gpu->coolerSettings);
+    gpu->status = nvapi->GPU_GetCoolerSettings(gpu->handle, 0, &gpu->coolerSettings);
     if(max_level < gpu->coolerSettings.cooler[0].currentLevel)
         max_level = gpu->coolerSettings.cooler[0].currentLevel;
     ui->labelStatusFanCur->setText(QString("%1%").arg(gpu->coolerSettings.cooler[0].currentLevel));
@@ -71,7 +72,7 @@ void GpuTabNvAPI::regulateFan()
 
 void GpuTabNvAPI::displayStatus()
 {
-    gpu->status = api->nvapi->GPU_GetAllClocks(gpu->handle, &gpu->clocks);
+    gpu->status = nvapi->GPU_GetAllClocks(gpu->handle, &gpu->clocks);
 
     if(gpu->clocks.clock[30] != 0) {
         ui->labelStatusCoreCur->setText(QString("%1Mhz").arg(gpu->clocks.clock[30]/2000.0, 0, 'f', 1));

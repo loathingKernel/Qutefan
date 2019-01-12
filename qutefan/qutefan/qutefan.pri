@@ -27,5 +27,7 @@ SOURCES += \
 HEADERS += \
     $$PWD/qutefan_nvctrl.h \
     $$PWD/gputab_nvctrl.h
+
+LIBS += -lX11 -lXNVCtrl
 }
 

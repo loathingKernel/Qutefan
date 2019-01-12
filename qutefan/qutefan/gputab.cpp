@@ -1,6 +1,5 @@
-#include "gputab.h"
 #include "ui_gputab.h"
-
+#include "gputab.h"
 
 GpuTab::GpuTab(QWidget* parent) : QWidget(parent), ui(new Ui::GpuTab)
 {

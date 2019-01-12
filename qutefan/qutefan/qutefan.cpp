@@ -8,25 +8,32 @@ QuteFan::QuteFan(QWidget *parent) : QMainWindow(parent), ui(new Ui::QuteFan)
     setWindowTitle(qApp->applicationName());
 
     timer = new QTimer(this);
-    trayIcon = new QuteFanTrayIcon(this);
+    tray_icon = new QuteFanTrayIcon(this);
 
 #if defined(Q_OS_WIN)
-    nvapi = new QuteFanNvAPI();
-    if(nvapi->available()) {
-        nvapi->initialize();
+    qf_nvapi = new QuteFanNvAPI();
+    if(qf_nvapi->available()) {
+        qf_nvapi->initialize();
         // Dynamically add tabs for as many GPUs as were found.
-        for(int i = gpuTabs.count(); i < nvapi->gpuCount; i++) {
-            gpuTabs.append(new GpuTabNvAPI(nvapi, &nvapi->gpu[i]));
-            ui->tabWidgetGpu->addTab(gpuTabs[static_cast<int>(i)], QString("%1").arg(nvapi->gpu[i].name));
+        for(int i = 0; i < qf_nvapi->gpu_count; i++) {
+            gpu_tabs.append(new GpuTabNvAPI(qf_nvapi, &qf_nvapi->gpu[i]));
+            ui->tabWidgetGpu->addTab(gpu_tabs[static_cast<int>(i)], QString("%1").arg(qf_nvapi->gpu[i].name));
         }
     }
 #elif defined(Q_OS_LINUX)
-    nvctrl = new QuteFanNVCtrl();
-    if(nvctrl->available())
-        nvctrl->initialize();
+    qf_nvctrl = new QuteFanNVCtrl();
+    if(qf_nvctrl->available()) {
+        qf_nvctrl->initialize();
+        for(int i = 0; i < qf_nvctrl->num_gpus; i++) {
+            gpu_tabs.append(new GpuTabNVCtrl(qf_nvctrl, &qf_nvctrl->gpu[i]));
+            ui->tabWidgetGpu->addTab(gpu_tabs[static_cast<int>(i)], QString("%1").arg(qf_nvctrl->gpu[i].name));
+        }
+    }
 #endif
-    else
+    else {
         QMessageBox::critical(this, "Error", "No supported hardware was found.");
+        qApp->quit();
+    }
 
 
     // Resize window to the minimum possible and don't let it be resized.
@@ -41,25 +48,25 @@ QuteFan::QuteFan(QWidget *parent) : QMainWindow(parent), ui(new Ui::QuteFan)
     connect(ui->spinBoxInterval, SIGNAL(valueChanged(int)), this, SLOT(intervalChanged(int)));
 
     timer->start(ui->spinBoxInterval->text().toInt() * 1000);
-    trayIcon->show();
+    tray_icon->show();
 }
 
 QuteFan::~QuteFan()
 {
-    foreach(GpuTab* tab, gpuTabs)
+    foreach(GpuTab* tab, gpu_tabs)
         tab->setGPUDefaults();
     delete ui;
 }
 
 void QuteFan::closeEvent(QCloseEvent* event)
 {
-    if (trayIcon->isVisible()) {
-        if(firstCloseToTray) {
-            trayIcon->showMessage(tr("Qutefan"), tr("Qutefan will now keep on running in the tray"));
-            firstCloseToTray = false;
+    if (tray_icon->isVisible()) {
+        if(first_close_to_tray) {
+            tray_icon->showMessage(tr("Qutefan"), tr("Qutefan will now keep on running in the tray"));
+            first_close_to_tray = false;
         }
         this->hide();
-        trayIcon->updateMenu();
+        tray_icon->updateMenu();
         event->ignore();
     }
 }
@@ -84,7 +91,7 @@ void QuteFan::onActionAboutQtTriggered()
 
 void QuteFan::regulateFan()
 {
-    foreach(GpuTab* tab, gpuTabs) {
+    foreach(GpuTab* tab, gpu_tabs) {
         tab->regulateFan();
         tab->displayStatus();
     }

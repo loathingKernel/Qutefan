@@ -1,7 +1,6 @@
 #ifndef GPUTABNVAPI_H
 #define GPUTABNVAPI_H
 
-#include <QWidget>
 #include "gputab.h"
 #include "qutefan_nvapi.h"
 
@@ -25,6 +24,7 @@ private slots:
 private:
     QuteFanNvAPI* api;
     QuteFanNvAPI::NvGPU* gpu;
+    QNvAPI* nvapi;
     NV_GPU_COOLER_LEVELS default_cooler_levels;
     NvS32 max_temp;
     NvS32 max_level;

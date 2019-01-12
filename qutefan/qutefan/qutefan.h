@@ -45,18 +45,18 @@ private:
     void setGpuDefaults(unsigned int);
 
 #if defined(Q_OS_WIN)
-    QuteFanNvAPI* nvapi;
+    QuteFanNvAPI* qf_nvapi;
 #elif defined(Q_OS_LINUX)
-    QuteFanNVCtrl* nvctrl;
+    QuteFanNVCtrl* qf_nvctrl;
 #endif
 
-    QList<GpuTab*> gpuTabs;
+    QList<GpuTab*> gpu_tabs;
 
     QTimer* timer;
     int interval;
 
-    QuteFanTrayIcon* trayIcon;
-    bool firstCloseToTray = true;
+    QuteFanTrayIcon* tray_icon;
+    bool first_close_to_tray = true;
 
     Ui::QuteFan* ui;
 };

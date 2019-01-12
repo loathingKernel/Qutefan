@@ -60,6 +60,11 @@ QNvAPI::QNvAPI()
     }
 }
 
+QNvAPI::~QNvAPI()
+{
+    this->unload();
+}
+
 NvAPI_Status QNvAPI::Initialize(void)
 {
     NvAPI_Status status = nvapi_Initialize();

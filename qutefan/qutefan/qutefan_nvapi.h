@@ -9,12 +9,12 @@ public:
     NvAPI_Status status = NVAPI_OK;
     NvAPI_ShortString version = {};
 
-    NV_DISPLAY_DRIVER_VERSION driverVersion = {};
+    NV_DISPLAY_DRIVER_VERSION driver_version = {};
 
-    NvU32 displayCount = 0;
-    NvDisplayHandle displayHandle[NVAPI_MAX_PHYSICAL_GPUS*NVAPI_MAX_DISPLAY_HEADS] = {};
+    NvU32 display_count = 0;
+    NvDisplayHandle display_handle[NVAPI_MAX_PHYSICAL_GPUS*NVAPI_MAX_DISPLAY_HEADS] = {};
 
-    NvU32 gpuCount = 0;
+    NvU32 gpu_count = 0;
     typedef struct {
         NvAPI_Status status;
         NvPhysicalGpuHandle handle;

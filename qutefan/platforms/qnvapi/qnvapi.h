@@ -73,7 +73,8 @@ typedef NV_GPU_CLOCKS_V2    NV_GPU_CLOCKS;
 class QNvAPI : public QLibrary
 {
 public:
-    QNvAPI(void);
+    QNvAPI();
+    ~QNvAPI();
 
     NvAPI_Status Initialize(void);
 
