@@ -25,10 +25,13 @@ unix {
       PREFIX=/usr/local
     }
     target.path   = $$PREFIX/bin
+
     desktop.path  = $$PREFIX/share/applications
     desktop.files = resources/Qutefan.desktop
+
     icons.path    = $$PREFIX/share/icons/hicolor/128x128/apps/
     icons.files   = resources/Qutefan.png
+
     QMAKE_SUBSTITUTES += resources/Qutefan.desktop.in
     INSTALLS     += desktop icons
 }

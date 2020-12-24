@@ -37,6 +37,9 @@
         <property name="frameShape">
          <enum>QFrame::StyledPanel</enum>
         </property>
+        <property name="frameShadow">
+         <enum>QFrame::Sunken</enum>
+        </property>
         <property name="text">
          <string>0Mhz</string>
         </property>
@@ -62,6 +65,9 @@
         <property name="frameShape">
          <enum>QFrame::StyledPanel</enum>
         </property>
+        <property name="frameShadow">
+         <enum>QFrame::Sunken</enum>
+        </property>
         <property name="text">
          <string>0ºC</string>
         </property>
@@ -81,6 +87,9 @@
         <property name="frameShape">
          <enum>QFrame::StyledPanel</enum>
         </property>
+        <property name="frameShadow">
+         <enum>QFrame::Sunken</enum>
+        </property>
         <property name="text">
          <string>0Mhz</string>
         </property>
@@ -99,6 +108,9 @@
         </property>
         <property name="frameShape">
          <enum>QFrame::StyledPanel</enum>
+        </property>
+        <property name="frameShadow">
+         <enum>QFrame::Sunken</enum>
         </property>
         <property name="text">
          <string>0Mhz</string>
@@ -124,6 +136,9 @@
         </property>
         <property name="frameShape">
          <enum>QFrame::StyledPanel</enum>
+        </property>
+        <property name="frameShadow">
+         <enum>QFrame::Sunken</enum>
         </property>
         <property name="text">
          <string>0%</string>
@@ -159,6 +174,9 @@
         </property>
         <property name="frameShape">
          <enum>QFrame::StyledPanel</enum>
+        </property>
+        <property name="frameShadow">
+         <enum>QFrame::Sunken</enum>
         </property>
         <property name="text">
          <string>0ºC</string>
@@ -210,6 +228,9 @@
         </property>
         <property name="frameShape">
          <enum>QFrame::StyledPanel</enum>
+        </property>
+        <property name="frameShadow">
+         <enum>QFrame::Sunken</enum>
         </property>
         <property name="text">
          <string>0%</string>
