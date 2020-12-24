@@ -1,0 +1,7 @@
+[Desktop Entry]
+Type=Application
+Name=Qutefan
+Comment=GPU fan control that does one job
+Exec=$$target.path/Qutefan
+Icon=Qutefan
+Categories=System;

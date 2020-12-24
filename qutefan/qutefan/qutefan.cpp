@@ -79,7 +79,9 @@ void QuteFan::onActionAboutTriggered()
             "<b>Author:</b> %3<br/>"
             "<b>Github:</b> <a href=\"https://www.github.com/loathingkernel/qutefan\">Qutefan</a>";
 
-    QString txt = format.arg(qApp->applicationName(), qApp->applicationVersion(), qApp->organizationName());
+    QString txt = format.arg(qApp->applicationName(),
+                             qApp->applicationVersion(),
+                             qApp->organizationName());
 
     QMessageBox::about(this, ui->actionAbout->text(), txt);
 }

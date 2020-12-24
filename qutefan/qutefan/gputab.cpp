@@ -4,11 +4,17 @@
 GpuTab::GpuTab(QWidget* parent) : QWidget(parent), ui(new Ui::GpuTab)
 {
     ui->setupUi(this);
+
     // Hide unfinished UI elements
     ui->groupBoxOverclock->hide();
     ui->radioButtonGraph->hide();
     ui->pushButtonGraph->hide();
+    ui->pushButtonChart->hide();
+
+    ui->groupBoxCharts->hide();
     ui->spinBoxFixedLevel->setSingleStep(5);
+
+    connect(ui->pushButtonChart, SIGNAL(pressed()), this, SLOT(showChart()));
     connect(ui->pushButtonReset, SIGNAL(pressed()), this, SLOT(resetMax()));
 }
 

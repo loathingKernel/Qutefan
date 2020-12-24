@@ -47,14 +47,16 @@ void QuteFanNVCtrl::initialize()
 
     for(int i = 0; i < num_gpus; i++) {
         gpu[i].handle = i;
-        gpu[i].status = XNVCTRLQueryTargetStringAttribute(dpy, NV_CTRL_TARGET_TYPE_GPU, gpu[i].handle,
-                                                            0, NV_CTRL_STRING_PRODUCT_NAME, &gpu[i].name);
+        gpu[i].status = XNVCTRLQueryTargetStringAttribute(
+                    dpy, NV_CTRL_TARGET_TYPE_GPU, gpu[i].handle,
+                    0, NV_CTRL_STRING_PRODUCT_NAME, &gpu[i].name);
         if (!gpu[i].status) {
             qDebug("Failed to query gpu product name");
             return;
         }
-        gpu[i].status = XNVCTRLQueryTargetStringAttribute(dpy, NV_CTRL_TARGET_TYPE_GPU, gpu[i].handle,
-                                                            0, NV_CTRL_STRING_GPU_UUID, &gpu[i].uuid);
+        gpu[i].status = XNVCTRLQueryTargetStringAttribute(
+                    dpy, NV_CTRL_TARGET_TYPE_GPU, gpu[i].handle,
+                    0, NV_CTRL_STRING_GPU_UUID, &gpu[i].uuid);
     }
 }
 

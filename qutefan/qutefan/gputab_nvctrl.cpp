@@ -1,3 +1,5 @@
+#include <QtCharts>
+
 #include "ui_gputab.h"
 #include "gputab_nvctrl.h"
 
@@ -97,6 +99,12 @@ void GpuTabNVCtrl::regulateFan()
     if(max_level < level) max_level = level;
     ui->labelStatusFanCur->setText(QString("%1%").arg(level));
     ui->labelStatusFanMax->setText(QString("%1%").arg(max_level));
+
+    current_entry->time = QDateTime::currentDateTime();
+    current_entry->level = level;
+    current_entry->temp = temp;
+    current_entry++;
+    if(current_entry > &history[599]) current_entry = history;
 }
 
 void GpuTabNVCtrl::displayStatus()
@@ -127,4 +135,49 @@ void GpuTabNVCtrl::resetMax()
     ui->labelStatusTempMax->setText(QString("%1°C").arg(max_temp));
     max_level = level;
     ui->labelStatusFanMax->setText(QString("%1%").arg(max_level));
+}
+
+void GpuTabNVCtrl::showChart()
+{
+    if(ui->groupBoxCharts->isVisible()) {
+        return;
+    }
+
+    QLineSeries *series = new QLineSeries();
+    //TODO: fix this after testing
+    for (unsigned long i = 0; i < 600; i++)
+        if (history[i].level != 0)
+            series->append(history[i].time.toMSecsSinceEpoch(), history[i].level);
+
+    QChart *chart = new QChart();
+    chart->legend()->hide();
+    chart->addSeries(series);
+    chart->setTitle("Fan Speed");
+    chart->setMargins(QMargins(0,0,0,0));
+    //chart->setBackgroundRoundness(0);
+
+    QDateTimeAxis *axisX = new QDateTimeAxis;
+    axisX->setRange(QDateTime::currentDateTime().addSecs(-300), QDateTime::currentDateTime());
+    axisX->setTickCount(10);
+    axisX->setFormat("HH:mm:ss");
+    axisX->setTitleText("Time");
+    chart->addAxis(axisX, Qt::AlignBottom);
+    series->attachAxis(axisX);
+
+    QValueAxis *axisY = new QValueAxis;
+    axisY->setMax(max_level + 10);
+    axisY->setLabelFormat("%i");
+    axisY->setTitleText("Duty Cycle (%)");
+    chart->addAxis(axisY, Qt::AlignLeft);
+    series->attachAxis(axisY);
+
+    QChartView *chartView = new QChartView(chart);
+    chartView->setRenderHint(QPainter::Antialiasing);
+
+    //popup->resize(820, 600);
+    ui->groupBoxCharts->resize(640, 480);
+    chartView->resize(ui->groupBoxCharts->size());
+    ui->groupBoxCharts->layout()->addWidget(chartView);
+    ui->groupBoxCharts->show();
+    //popup->show();
 }

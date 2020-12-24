@@ -28,6 +28,6 @@ HEADERS += \
     $$PWD/qutefan_nvctrl.h \
     $$PWD/gputab_nvctrl.h
 
-LIBS += -lX11 -lXNVCtrl
+LIBS += -lXext -lX11 -lXNVCtrl -lXext
 }
 

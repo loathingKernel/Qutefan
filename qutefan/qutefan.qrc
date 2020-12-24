@@ -1,8 +1,8 @@
 <RCC>
     <qresource prefix="/">
-        <file>images/icons/blue.png</file>
-        <file>images/icons/gray.png</file>
-        <file>images/icons/green.png</file>
-        <file>images/icons/red.png</file>
+        <file>resources/status/inactive.png</file>
+        <file>resources/status/low.png</file>
+        <file>resources/status/high.png</file>
+        <file>resources/Qutefan.png</file>
     </qresource>
 </RCC>

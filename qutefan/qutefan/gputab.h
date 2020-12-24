@@ -34,6 +34,7 @@ public:
 
 public slots:
     virtual void resetMax() = 0;
+    virtual void showChart() = 0;
 };
 
 #endif // GPUTAB_H
