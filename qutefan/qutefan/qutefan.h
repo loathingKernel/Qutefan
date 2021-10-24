@@ -7,6 +7,7 @@
 #include <QIcon>
 #include <QSystemTrayIcon>
 #include <QCloseEvent>
+#include <QSettings>
 
 #include "qutefantrayicon.h"
 
@@ -41,8 +42,13 @@ private slots:
     void intervalChanged(int);
 
 private:
+    void saveSettings();
+    void loadSettings();
+
     void getGpuDefaults();
     void setGpuDefaults(unsigned int);
+
+    QSettings* settings;
 
 #if defined(Q_OS_WIN)
     QuteFanNvAPI* qf_nvapi;

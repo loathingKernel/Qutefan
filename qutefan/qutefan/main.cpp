@@ -6,9 +6,9 @@ int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
 
-    a.setOrganizationName("loathingkernel");
+    a.setOrganizationName("Qutefan");
     a.setApplicationName("Qutefan");
-    a.setApplicationVersion("0.1.0");
+    a.setApplicationVersion("0.1.1");
 
     QFont f;
     f.setHintingPreference(QFont::PreferFullHinting);

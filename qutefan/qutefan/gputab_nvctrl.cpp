@@ -3,7 +3,10 @@
 #include "ui_gputab.h"
 #include "gputab_nvctrl.h"
 
-GpuTabNVCtrl::GpuTabNVCtrl(QuteFanNVCtrl* _api, QuteFanNVCtrl::NvGPU* _gpu, QWidget* parent) : GpuTab(parent)
+GpuTabNVCtrl::GpuTabNVCtrl(QuteFanNVCtrl* _api,
+                           QuteFanNVCtrl::NvGPU* _gpu,
+                           QSettings* _settings,
+                           QWidget* parent) : GpuTab(_settings, parent)
 {
     api = _api;
     gpu = _gpu;
@@ -19,10 +22,25 @@ GpuTabNVCtrl::GpuTabNVCtrl(QuteFanNVCtrl* _api, QuteFanNVCtrl::NvGPU* _gpu, QWid
     ui->spinBoxFixedLevel->setMinimum(30);
     ui->spinBoxFixedLevel->setMaximum(100);
     ui->spinBoxFixedLevel->setValue(default_level);
+
+    char* _uuid;
+    gpu->status = XNVCTRLQueryTargetStringAttribute(api->dpy,
+                                                    NV_CTRL_TARGET_TYPE_GPU,
+                                                    gpu->handle,
+                                                    0,
+                                                    NV_CTRL_STRING_GPU_UUID,
+                                                    &_uuid);
+    uuid = new QString(_uuid);
+    loadSettings(uuid);
 }
 
 GpuTabNVCtrl::~GpuTabNVCtrl()
 {
+}
+
+void GpuTabNVCtrl::saveGpuSettings()
+{
+    saveSettings(uuid);
 }
 
 void GpuTabNVCtrl::setGPUDefaults()
@@ -111,11 +129,11 @@ void GpuTabNVCtrl::displayStatus()
 {
     char* str;
     gpu->status = XNVCTRLQueryTargetStringAttribute(api->dpy,
-                                              NV_CTRL_TARGET_TYPE_GPU,
-                                              gpu->handle,
-                                              0,
-                                              NV_CTRL_STRING_GPU_CURRENT_CLOCK_FREQS,
-                                              &str);
+                                                    NV_CTRL_TARGET_TYPE_GPU,
+                                                    gpu->handle,
+                                                    0,
+                                                    NV_CTRL_STRING_GPU_CURRENT_CLOCK_FREQS,
+                                                    &str);
     QStringList list = QStringList(QString(str).split(", "));
     XFree(str);
 

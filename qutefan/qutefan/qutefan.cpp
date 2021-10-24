@@ -10,6 +10,13 @@ QuteFan::QuteFan(QWidget *parent) : QMainWindow(parent), ui(new Ui::QuteFan)
     timer = new QTimer(this);
     tray_icon = new QuteFanTrayIcon(this);
 
+    settings = new QSettings(
+                QSettings::IniFormat,
+                QSettings::UserScope,
+                qApp->organizationName(),
+                qApp->applicationName(),
+                this);
+
 #if defined(Q_OS_WIN)
     qf_nvapi = new QuteFanNvAPI();
     if(qf_nvapi->available()) {
@@ -25,7 +32,7 @@ QuteFan::QuteFan(QWidget *parent) : QMainWindow(parent), ui(new Ui::QuteFan)
     if(qf_nvctrl->available()) {
         qf_nvctrl->initialize();
         for(int i = 0; i < qf_nvctrl->num_gpus; i++) {
-            gpu_tabs.append(new GpuTabNVCtrl(qf_nvctrl, &qf_nvctrl->gpu[i]));
+            gpu_tabs.append(new GpuTabNVCtrl(qf_nvctrl, &qf_nvctrl->gpu[i], settings));
             ui->tabWidgetGpu->addTab(gpu_tabs[static_cast<int>(i)], QString("%1").arg(qf_nvctrl->gpu[i].name));
         }
     }
@@ -47,15 +54,34 @@ QuteFan::QuteFan(QWidget *parent) : QMainWindow(parent), ui(new Ui::QuteFan)
     connect(ui->actionAboutQt, SIGNAL(triggered()), this, SLOT(onActionAboutQtTriggered()));
     connect(ui->spinBoxInterval, SIGNAL(valueChanged(int)), this, SLOT(intervalChanged(int)));
 
-    timer->start(ui->spinBoxInterval->text().toInt() * 1000);
+    loadSettings();
+
+    timer->start(ui->spinBoxInterval->value() * 1000);
     tray_icon->show();
 }
 
 QuteFan::~QuteFan()
 {
-    foreach(GpuTab* tab, gpu_tabs)
+    foreach(GpuTab* tab, gpu_tabs) {
+        tab->saveGpuSettings();
         tab->setGPUDefaults();
+    }
+    saveSettings();
     delete ui;
+}
+
+void QuteFan::loadSettings()
+{
+    settings->beginGroup("Application");
+    ui->spinBoxInterval->setValue(settings->value("interval", 1).toInt());
+    settings->endGroup();
+}
+
+void QuteFan::saveSettings()
+{
+    settings->beginGroup("Application");
+    settings->setValue("interval", ui->spinBoxInterval->value());
+    settings->endGroup();
 }
 
 void QuteFan::closeEvent(QCloseEvent* event)

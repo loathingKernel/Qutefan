@@ -2,6 +2,7 @@
 #define GPUTAB_NVCTRL_H
 
 #include <QDateTime>
+#include <QSettings>
 
 #include "gputab.h"
 #include "qutefan_nvctrl.h"
@@ -13,9 +14,10 @@ class GpuTabNVCtrl;
 class GpuTabNVCtrl : public GpuTab
 {
 public:
-    explicit GpuTabNVCtrl(QuteFanNVCtrl*, QuteFanNVCtrl::NvGPU*, QWidget* parent = nullptr);
+    explicit GpuTabNVCtrl(QuteFanNVCtrl*, QuteFanNVCtrl::NvGPU*, QSettings*, QWidget* parent = nullptr);
     ~GpuTabNVCtrl();
 
+    void saveGpuSettings();
     void setGPUDefaults();
     void regulateFan();
     void displayStatus();
@@ -27,6 +29,8 @@ private slots:
 private:
     QuteFanNVCtrl* api;
     QuteFanNVCtrl::NvGPU* gpu;
+
+    QString* uuid;
 
     int default_level;
     int default_control;
