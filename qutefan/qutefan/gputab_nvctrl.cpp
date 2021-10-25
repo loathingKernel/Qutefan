@@ -1,4 +1,6 @@
+#if USE_CHARTS
 #include <QtCharts>
+#endif
 
 #include "ui_gputab.h"
 #include "gputab_nvctrl.h"

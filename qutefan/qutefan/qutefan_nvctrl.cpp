@@ -39,7 +39,7 @@ void QuteFanNVCtrl::initialize()
         return;
     }
 
-    status = XNVCTRLQueryTargetCount(dpy, NV_CTRL_TARGET_TYPE_GPU, &num_gpus);
+    status = XNVCTRLQueryTargetCount(dpy, NV_CTRL_TARGET_TYPE_GPU, &gpu_count);
     if (!status) {
         qDebug("Failed to query number of gpus");
         return;
