@@ -23,14 +23,14 @@ GpuTabNVCtrl::GpuTabNVCtrl(QuteFanNVCtrl* _api,
     ui->spinBoxFixedLevel->setMaximum(100);
     ui->spinBoxFixedLevel->setValue(default_level);
 
-    char* _uuid;
+    char* str;
     gpu->status = XNVCTRLQueryTargetStringAttribute(api->dpy,
                                                     NV_CTRL_TARGET_TYPE_GPU,
                                                     gpu->handle,
                                                     0,
                                                     NV_CTRL_STRING_GPU_UUID,
-                                                    &_uuid);
-    uuid = new QString(_uuid);
+                                                    &str);
+    uuid = new QString(str);
     loadSettings(uuid);
 }
 
@@ -155,6 +155,7 @@ void GpuTabNVCtrl::resetMax()
     ui->labelStatusFanMax->setText(QString("%1%").arg(max_level));
 }
 
+#if USE_CHARTS
 void GpuTabNVCtrl::showChart()
 {
     if(ui->groupBoxCharts->isVisible()) {
@@ -199,3 +200,4 @@ void GpuTabNVCtrl::showChart()
     ui->groupBoxCharts->show();
     //popup->show();
 }
+#endif

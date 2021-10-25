@@ -7,7 +7,7 @@ QuteFanNVCtrl::QuteFanNVCtrl()
 
 QuteFanNVCtrl::~QuteFanNVCtrl()
 {
-    for(int i = 0; i < num_gpus; i ++) {
+    for(int i = 0; i < gpu_count; i ++) {
         XFree(gpu[i].name);
         XFree(gpu[i].uuid);
     }
@@ -45,7 +45,7 @@ void QuteFanNVCtrl::initialize()
         return;
     }
 
-    for(int i = 0; i < num_gpus; i++) {
+    for(int i = 0; i < gpu_count; i++) {
         gpu[i].handle = i;
         gpu[i].status = XNVCTRLQueryTargetStringAttribute(
                     dpy, NV_CTRL_TARGET_TYPE_GPU, gpu[i].handle,

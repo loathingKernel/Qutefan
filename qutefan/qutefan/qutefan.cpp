@@ -22,8 +22,8 @@ QuteFan::QuteFan(QWidget *parent) : QMainWindow(parent), ui(new Ui::QuteFan)
     if(qf_nvapi->available()) {
         qf_nvapi->initialize();
         // Dynamically add tabs for as many GPUs as were found.
-        for(int i = 0; i < qf_nvapi->gpu_count; i++) {
-            gpu_tabs.append(new GpuTabNvAPI(qf_nvapi, &qf_nvapi->gpu[i]));
+        for(unsigned long i = 0; i < qf_nvapi->gpu_count; i++) {
+            gpu_tabs.append(new GpuTabNvAPI(qf_nvapi, &qf_nvapi->gpu[i], settings, this));
             ui->tabWidgetGpu->addTab(gpu_tabs[static_cast<int>(i)], QString("%1").arg(qf_nvapi->gpu[i].name));
         }
     }
@@ -31,8 +31,8 @@ QuteFan::QuteFan(QWidget *parent) : QMainWindow(parent), ui(new Ui::QuteFan)
     qf_nvctrl = new QuteFanNVCtrl();
     if(qf_nvctrl->available()) {
         qf_nvctrl->initialize();
-        for(int i = 0; i < qf_nvctrl->num_gpus; i++) {
-            gpu_tabs.append(new GpuTabNVCtrl(qf_nvctrl, &qf_nvctrl->gpu[i], settings));
+        for(int i = 0; i < qf_nvctrl->gpu_count; i++) {
+            gpu_tabs.append(new GpuTabNVCtrl(qf_nvctrl, &qf_nvctrl->gpu[i], settings, this));
             ui->tabWidgetGpu->addTab(gpu_tabs[static_cast<int>(i)], QString("%1").arg(qf_nvctrl->gpu[i].name));
         }
     }

@@ -24,10 +24,10 @@ void QuteFanNvAPI::initialize()
     nvapi->GetInterfaceVersionString(version);
     qDebug("NvAPI version: %s", version);
 
-    nvapi->EnumPhysicalGPUs(handle, &num_gpus);
-    for(int i = 0; i < num_gpus; i++) {
+    nvapi->EnumPhysicalGPUs(handle, &gpu_count);
+    for(unsigned long i = 0; i < gpu_count; i++) {
         gpu[i].handle = handle[i];
         nvapi->GPU_GetFullName(gpu[i].handle, gpu[i].name);
     }
-    qDebug("Total number of GPU's = %lu", num_gpus);
+    qDebug("Total number of GPUs = %lu", gpu_count);
 }

@@ -16,7 +16,9 @@ GpuTab::GpuTab(QSettings* _settings, QWidget* parent) : QWidget(parent), ui(new 
     ui->groupBoxCharts->hide();
     ui->spinBoxFixedLevel->setSingleStep(5);
 
+#if USE_CHARTS
     connect(ui->pushButtonChart, SIGNAL(pressed()), this, SLOT(showChart()));
+#endif
     connect(ui->pushButtonReset, SIGNAL(pressed()), this, SLOT(resetMax()));
 }
 

@@ -2,7 +2,6 @@
 #define GPUTAB_NVCTRL_H
 
 #include <QDateTime>
-#include <QSettings>
 
 #include "gputab.h"
 #include "qutefan_nvctrl.h"
@@ -24,7 +23,9 @@ public:
 
 private slots:
     void resetMax();
+#if USE_CHARTS
     void showChart();
+#endif
 
 private:
     QuteFanNVCtrl* api;

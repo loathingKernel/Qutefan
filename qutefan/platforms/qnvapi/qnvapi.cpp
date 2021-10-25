@@ -11,8 +11,10 @@ QNvAPI::QNvAPI()
       nvapi_GetInterfaceVersionString(nullptr),
       nvapi_GetDisplayDriverVersion(nullptr),
       nvapi_GetPhysicalGPUsFromDisplay(nullptr),
+      nvapi_GetPhysicalGPUFromGPUID(nullptr),
       nvapi_GetAssociatedNvidiaDisplayHandle(nullptr),
       nvapi_GetAssociatedDisplayOutputId(nullptr),
+      nvapi_GetGPUIDFromPhysicalGPU(nullptr),
       nvapi_GPU_GetThermalSettings(nullptr),
       nvapi_GPU_GetFullName(nullptr),
       nvapi_GPU_GetEDID(nullptr),
@@ -38,11 +40,15 @@ QNvAPI::QNvAPI()
         nvapi_EnumNvidiaDisplayHandle           = reinterpret_cast<QNVAPI_ENUMNVIDIADISPLAYHANDLE>          (nvapi_QueryInterface(0x9ABDD40D));
         nvapi_EnumPhysicalGPUs                  = reinterpret_cast<QNVAPI_ENUMPHYSICALGPUS>                 (nvapi_QueryInterface(0xE5AC921F));
 
+
         nvapi_GetInterfaceVersionString         = reinterpret_cast<QNVAPI_GETINTERFACEVERSIONSTRING>        (nvapi_QueryInterface(0x01053FA5));
         nvapi_GetDisplayDriverVersion           = reinterpret_cast<QNVAPI_GETDISPLAYDRIVERVERSION>          (nvapi_QueryInterface(0xF951A4D1));
         nvapi_GetPhysicalGPUsFromDisplay        = reinterpret_cast<QNVAPI_GETPHYSICALGPUSFROMDISPLAY>       (nvapi_QueryInterface(0x34EF9506));
+        nvapi_GetPhysicalGPUFromGPUID           = reinterpret_cast<QNVAPI_GETPHYSICALGPUFROMGPUID>          (nvapi_QueryInterface(0x5380AD1A));
         nvapi_GetAssociatedNvidiaDisplayHandle  = reinterpret_cast<QNVAPI_GETASSOCIATEDNVIDIADISPLAYHANDLE> (nvapi_QueryInterface(0x35C29134));
         nvapi_GetAssociatedDisplayOutputId      = reinterpret_cast<QNVAPI_GETASSOCIATEDDISPLAYOUTPUTID>     (nvapi_QueryInterface(0xD995937E));
+
+        nvapi_GetGPUIDFromPhysicalGPU           = reinterpret_cast<QNVAPI_GETGPUIDFROMPHYSICALGPU>          (nvapi_QueryInterface(0x6533EA3E));
 
         nvapi_GPU_GetThermalSettings            = reinterpret_cast<QNVAPI_GPU_GETTHERMALSETTINGS>           (nvapi_QueryInterface(0xE3640A56));
         nvapi_GPU_GetFullName                   = reinterpret_cast<QNVAPI_GPU_GETFULLNAME>                  (nvapi_QueryInterface(0xCEEE8E9F));
@@ -114,6 +120,14 @@ NvAPI_Status QNvAPI::GetPhysicalGPUsFromDisplay(NvDisplayHandle hNvDisp, NvPhysi
     return status;
 }
 
+NvAPI_Status QNvAPI::GetPhysicalGPUFromGPUID(NvU32 gpuId, NvPhysicalGpuHandle* nvGPUHandle)
+{
+    NvAPI_Status status = nvapi_GetPhysicalGPUFromGPUID(gpuId, nvGPUHandle);
+    if(status != NVAPI_OK)
+        qDebug("NvAPI_GetGetPhysicalGPUFromGPUID() failed with status %d", status);
+    return status;
+}
+
 NvAPI_Status QNvAPI::GetAssociatedNvidiaDisplayHandle(const char* szDisplayName, NvDisplayHandle* pNvDispHandle)
 {
     NvAPI_Status status = nvapi_GetAssociatedNvidiaDisplayHandle(szDisplayName, pNvDispHandle);
@@ -127,6 +141,14 @@ NvAPI_Status QNvAPI::GetAssociatedDisplayOutputId(NvDisplayHandle hNvDisplay, Nv
     NvAPI_Status  status = nvapi_GetAssociatedDisplayOutputId(hNvDisplay, pOutputId);
     if(status != NVAPI_OK)
         qDebug("NvAPI_GetAssociatedDisplayOutputId() failed with status %d", status);
+    return status;
+}
+
+NvAPI_Status QNvAPI::GetGPUIDFromPhysicalGPU(NvPhysicalGpuHandle hPhysicalGpu, NvU32* gpuId)
+{
+    NvAPI_Status status = nvapi_GetGPUIDFromPhysicalGPU(hPhysicalGpu, gpuId);
+    if(status != NVAPI_OK)
+        qDebug("NvAPI_GetGPUIDFromPhysicalGPU() failed with status %d", status);
     return status;
 }
 
@@ -234,8 +256,10 @@ bool QNvAPI::isAvailable(void)
             nvapi_GetInterfaceVersionString &&
             nvapi_GetDisplayDriverVersion &&
             nvapi_GetPhysicalGPUsFromDisplay &&
+            nvapi_GetPhysicalGPUFromGPUID &&
             nvapi_GetAssociatedNvidiaDisplayHandle &&
             nvapi_GetAssociatedDisplayOutputId &&
+            nvapi_GetGPUIDFromPhysicalGPU &&
             nvapi_GPU_GetThermalSettings &&
             nvapi_GPU_GetFullName &&
             nvapi_GPU_GetEDID &&

@@ -15,7 +15,7 @@ public:
     int screen;
 
     bool status;
-    int num_gpus;
+    int gpu_count;
 
     typedef struct {
         int major;

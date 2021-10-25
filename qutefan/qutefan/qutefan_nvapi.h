@@ -19,6 +19,10 @@ public:
         NvAPI_Status status;
         NvPhysicalGpuHandle handle;
         NvAPI_ShortString name;
+        NvU32 deviceId;
+        NvU32 subSystemId;
+        NvU32 revisionId;
+        NvU32 extDeviceId;
         NvU32 coolerTach;
         NV_GPU_THERMAL_SETTINGS thermalSettings;
         NV_GPU_COOLER_SETTINGS coolerSettings;

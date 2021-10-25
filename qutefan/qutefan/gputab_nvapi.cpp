@@ -1,7 +1,10 @@
 #include "ui_gputab.h"
 #include "gputab_nvapi.h"
 
-GpuTabNvAPI::GpuTabNvAPI(QuteFanNvAPI* _api, QuteFanNvAPI::NvGPU* _gpu, QWidget* parent) : GpuTab(parent)
+GpuTabNvAPI::GpuTabNvAPI(QuteFanNvAPI* _api,
+                         QuteFanNvAPI::NvGPU* _gpu,
+                         QSettings* _settings,
+                         QWidget* parent) : GpuTab(_settings, parent)
 {
     api = _api;
     gpu = _gpu;
@@ -15,10 +18,27 @@ GpuTabNvAPI::GpuTabNvAPI(QuteFanNvAPI* _api, QuteFanNvAPI::NvGPU* _gpu, QWidget*
     ui->spinBoxFixedLevel->setMinimum(gpu->coolerSettings.cooler[0].defaultMin);
     ui->spinBoxFixedLevel->setMaximum(gpu->coolerSettings.cooler[0].defaultMax);
     ui->spinBoxFixedLevel->setValue(gpu->coolerSettings.cooler[0].currentLevel);
+
+    gpu->status = nvapi->GPU_GetPCIIdentifiers(gpu->handle,
+                                               &gpu->deviceId, &gpu->subSystemId, &gpu->revisionId, &gpu->extDeviceId);
+
+    QStringList id_list = {
+        QString::number(gpu->deviceId, 16),
+        QString::number(gpu->subSystemId, 16),
+        QString::number(gpu->revisionId, 16),
+        QString::number(gpu->extDeviceId, 16),
+    };
+    uuid = new QString(id_list.join("-"));
+    loadSettings(uuid);
 }
 
 GpuTabNvAPI::~GpuTabNvAPI()
 {
+}
+
+void GpuTabNvAPI::saveGpuSettings()
+{
+    saveSettings(uuid);
 }
 
 void GpuTabNvAPI::setGPUDefaults()
@@ -91,3 +111,50 @@ void GpuTabNvAPI::resetMax()
     max_level = gpu->coolerSettings.cooler[0].currentLevel;
     ui->labelStatusFanMax->setText(QString("%1%").arg(max_level));
 }
+
+#if USE_CHARTS
+void GpuTabNvAPI::showChart()
+{
+    if(ui->groupBoxCharts->isVisible()) {
+        return;
+    }
+
+    QLineSeries *series = new QLineSeries();
+    //TODO: fix this after testing
+    for (unsigned long i = 0; i < 600; i++)
+        if (history[i].level != 0)
+            series->append(history[i].time.toMSecsSinceEpoch(), history[i].level);
+
+    QChart *chart = new QChart();
+    chart->legend()->hide();
+    chart->addSeries(series);
+    chart->setTitle("Fan Speed");
+    chart->setMargins(QMargins(0,0,0,0));
+    //chart->setBackgroundRoundness(0);
+
+    QDateTimeAxis *axisX = new QDateTimeAxis;
+    axisX->setRange(QDateTime::currentDateTime().addSecs(-300), QDateTime::currentDateTime());
+    axisX->setTickCount(10);
+    axisX->setFormat("HH:mm:ss");
+    axisX->setTitleText("Time");
+    chart->addAxis(axisX, Qt::AlignBottom);
+    series->attachAxis(axisX);
+
+    QValueAxis *axisY = new QValueAxis;
+    axisY->setMax(max_level + 10);
+    axisY->setLabelFormat("%i");
+    axisY->setTitleText("Duty Cycle (%)");
+    chart->addAxis(axisY, Qt::AlignLeft);
+    series->attachAxis(axisY);
+
+    QChartView *chartView = new QChartView(chart);
+    chartView->setRenderHint(QPainter::Antialiasing);
+
+    //popup->resize(820, 600);
+    ui->groupBoxCharts->resize(640, 480);
+    chartView->resize(ui->groupBoxCharts->size());
+    ui->groupBoxCharts->layout()->addWidget(chartView);
+    ui->groupBoxCharts->show();
+    //popup->show();
+}
+#endif

@@ -84,8 +84,11 @@ public:
     NvAPI_Status GetInterfaceVersionString(NvAPI_ShortString);
     NvAPI_Status GetDisplayDriverVersion(NvDisplayHandle, NV_DISPLAY_DRIVER_VERSION*);
     NvAPI_Status GetPhysicalGPUsFromDisplay(NvDisplayHandle, NvPhysicalGpuHandle[NVAPI_MAX_PHYSICAL_GPUS], NvU32*);
+    NvAPI_Status GetPhysicalGPUFromGPUID(NvU32, NvPhysicalGpuHandle*);
     NvAPI_Status GetAssociatedNvidiaDisplayHandle(const char*,  NvDisplayHandle*);
     NvAPI_Status GetAssociatedDisplayOutputId(NvDisplayHandle, NvU32*);
+
+    NvAPI_Status GetGPUIDFromPhysicalGPU(NvPhysicalGpuHandle, NvU32*);
 
     NvAPI_Status GPU_GetThermalSettings(NvPhysicalGpuHandle, NvU32, NV_GPU_THERMAL_SETTINGS*);
     NvAPI_Status GPU_GetFullName(NvPhysicalGpuHandle, NvAPI_ShortString);
@@ -121,10 +124,15 @@ private:
     QNVAPI_GETDISPLAYDRIVERVERSION          nvapi_GetDisplayDriverVersion;
     typedef NvAPI_Status (__cdecl * QNVAPI_GETPHYSICALGPUSFROMDISPLAY)       (NvDisplayHandle, NvPhysicalGpuHandle[NVAPI_MAX_PHYSICAL_GPUS], NvU32*);
     QNVAPI_GETPHYSICALGPUSFROMDISPLAY       nvapi_GetPhysicalGPUsFromDisplay;
+    typedef NvAPI_Status (__cdecl * QNVAPI_GETPHYSICALGPUFROMGPUID)          (NvU32, NvPhysicalGpuHandle*);
+    QNVAPI_GETPHYSICALGPUFROMGPUID          nvapi_GetPhysicalGPUFromGPUID;
     typedef NvAPI_Status (__cdecl * QNVAPI_GETASSOCIATEDNVIDIADISPLAYHANDLE) (const char*,  NvDisplayHandle*);
     QNVAPI_GETASSOCIATEDNVIDIADISPLAYHANDLE nvapi_GetAssociatedNvidiaDisplayHandle;
     typedef NvAPI_Status (__cdecl * QNVAPI_GETASSOCIATEDDISPLAYOUTPUTID)     (NvDisplayHandle, NvU32*);
     QNVAPI_GETASSOCIATEDDISPLAYOUTPUTID     nvapi_GetAssociatedDisplayOutputId;
+
+    typedef NvAPI_Status (__cdecl * QNVAPI_GETGPUIDFROMPHYSICALGPU)          (NvPhysicalGpuHandle, NvU32*);
+    QNVAPI_GETGPUIDFROMPHYSICALGPU          nvapi_GetGPUIDFromPhysicalGPU;
 
     typedef NvAPI_Status (__cdecl * QNVAPI_GPU_GETTHERMALSETTINGS)           (NvPhysicalGpuHandle, NvU32, NV_GPU_THERMAL_SETTINGS*);
     QNVAPI_GPU_GETTHERMALSETTINGS           nvapi_GPU_GetThermalSettings;

@@ -39,7 +39,9 @@ public:
 
 public slots:
     virtual void resetMax() = 0;
+#if USE_CHARTS
     virtual void showChart() = 0;
+#endif
 
 private:
     QSettings* settings;
