@@ -38,18 +38,18 @@ GpuTab::FanMode GpuTab::getMode()
     return FanMode::Off;
 }
 
-void GpuTab::saveSettings(QString* uuid)
+void GpuTab::saveSettings(const QString &uuid)
 {
-    settings->beginGroup(*uuid);
+    settings->beginGroup(uuid);
     settings->setValue("mode", static_cast<int>(getMode()));
     settings->setValue("fixed", ui->spinBoxFixedLevel->value());
     settings->setValue("linear", ui->spinBoxLinearOffset->value());
     settings->endGroup();
 }
 
-void GpuTab::loadSettings(QString* uuid)
+void GpuTab::loadSettings(const QString &uuid)
 {
-    settings->beginGroup(*uuid);
+    settings->beginGroup(uuid);
     int mode = settings->value("mode", 0).toInt();
     if (mode == static_cast<int>(FanMode::Off)) ui->radioButtonOff->setChecked(true);
     if (mode == static_cast<int>(FanMode::Quiet)) ui->radioButtonQuiet->setChecked(true);

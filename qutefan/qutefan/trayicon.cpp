@@ -1,4 +1,4 @@
-#include "qutefantrayicon.h"
+#include "trayicon.h"
 
 QuteFanTrayIcon::QuteFanTrayIcon(QMainWindow *parent) : QSystemTrayIcon(parent)
 {

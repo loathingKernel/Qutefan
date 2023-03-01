@@ -9,7 +9,7 @@
 #include <QCloseEvent>
 #include <QSettings>
 
-#include "qutefantrayicon.h"
+#include "trayicon.h"
 
 #if defined(Q_OS_WIN)
 #include "qutefan_nvapi.h"

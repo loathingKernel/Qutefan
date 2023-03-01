@@ -25,130 +25,11 @@
      <property name="title">
       <string>Status</string>
      </property>
-     <layout class="QGridLayout" name="gridLayoutStatus">
-      <item row="5" column="1" colspan="2">
-       <widget class="QLabel" name="labelStatusShaderCur">
-        <property name="minimumSize">
-         <size>
-          <width>36</width>
-          <height>0</height>
-         </size>
-        </property>
-        <property name="frameShape">
-         <enum>QFrame::StyledPanel</enum>
-        </property>
-        <property name="frameShadow">
-         <enum>QFrame::Sunken</enum>
-        </property>
-        <property name="text">
-         <string>0Mhz</string>
-        </property>
-        <property name="alignment">
-         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-        </property>
-       </widget>
-      </item>
-      <item row="0" column="2">
-       <widget class="QLabel" name="labelStatusTempMax">
-        <property name="minimumSize">
-         <size>
-          <width>40</width>
-          <height>0</height>
-         </size>
-        </property>
-        <property name="font">
-         <font>
-          <weight>75</weight>
-          <bold>true</bold>
-         </font>
-        </property>
-        <property name="frameShape">
-         <enum>QFrame::StyledPanel</enum>
-        </property>
-        <property name="frameShadow">
-         <enum>QFrame::Sunken</enum>
-        </property>
-        <property name="text">
-         <string>0ºC</string>
-        </property>
-        <property name="alignment">
-         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-        </property>
-       </widget>
-      </item>
-      <item row="4" column="1" colspan="2">
-       <widget class="QLabel" name="labelStatusMemCur">
-        <property name="minimumSize">
-         <size>
-          <width>36</width>
-          <height>0</height>
-         </size>
-        </property>
-        <property name="frameShape">
-         <enum>QFrame::StyledPanel</enum>
-        </property>
-        <property name="frameShadow">
-         <enum>QFrame::Sunken</enum>
-        </property>
-        <property name="text">
-         <string>0Mhz</string>
-        </property>
-        <property name="alignment">
-         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-        </property>
-       </widget>
-      </item>
-      <item row="3" column="1" colspan="2">
-       <widget class="QLabel" name="labelStatusCoreCur">
-        <property name="minimumSize">
-         <size>
-          <width>36</width>
-          <height>0</height>
-         </size>
-        </property>
-        <property name="frameShape">
-         <enum>QFrame::StyledPanel</enum>
-        </property>
-        <property name="frameShadow">
-         <enum>QFrame::Sunken</enum>
-        </property>
-        <property name="text">
-         <string>0Mhz</string>
-        </property>
-        <property name="alignment">
-         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-        </property>
-       </widget>
-      </item>
-      <item row="1" column="2">
-       <widget class="QLabel" name="labelStatusFanMax">
-        <property name="minimumSize">
-         <size>
-          <width>40</width>
-          <height>0</height>
-         </size>
-        </property>
-        <property name="font">
-         <font>
-          <weight>75</weight>
-          <bold>true</bold>
-         </font>
-        </property>
-        <property name="frameShape">
-         <enum>QFrame::StyledPanel</enum>
-        </property>
-        <property name="frameShadow">
-         <enum>QFrame::Sunken</enum>
-        </property>
-        <property name="text">
-         <string>0%</string>
-        </property>
-        <property name="alignment">
-         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-        </property>
-       </widget>
-      </item>
-      <item row="3" column="0">
+     <layout class="QFormLayout" name="formLayoutStatus">
+      <property name="labelAlignment">
+       <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+      </property>
+      <item row="0" column="0">
        <widget class="QLabel" name="labelStatusCore">
         <property name="minimumSize">
          <size>
@@ -165,12 +46,12 @@
        </widget>
       </item>
       <item row="0" column="1">
-       <widget class="QLabel" name="labelStatusTempCur">
-        <property name="minimumSize">
-         <size>
-          <width>36</width>
-          <height>0</height>
-         </size>
+       <widget class="QLabel" name="labelStatusCoreCur">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
         </property>
         <property name="frameShape">
          <enum>QFrame::StyledPanel</enum>
@@ -179,68 +60,14 @@
          <enum>QFrame::Sunken</enum>
         </property>
         <property name="text">
-         <string>0ºC</string>
+         <string>0Mhz</string>
         </property>
         <property name="alignment">
          <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
         </property>
        </widget>
       </item>
-      <item row="5" column="0">
-       <widget class="QLabel" name="labelStatusShader">
-        <property name="minimumSize">
-         <size>
-          <width>78</width>
-          <height>0</height>
-         </size>
-        </property>
-        <property name="text">
-         <string>Shader Speed:</string>
-        </property>
-        <property name="alignment">
-         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-        </property>
-       </widget>
-      </item>
-      <item row="0" column="0">
-       <widget class="QLabel" name="labelStatusTemp">
-        <property name="minimumSize">
-         <size>
-          <width>78</width>
-          <height>0</height>
-         </size>
-        </property>
-        <property name="text">
-         <string>Temperature:</string>
-        </property>
-        <property name="alignment">
-         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-        </property>
-       </widget>
-      </item>
-      <item row="1" column="1">
-       <widget class="QLabel" name="labelStatusFanCur">
-        <property name="minimumSize">
-         <size>
-          <width>36</width>
-          <height>0</height>
-         </size>
-        </property>
-        <property name="frameShape">
-         <enum>QFrame::StyledPanel</enum>
-        </property>
-        <property name="frameShadow">
-         <enum>QFrame::Sunken</enum>
-        </property>
-        <property name="text">
-         <string>0%</string>
-        </property>
-        <property name="alignment">
-         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-        </property>
-       </widget>
-      </item>
-      <item row="4" column="0">
+      <item row="1" column="0">
        <widget class="QLabel" name="labelStatusMem">
         <property name="minimumSize">
          <size>
@@ -256,8 +83,30 @@
         </property>
        </widget>
       </item>
-      <item row="1" column="0">
-       <widget class="QLabel" name="labelStatusFan">
+      <item row="1" column="1">
+       <widget class="QLabel" name="labelStatusMemCur">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="frameShape">
+         <enum>QFrame::StyledPanel</enum>
+        </property>
+        <property name="frameShadow">
+         <enum>QFrame::Sunken</enum>
+        </property>
+        <property name="text">
+         <string>0Mhz</string>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="0">
+       <widget class="QLabel" name="labelStatusShader">
         <property name="minimumSize">
          <size>
           <width>78</width>
@@ -265,26 +114,52 @@
          </size>
         </property>
         <property name="text">
-         <string>Fan level:</string>
+         <string>Shader Speed:</string>
         </property>
         <property name="alignment">
          <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
         </property>
        </widget>
       </item>
-      <item row="6" column="0">
-       <widget class="QPushButton" name="pushButtonChart">
+      <item row="2" column="1">
+       <widget class="QLabel" name="labelStatusShaderCur">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="frameShape">
+         <enum>QFrame::StyledPanel</enum>
+        </property>
+        <property name="frameShadow">
+         <enum>QFrame::Sunken</enum>
+        </property>
         <property name="text">
-         <string>Show History</string>
+         <string>0Mhz</string>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
         </property>
        </widget>
       </item>
-      <item row="6" column="1" colspan="2">
-       <widget class="QPushButton" name="pushButtonReset">
-        <property name="text">
-         <string>Reset Max</string>
-        </property>
-       </widget>
+      <item row="3" column="0" colspan="2">
+       <layout class="QHBoxLayout" name="horizontalLayoutStatusButtons">
+        <item>
+         <widget class="QPushButton" name="pushButtonChart">
+          <property name="text">
+           <string>Show History</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QPushButton" name="pushButtonReset">
+          <property name="text">
+           <string>Reset Max</string>
+          </property>
+         </widget>
+        </item>
+       </layout>
       </item>
      </layout>
     </widget>
@@ -378,7 +253,6 @@
            </property>
            <property name="font">
             <font>
-             <weight>75</weight>
              <bold>true</bold>
             </font>
            </property>
@@ -424,7 +298,6 @@
            </property>
            <property name="font">
             <font>
-             <weight>75</weight>
              <bold>true</bold>
             </font>
            </property>
@@ -511,7 +384,6 @@
        <widget class="QRadioButton" name="radioButtonOff">
         <property name="font">
          <font>
-          <weight>75</weight>
           <bold>true</bold>
          </font>
         </property>
@@ -527,7 +399,6 @@
        <widget class="QRadioButton" name="radioButtonFixed">
         <property name="font">
          <font>
-          <weight>75</weight>
           <bold>true</bold>
          </font>
         </property>
@@ -540,7 +411,6 @@
        <widget class="QRadioButton" name="radioButtonQuiet">
         <property name="font">
          <font>
-          <weight>75</weight>
           <bold>true</bold>
          </font>
         </property>
@@ -583,7 +453,6 @@
        <widget class="QRadioButton" name="radioButtonLinear">
         <property name="font">
          <font>
-          <weight>75</weight>
           <bold>true</bold>
          </font>
         </property>
@@ -606,7 +475,6 @@
        <widget class="QRadioButton" name="radioButtonGraph">
         <property name="font">
          <font>
-          <weight>75</weight>
           <bold>true</bold>
          </font>
         </property>

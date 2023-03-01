@@ -1,12 +1,12 @@
 #ifndef QUTEFAN_NVCTRL_H
 #define QUTEFAN_NVCTRL_H
 
-#include <QtGlobal>
+#include <vector>
 #include <X11/Xlib.h>
 #include "NVCtrl/NVCtrl.h"
 #include "NVCtrl/NVCtrlLib.h"
 
-#define NVCTRL_MAX_PHYSICAL_GPUS 64
+#include <QtGlobal>
 
 class QuteFanNVCtrl
 {
@@ -15,7 +15,6 @@ public:
     int screen;
 
     bool status;
-    int gpu_count;
 
     typedef struct {
         int major;
@@ -24,12 +23,26 @@ public:
     NvVersion version;
 
     typedef struct {
+        uint32_t handle;
+        int default_level;
+        int current_level;
+        int maximum_level;
+    } NvCooler;
+
+    int gpu_count;
+    typedef struct {
         bool status;
-        int handle;
+        uint32_t handle;
         char* name;
         char* uuid;
+        int current_temp;
+        int maximum_temp;
+        int default_control;
+        int current_control;
+        int cooler_count;
+        std::vector<NvCooler> cooler;
     } NvGPU;
-    NvGPU gpu[NVCTRL_MAX_PHYSICAL_GPUS] = {};
+    std::vector<NvGPU> gpu;
 
     QuteFanNVCtrl();
     ~QuteFanNVCtrl();

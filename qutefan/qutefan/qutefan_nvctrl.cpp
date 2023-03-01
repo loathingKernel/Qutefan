@@ -7,9 +7,13 @@ QuteFanNVCtrl::QuteFanNVCtrl()
 
 QuteFanNVCtrl::~QuteFanNVCtrl()
 {
-    for(int i = 0; i < gpu_count; i ++) {
-        XFree(gpu[i].name);
-        XFree(gpu[i].uuid);
+//    for(int i = 0; i < gpu_count; i ++) {
+//        XFree(gpu[i].name);
+//        XFree(gpu[i].uuid);
+//    }
+    for (const NvGPU &_gpu: gpu) {
+        XFree(_gpu.name);
+        XFree(_gpu.uuid);
     }
 }
 
@@ -46,17 +50,45 @@ void QuteFanNVCtrl::initialize()
     }
 
     for(int i = 0; i < gpu_count; i++) {
-        gpu[i].handle = i;
-        gpu[i].status = XNVCTRLQueryTargetStringAttribute(
-                    dpy, NV_CTRL_TARGET_TYPE_GPU, gpu[i].handle,
-                    0, NV_CTRL_STRING_PRODUCT_NAME, &gpu[i].name);
-        if (!gpu[i].status) {
+        NvGPU _gpu = NvGPU();
+        _gpu.handle = i;
+        _gpu.status = XNVCTRLQueryTargetStringAttribute(
+                    dpy, NV_CTRL_TARGET_TYPE_GPU, _gpu.handle,
+                    0, NV_CTRL_STRING_PRODUCT_NAME, &_gpu.name);
+        if (!_gpu.status) {
             qDebug("Failed to query gpu product name");
             return;
         }
-        gpu[i].status = XNVCTRLQueryTargetStringAttribute(
-                    dpy, NV_CTRL_TARGET_TYPE_GPU, gpu[i].handle,
-                    0, NV_CTRL_STRING_GPU_UUID, &gpu[i].uuid);
+        _gpu.status = XNVCTRLQueryTargetStringAttribute(
+                    dpy, NV_CTRL_TARGET_TYPE_GPU, _gpu.handle,
+                    0, NV_CTRL_STRING_GPU_UUID, &_gpu.uuid);
+
+        // Get general cooler information
+        int len, *cooler_data = NULL;
+        _gpu.status = XNVCTRLQueryTargetBinaryData(
+                    dpy, NV_CTRL_TARGET_TYPE_GPU, _gpu.handle,
+                    0, NV_CTRL_BINARY_DATA_COOLERS_USED_BY_GPU, (unsigned char **)(&cooler_data), &len);
+        _gpu.cooler_count = cooler_data[0];
+
+        // Get per cooler information
+        for(int j = 1; j <= _gpu.cooler_count; ++j) {
+            NvCooler _cooler = NvCooler();
+
+            _cooler.handle = cooler_data[j];
+
+            _gpu.status = XNVCTRLQueryTargetAttribute(
+                        dpy, NV_CTRL_TARGET_TYPE_COOLER, _cooler.handle,
+                        0, NV_CTRL_THERMAL_COOLER_LEVEL, &_cooler.default_level);
+
+            _gpu.status = XNVCTRLQueryTargetAttribute(
+                        dpy, NV_CTRL_TARGET_TYPE_COOLER, _cooler.handle,
+                        0, NV_CTRL_THERMAL_COOLER_CURRENT_LEVEL, &_cooler.current_level);
+            qDebug("Saved defaults");
+
+            _gpu.cooler.push_back(_cooler);
+        }
+
+        gpu.push_back(_gpu);
     }
 }
 

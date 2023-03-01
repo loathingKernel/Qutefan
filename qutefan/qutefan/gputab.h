@@ -27,8 +27,8 @@ public:
     GpuTab::FanMode getMode();
     GpuTab::FanMode last_mode = FanMode::Off;
 
-    void saveSettings(QString*);
-    void loadSettings(QString*);
+    void saveSettings(const QString &);
+    void loadSettings(const QString &);
 
     Ui::GpuTab* ui;
 

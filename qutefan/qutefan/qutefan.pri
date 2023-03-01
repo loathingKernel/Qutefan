@@ -1,13 +1,16 @@
 SOURCES += \
+    $$PWD/dual_label.cpp \
     $$PWD/main.cpp \
     $$PWD/qutefan.cpp \
     $$PWD/gputab.cpp \
-    $$PWD/qutefantrayicon.cpp
+    $$PWD/trayicon.cpp
 HEADERS += \
+    $$PWD/dual_label.h \
     $$PWD/qutefan.h \
     $$PWD/gputab.h \
-    $$PWD/qutefantrayicon.h
+    $$PWD/trayicon.h
 FORMS += \
+    $$PWD/dual_label.ui \
     $$PWD/qutefan.ui \
     $$PWD/gputab.ui
 

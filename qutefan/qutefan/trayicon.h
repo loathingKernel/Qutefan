@@ -1,5 +1,5 @@
-#ifndef QUTEFANTRAYICON_H
-#define QUTEFANTRAYICON_H
+#ifndef TRAYICON_H
+#define TRAYICON_H
 
 #include <QApplication>
 #include <QAction>
@@ -35,4 +35,4 @@ private:
     QMainWindow* main;
 };
 
-#endif // QUTEFANTRAYICON_H
+#endif // TRAYICON_H

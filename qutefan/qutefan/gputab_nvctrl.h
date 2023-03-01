@@ -1,8 +1,10 @@
 #ifndef GPUTAB_NVCTRL_H
 #define GPUTAB_NVCTRL_H
 
+#include <QLabel>
 #include <QDateTime>
 
+#include "dual_label.h"
 #include "gputab.h"
 #include "qutefan_nvctrl.h"
 
@@ -31,25 +33,21 @@ private:
     QuteFanNVCtrl* api;
     QuteFanNVCtrl::NvGPU* gpu;
 
-    QString* uuid;
+    QLabel*    temp_label;
+    DualLabel* temp_info;
 
-    int default_level;
-    int default_control;
+    QVector<QLabel*>    fan_label;
+    QVector<DualLabel*> fan_info;
 
-    int max_temp;
-    int max_level;
-
-    int temp;
-    int level;
-
+#if USE_CHARTS
     typedef struct {
         QDateTime time;
         int level;
         int temp;
     } NvLogger;
     NvLogger history[600] = {};
-
     NvLogger* current_entry = history;
+# endif
 };
 
 #endif // GPUTAB_NVCTRL_H
