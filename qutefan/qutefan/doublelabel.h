@@ -6,13 +6,13 @@ namespace Ui {
 class DualLabel;
 }
 
-class DualLabel : public QWidget
+class DoubleLabel : public QWidget
 {
     Q_OBJECT
 
 public:
-    explicit DualLabel(QWidget *parent = nullptr);
-    ~DualLabel();
+    explicit DoubleLabel(QWidget *parent = nullptr);
+    ~DoubleLabel();
 
     void setCurrent(const QString &);
     void setMaximum(const QString &);

@@ -1,7 +1,7 @@
-#include "dual_label.h"
-#include "ui_dual_label.h"
+#include "doublelabel.h"
+#include "ui_doublelabel.h"
 
-DualLabel::DualLabel(QWidget *parent) :
+DoubleLabel::DoubleLabel(QWidget *parent) :
     QWidget(parent),
     ui(new Ui::DualLabel)
 {
@@ -17,18 +17,18 @@ DualLabel::DualLabel(QWidget *parent) :
     ui->labelMaximum->setMinimumWidth(width);
 }
 
-DualLabel::~DualLabel()
+DoubleLabel::~DoubleLabel()
 {
     delete ui;
 }
 
-void DualLabel::setCurrent(const QString &level)
+void DoubleLabel::setCurrent(const QString &level)
 {
     ui->labelCurrent->setText(level);
 
 }
 
-void DualLabel::setMaximum(const QString &level)
+void DoubleLabel::setMaximum(const QString &level)
 {
     ui->labelMaximum->setText(level);
 }

@@ -18,12 +18,12 @@ GpuTabNVCtrl::GpuTabNVCtrl(QuteFanNVCtrl* _api,
     ui->spinBoxFixedLevel->setValue(gpu->cooler[0].default_level);
 
     temp_label = new QLabel("Temperature:", this);
-    temp_info = new DualLabel(this);
+    temp_info = new DoubleLabel(this);
     ui->formLayoutStatus->insertRow(0, temp_label, temp_info);
 
     for (int c = 0; c < gpu->cooler_count; ++c) {
         QLabel* _label = new QLabel(QString("Fan %1 level:").arg(gpu->cooler[c].handle));
-        DualLabel* _info = new DualLabel(this);
+        DoubleLabel* _info = new DoubleLabel(this);
         _info->setCurrent(QString("%1%").arg(gpu->cooler[c].current_level));
         ui->formLayoutStatus->insertRow(c + 1, _label, _info);
         fan_label.push_back(_label);
@@ -51,35 +51,24 @@ void GpuTabNVCtrl::saveGpuSettings()
 void GpuTabNVCtrl::setGPUDefaults()
 {
     for(int c = 0; c < gpu->cooler_count; ++c) {
-        gpu->status = XNVCTRLSetTargetAttributeAndGetStatus(
-                    api->dpy, NV_CTRL_TARGET_TYPE_COOLER, gpu->cooler[c].handle,
-                    0, NV_CTRL_THERMAL_COOLER_LEVEL, gpu->cooler[c].default_level);
+        api->setCoolerLevel(gpu, &gpu->cooler[c], gpu->cooler[c].default_level);
     }
-    gpu->status = XNVCTRLSetTargetAttributeAndGetStatus(
-                api->dpy, NV_CTRL_TARGET_TYPE_GPU, gpu->handle,
-                0, NV_CTRL_GPU_COOLER_MANUAL_CONTROL, NV_CTRL_GPU_COOLER_MANUAL_CONTROL_FALSE);
+    api->setCoolerManualControl(gpu, false);
     qDebug("Restored defaults for GPU");
 }
 
 void GpuTabNVCtrl::regulateFan()
 {
-    gpu->status = XNVCTRLQueryTargetAttribute(
-                api->dpy, NV_CTRL_TARGET_TYPE_THERMAL_SENSOR, gpu->handle,
-                0, NV_CTRL_THERMAL_SENSOR_READING, &gpu->current_temp);
-
-    if(gpu->maximum_temp < gpu->current_temp)
-        gpu->maximum_temp = gpu->current_temp;
-    temp_info->setCurrent(QString("%1°C").arg(gpu->current_temp));
-    temp_info->setMaximum(QString("%1°C").arg(gpu->maximum_temp));
+    QList<int> temp = api->getGpuTemperature(gpu);
+    temp_info->setCurrent(QString("%1°C").arg(temp[0]));
+    temp_info->setMaximum(QString("%1°C").arg(temp[1]));
 
     GpuTab::FanMode mode = getMode();
     if(mode == GpuTab::FanMode::Off) {
         if(mode != last_mode)
             setGPUDefaults();
     } else {
-        gpu->status = XNVCTRLSetTargetAttributeAndGetStatus(
-                    api->dpy, NV_CTRL_TARGET_TYPE_GPU, gpu->handle,
-                    0, NV_CTRL_GPU_COOLER_MANUAL_CONTROL, NV_CTRL_GPU_COOLER_MANUAL_CONTROL_TRUE);
+        api->setCoolerManualControl(gpu, true);
 
         for (int c = 0; c < gpu->cooler_count; ++c) {
             int level;
@@ -97,22 +86,15 @@ void GpuTabNVCtrl::regulateFan()
                 level = gpu->current_temp + ui->spinBoxLinearOffset->text().toInt();
                 break;
             }
-            gpu->status = XNVCTRLSetTargetAttributeAndGetStatus(
-                        api->dpy, NV_CTRL_TARGET_TYPE_COOLER, gpu->cooler[c].handle,
-                        0, NV_CTRL_THERMAL_COOLER_LEVEL, level);
+            api->setCoolerLevel(gpu, &gpu->cooler[c], level);
         }
     }
     last_mode = mode;
 
     for (int c = 0; c < gpu->cooler_count; ++c) {
-        gpu->status = XNVCTRLQueryTargetAttribute(
-                    api->dpy, NV_CTRL_TARGET_TYPE_COOLER, gpu->cooler[c].handle,
-                    0, NV_CTRL_THERMAL_COOLER_CURRENT_LEVEL, &gpu->cooler[c].current_level);
-
-        if(gpu->cooler[c].maximum_level < gpu->cooler[c].current_level)
-            gpu->cooler[c].maximum_level = gpu->cooler[c].current_level;
-        fan_info[c]->setCurrent(QString("%1%").arg(gpu->cooler[c].current_level));
-        fan_info[c]->setMaximum(QString("%1%").arg(gpu->cooler[c].maximum_level));
+        QList<int> level = api->getCoolerLevel(gpu, &gpu->cooler[c]);
+        fan_info[c]->setCurrent(QString("%1%").arg(level[0]));
+        fan_info[c]->setMaximum(QString("%1%").arg(level[1]));
     }
 #if USE_CHARTS
     current_entry->time = QDateTime::currentDateTime();
@@ -125,23 +107,7 @@ void GpuTabNVCtrl::regulateFan()
 
 void GpuTabNVCtrl::displayStatus()
 {
-    char* str;
-    gpu->status = XNVCTRLQueryTargetStringAttribute(
-                api->dpy,
-                NV_CTRL_TARGET_TYPE_GPU,
-                gpu->handle,
-                0,
-                NV_CTRL_STRING_GPU_CURRENT_CLOCK_FREQS,
-                &str
-    );
-    QStringList list = QStringList(QString(str).split(", "));
-    XFree(str);
-
-    QMap<QString, int> clocks;
-    for(int i = 0; i < list.size(); i++) {
-        clocks.insert(list[i].split("=").first(), list[i].split("=").last().toInt());
-    }
-
+    QMap<QString, int> clocks = api->getCurrentClockFreqs(gpu);
     ui->labelStatusCoreCur->setText(QString("%1Mhz").arg(clocks["nvclock"]));
     //ui->labelStatusShaderCur->setText(QString("%1Mhz").arg(clocks["memTransferRate"]));
     ui->labelStatusMemCur->setText(QString("%1Mhz").arg(clocks["memclock"]));

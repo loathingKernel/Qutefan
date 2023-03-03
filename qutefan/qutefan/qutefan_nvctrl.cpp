@@ -1,5 +1,6 @@
 #include "qutefan_nvctrl.h"
 
+
 QuteFanNVCtrl::QuteFanNVCtrl()
 {
 
@@ -21,7 +22,7 @@ bool QuteFanNVCtrl::available()
         return false;
     }
 
-    screen = GetNvXScreen(dpy);
+    screen = getNvXScreen(dpy);
     if (screen < 0) {
         qDebug("Unable to find any NVIDIA X screens; aborting.");
         return false;
@@ -87,7 +88,67 @@ void QuteFanNVCtrl::initialize()
     }
 }
 
-int QuteFanNVCtrl::GetNvXScreen(Display *dpy)
+void QuteFanNVCtrl::setCoolerManualControl(NvGPU* _gpu, bool enable)
+{
+    if (enable) {
+        _gpu->status = XNVCTRLSetTargetAttributeAndGetStatus(
+                    dpy, NV_CTRL_TARGET_TYPE_GPU, _gpu->handle,
+                    0, NV_CTRL_GPU_COOLER_MANUAL_CONTROL, NV_CTRL_GPU_COOLER_MANUAL_CONTROL_TRUE);
+    } else {
+        _gpu->status = XNVCTRLSetTargetAttributeAndGetStatus(
+                    dpy, NV_CTRL_TARGET_TYPE_GPU, _gpu->handle,
+                    0, NV_CTRL_GPU_COOLER_MANUAL_CONTROL, NV_CTRL_GPU_COOLER_MANUAL_CONTROL_FALSE);
+    }
+}
+
+QList<int> QuteFanNVCtrl::getCoolerLevel(NvGPU* _gpu, NvCooler *_cooler)
+{
+    _gpu->status = XNVCTRLQueryTargetAttribute(
+                dpy, NV_CTRL_TARGET_TYPE_COOLER, _cooler->handle,
+                0, NV_CTRL_THERMAL_COOLER_CURRENT_LEVEL, &_cooler->current_level);
+
+    if(_cooler->maximum_level < _cooler->current_level)
+        _cooler->maximum_level = _cooler->current_level;
+
+    return QList<int>({_cooler->current_level, _cooler->maximum_level});
+}
+
+void QuteFanNVCtrl::setCoolerLevel(NvGPU* _gpu, NvCooler* _cooler, int level)
+{
+    _gpu->status = XNVCTRLSetTargetAttributeAndGetStatus(
+                dpy, NV_CTRL_TARGET_TYPE_COOLER, _cooler->handle,
+                0, NV_CTRL_THERMAL_COOLER_LEVEL, level);
+}
+
+QList<int> QuteFanNVCtrl::getGpuTemperature(NvGPU* _gpu)
+{
+    _gpu->status = XNVCTRLQueryTargetAttribute(
+                dpy, NV_CTRL_TARGET_TYPE_THERMAL_SENSOR, _gpu->handle,
+                0, NV_CTRL_THERMAL_SENSOR_READING, &_gpu->current_temp);
+
+    if(_gpu->maximum_temp < _gpu->current_temp)
+        _gpu->maximum_temp = _gpu->current_temp;
+
+    return QList<int>({_gpu->current_temp, _gpu->maximum_temp});
+}
+
+QMap<QString, int> QuteFanNVCtrl::getCurrentClockFreqs(NvGPU * _gpu)
+{
+    char* str;
+    _gpu->status = XNVCTRLQueryTargetStringAttribute(
+                dpy, NV_CTRL_TARGET_TYPE_GPU, _gpu->handle,
+                0, NV_CTRL_STRING_GPU_CURRENT_CLOCK_FREQS, &str);
+    QStringList list = QStringList(QString(str).split(", "));
+    XFree(str);
+
+    QMap<QString, int> clocks;
+    for(int i = 0; i < list.size(); i++) {
+        clocks.insert(list[i].split("=").first(), list[i].split("=").last().toInt());
+    }
+    return clocks;
+}
+
+int QuteFanNVCtrl::getNvXScreen(Display *dpy)
 {
     int defaultScreen, screen;
 

@@ -4,7 +4,7 @@
 #include <QLabel>
 #include <QDateTime>
 
-#include "dual_label.h"
+#include "doublelabel.h"
 #include "gputab.h"
 #include "qutefan_nvctrl.h"
 
@@ -34,10 +34,10 @@ private:
     QuteFanNVCtrl::NvGPU* gpu;
 
     QLabel*    temp_label;
-    DualLabel* temp_info;
+    DoubleLabel* temp_info;
 
     QVector<QLabel*>    fan_label;
-    QVector<DualLabel*> fan_info;
+    QVector<DoubleLabel*> fan_info;
 
 #if USE_CHARTS
     typedef struct {

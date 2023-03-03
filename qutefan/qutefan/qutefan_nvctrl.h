@@ -1,12 +1,14 @@
 #ifndef QUTEFAN_NVCTRL_H
 #define QUTEFAN_NVCTRL_H
 
-#include <vector>
-#include <X11/Xlib.h>
-#include "NVCtrl/NVCtrl.h"
-#include "NVCtrl/NVCtrlLib.h"
-
 #include <QtGlobal>
+#include <QVector>
+#include <QMap>
+
+#include <X11/Xlib.h>
+#include <NVCtrl/NVCtrl.h>
+#include <NVCtrl/NVCtrlLib.h>
+
 
 class QuteFanNVCtrl
 {
@@ -40,9 +42,9 @@ public:
         int default_control;
         int current_control;
         int cooler_count;
-        std::vector<NvCooler> cooler;
+        QVector<NvCooler> cooler;
     } NvGPU;
-    std::vector<NvGPU> gpu;
+    QVector<NvGPU> gpu;
 
     QuteFanNVCtrl();
     ~QuteFanNVCtrl();
@@ -50,8 +52,16 @@ public:
     bool available();
     void initialize();
 
+    void setCoolerManualControl(NvGPU*, bool);
+    QList<int> getCoolerLevel(NvGPU*, NvCooler*);
+    void setCoolerLevel(NvGPU*, NvCooler*, int level);
+
+    QList<int> getGpuTemperature(NvGPU*);
+
+    QMap<QString, int> getCurrentClockFreqs(NvGPU*);
+
 private:
-    int GetNvXScreen(Display*);
+    int getNvXScreen(Display*);
 };
 
 #endif // QUTEFAN_NVCTRL_H
