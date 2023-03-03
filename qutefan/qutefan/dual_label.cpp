@@ -10,7 +10,7 @@ DualLabel::DualLabel(QWidget *parent) :
     QFont font = this->font();
     QFontMetrics fm = QFontMetrics(font);
     int width =
-            fm.boundingRect("100%").width() + (fm.horizontalAdvance(QLatin1Char('x')) * 2) +
+            fm.boundingRect("xxxxx").width() + (fm.horizontalAdvance(QLatin1Char('x')) * 2) +
             (ui->labelCurrent->contentsMargins().left() + ui->labelCurrent->contentsMargins().right());
 
     ui->labelCurrent->setMinimumWidth(width);

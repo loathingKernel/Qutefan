@@ -7,13 +7,9 @@ QuteFanNVCtrl::QuteFanNVCtrl()
 
 QuteFanNVCtrl::~QuteFanNVCtrl()
 {
-//    for(int i = 0; i < gpu_count; i ++) {
-//        XFree(gpu[i].name);
-//        XFree(gpu[i].uuid);
-//    }
-    for (const NvGPU &_gpu: gpu) {
-        XFree(_gpu.name);
-        XFree(_gpu.uuid);
+    for(int i = 0; i < gpu_count; i ++) {
+        XFree(gpu[i].name);
+        XFree(gpu[i].uuid);
     }
 }
 
@@ -38,8 +34,7 @@ void QuteFanNVCtrl::initialize()
 {
     status = XNVCTRLQueryVersion(dpy, &(version.major), &(version.minor));
     if (status != True) {
-        qDebug("The NV-CONTROL X extension does not exist on '%s'.",
-                XDisplayName(nullptr));
+        qDebug("The NV-CONTROL X extension does not exist on '%s'.", XDisplayName(nullptr));
         return;
     }
 
@@ -104,8 +99,7 @@ int QuteFanNVCtrl::GetNvXScreen(Display *dpy)
 
     for (screen = 0; screen < ScreenCount(dpy); screen++) {
         if (XNVCTRLIsNvScreen(dpy, screen)) {
-            qDebug("Default X screen %d is not an NVIDIA X screen.  "
-                   "Using X screen %d instead.",
+            qDebug("Default X screen %d is not an NVIDIA X screen. Using X screen %d instead.",
                    defaultScreen, screen);
             return screen;
         }

@@ -50,10 +50,10 @@ void GpuTabNVCtrl::saveGpuSettings()
 
 void GpuTabNVCtrl::setGPUDefaults()
 {
-    for(QuteFanNVCtrl::NvCooler _cooler: gpu->cooler) {
+    for(int c = 0; c < gpu->cooler_count; ++c) {
         gpu->status = XNVCTRLSetTargetAttributeAndGetStatus(
-                    api->dpy, NV_CTRL_TARGET_TYPE_COOLER, _cooler.handle,
-                    0, NV_CTRL_THERMAL_COOLER_LEVEL, _cooler.default_level);
+                    api->dpy, NV_CTRL_TARGET_TYPE_COOLER, gpu->cooler[c].handle,
+                    0, NV_CTRL_THERMAL_COOLER_LEVEL, gpu->cooler[c].default_level);
     }
     gpu->status = XNVCTRLSetTargetAttributeAndGetStatus(
                 api->dpy, NV_CTRL_TARGET_TYPE_GPU, gpu->handle,
@@ -87,6 +87,7 @@ void GpuTabNVCtrl::regulateFan()
             case GpuTab::FanMode::Off:
             case GpuTab::FanMode::Graph:
             case GpuTab::FanMode::Quiet:
+            default:
                 level = gpu->cooler[c].default_level;
                 break;
             case GpuTab::FanMode::Fixed:
