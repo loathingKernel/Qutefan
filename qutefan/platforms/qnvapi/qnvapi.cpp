@@ -2,32 +2,20 @@
 
 static QMutex* nvapi_lock = new QMutex(QMutex::Recursive);
 
-QNvAPI::QNvAPI()
-    : QLibrary("nvapi"),
-      nvapi_QueryInterface(nullptr),
-      nvapi_Initialize(nullptr),
-      nvapi_EnumNvidiaDisplayHandle(nullptr),
-      nvapi_EnumPhysicalGPUs(nullptr),
-      nvapi_GetInterfaceVersionString(nullptr),
-      nvapi_GetDisplayDriverVersion(nullptr),
-      nvapi_GetPhysicalGPUsFromDisplay(nullptr),
-      nvapi_GetPhysicalGPUFromGPUID(nullptr),
-      nvapi_GetAssociatedNvidiaDisplayHandle(nullptr),
-      nvapi_GetAssociatedDisplayOutputId(nullptr),
-      nvapi_GetGPUIDFromPhysicalGPU(nullptr),
-      nvapi_GPU_GetThermalSettings(nullptr),
-      nvapi_GPU_GetFullName(nullptr),
-      nvapi_GPU_GetEDID(nullptr),
-      nvapi_GPU_GetTachReading(nullptr),
-      nvapi_GPU_GetAllClocks(nullptr),
-      nvapi_GPU_GetDynamicPstatesInfoEx(nullptr),
-      nvapi_GPU_GetMemoryInfo(nullptr),
-      nvapi_GPU_GetPCIIdentifiers(nullptr),
-      nvapi_GPU_GetUsages(nullptr),
-      nvapi_GPU_GetCoolerSettings(nullptr),
-      nvapi_GPU_SetCoolerLevels(nullptr)
+#if defined(Q_PROCESSOR_X86_64)
+    #define NVAPI_NAME "nvapi64.dll"
+#elif defined(Q_PROCESSOR_X86_32)
+    #define NVAPI_NAME "nvapi.dll"
+#else
+    #error "Uknown architecture"
+#endif
+
+QNvAPI::QNvAPI() : QLibrary()
 {
     QMutexLocker locker(nvapi_lock);
+
+    setFileName(NVAPI_NAME);
+    load();
 
     nvapi_QueryInterface = reinterpret_cast<QNVAPI_QUERYINTERFACE>(resolve("nvapi_QueryInterface"));
 
@@ -36,6 +24,7 @@ QNvAPI::QNvAPI()
         qDebug("NvAPI_QueryInterface() failed with status %d", status);
     } else {
         nvapi_Initialize                        = reinterpret_cast<QNVAPI_INITIALIZE>                       (nvapi_QueryInterface(0x0150E828));
+        nvapi_Unload                            = reinterpret_cast<QNVAPI_UNLOAD>                           (nvapi_QueryInterface(0xD22BDD7E));
 
         nvapi_EnumNvidiaDisplayHandle           = reinterpret_cast<QNVAPI_ENUMNVIDIADISPLAYHANDLE>          (nvapi_QueryInterface(0x9ABDD40D));
         nvapi_EnumPhysicalGPUs                  = reinterpret_cast<QNVAPI_ENUMPHYSICALGPUS>                 (nvapi_QueryInterface(0xE5AC921F));
@@ -55,27 +44,47 @@ QNvAPI::QNvAPI()
         nvapi_GPU_GetEDID                       = reinterpret_cast<QNVAPI_GPU_GETEDID>                      (nvapi_QueryInterface(0x37D32E69));
         nvapi_GPU_GetTachReading                = reinterpret_cast<QNVAPI_GPU_GETTACHREADING>               (nvapi_QueryInterface(0x5F608315));
         nvapi_GPU_GetAllClocks                  = reinterpret_cast<QNVAPI_GPU_GETALLCLOCKS>                 (nvapi_QueryInterface(0x1BD69F49));
+        nvapi_GPU_GetAllClockFrequencies        = reinterpret_cast<QNVAPI_GPU_GETALLCLOCKFREQUENCIES>       (nvapi_QueryInterface(0xDCB616C3));
         nvapi_GPU_GetDynamicPstatesInfoEx       = reinterpret_cast<QNVAPI_GPU_GETDYNAMICPSTATESINFOEX>      (nvapi_QueryInterface(0x60DED2ED));
         nvapi_GPU_GetMemoryInfo                 = reinterpret_cast<QNVAPI_GPU_GETMEMORYINFO>                (nvapi_QueryInterface(0x774AA982));
         nvapi_GPU_GetPCIIdentifiers             = reinterpret_cast<QNVAPI_GPU_GETPCIIDENTIFIERS>            (nvapi_QueryInterface(0x2DDFB66E));
 
         nvapi_GPU_GetUsages                     = reinterpret_cast<QNVAPI_GPU_GETUSAGES>                    (nvapi_QueryInterface(0x189A1FDF));
-
+        // Non-RTX
         nvapi_GPU_GetCoolerSettings             = reinterpret_cast<QNVAPI_GPU_GETCOOLERSETTINGS>            (nvapi_QueryInterface(0xDA141340));
         nvapi_GPU_SetCoolerLevels               = reinterpret_cast<QNVAPI_GPU_SETCOOLERLEVELS>              (nvapi_QueryInterface(0x891FA0AE));
+        // RTX
+        nvapi_GPU_GetClientFanCoolersInfo       = reinterpret_cast<QNVAPI_GPU_GETCLIENTFANCOOLERSINFO>      (nvapi_QueryInterface(0xFB85B01E));
+        nvapi_GPU_GetClientFanCoolersStatus     = reinterpret_cast<QNVAPI_GPU_GETCLIENTFANCOOLERSSTATUS>    (nvapi_QueryInterface(0x35AED5E8));
+        nvapi_GPU_GetClientFanCoolersControl    = reinterpret_cast<QNVAPI_GPU_GETCLIENTFANCOOLERSCONTROL>   (nvapi_QueryInterface(0x814B209F));
+        nvapi_GPU_SetClientFanCoolersControl    = reinterpret_cast<QNVAPI_GPU_SETCLIENTFANCOOLERSCONTROL>   (nvapi_QueryInterface(0xA58971A5));
     }
 }
 
 QNvAPI::~QNvAPI()
 {
-    this->unload();
+    unload();
+}
+
+bool QNvAPI::unload()
+{
+    NvAPI_Status status = Unload();
+    return status == NVAPI_OK && QLibrary::unload();
 }
 
 NvAPI_Status QNvAPI::Initialize(void)
 {
     NvAPI_Status status = nvapi_Initialize();
     if(status != NVAPI_OK)
-        qDebug("NvAPI_Initialize() failed with status %d", status);
+        qDebug("%s failed with status %d", __PRETTY_FUNCTION__, status);
+    return status;
+}
+
+NvAPI_Status QNvAPI::Unload(void)
+{
+    NvAPI_Status status = nvapi_Unload();
+    if(status != NVAPI_OK)
+        qDebug("%s failed with status %d", __PRETTY_FUNCTION__, status);
     return status;
 }
 
@@ -185,12 +194,21 @@ NvAPI_Status QNvAPI::GPU_GetTachReading(NvPhysicalGpuHandle hPhysicalGpu, NvU32*
     return status;
 }
 
-NvAPI_Status QNvAPI::GPU_GetAllClocks(__in NvPhysicalGpuHandle hPhysicalGpu, __inout NV_GPU_CLOCKS* pClkFreqs)
+NvAPI_Status QNvAPI::GPU_GetAllClocks(__in NvPhysicalGpuHandle hPhysicalGpu, __inout NV_GPU_CLOCKS* pClocks)
 {
-    pClkFreqs->version =  NV_GPU_CLOCKS_VER;
-    NvAPI_Status status = nvapi_GPU_GetAllClocks(hPhysicalGpu, pClkFreqs);
+    pClocks->version = NV_GPU_CLOCKS_VER;
+    NvAPI_Status status = nvapi_GPU_GetAllClocks(hPhysicalGpu, pClocks);
     if(status != NVAPI_OK)
         qDebug("NvAPI_GPU_GetAllClocks() failed with status %d", status);
+    return status;
+}
+
+NvAPI_Status QNvAPI::GPU_GetAllClockFrequencies(__in NvPhysicalGpuHandle hPhysicalGpu, __inout NV_GPU_CLOCK_FREQUENCIES* pClkFreqs)
+{
+    pClkFreqs->version = NV_GPU_CLOCK_FREQUENCIES_VER;
+    NvAPI_Status status = nvapi_GPU_GetAllClockFrequencies(hPhysicalGpu, pClkFreqs);
+    if(status != NVAPI_OK)
+        qDebug("NvAPI_GPU_GetAllClockFrequencies() failed with status %d", status);
     return status;
 }
 
@@ -229,12 +247,12 @@ NvAPI_Status QNvAPI::GPU_GetUsages(NvPhysicalGpuHandle hPhysicalGpu, NV_GPU_USAG
     return status;
 }
 
-NvAPI_Status QNvAPI::GPU_GetCoolerSettings(NvPhysicalGpuHandle hPhysicalGpu, NvU32 coolerIndex, NV_GPU_COOLER_SETTINGS* pCoolerSettings)
+NvAPI_Status QNvAPI::GPU_GetCoolerSettings(__in NvPhysicalGpuHandle hPhysicalGpu, __in NvU32 coolerIndex, __inout NV_GPU_COOLER_SETTINGS* pCoolerSettings)
 {
     pCoolerSettings->version = NV_GPU_COOLER_SETTINGS_VER;
     NvAPI_Status status = nvapi_GPU_GetCoolerSettings(hPhysicalGpu, coolerIndex, pCoolerSettings);
     if(status != NVAPI_OK)
-        qDebug("NvAPI_GPU_GetCoolerSettings() failed with status %d", status);
+        qDebug("%s failed with status %d", __PRETTY_FUNCTION__, status);
     return status;
 }
 
@@ -247,10 +265,47 @@ NvAPI_Status QNvAPI::GPU_SetCoolerLevels(NvPhysicalGpuHandle hPhysicalGpu, NvU32
     return status;
 }
 
+NvAPI_Status QNvAPI::GPU_GetClientFanCoolersInfo(NvPhysicalGpuHandle hPhysicalGpu, NV_GPU_FAN_COOLERS_INFO *pCoolersInfo)
+{
+    pCoolersInfo->version = NV_GPU_FAN_COOLERS_INFO_VER;
+    NvAPI_Status status = nvapi_GPU_GetClientFanCoolersInfo(hPhysicalGpu, pCoolersInfo);
+    if(status != NVAPI_OK)
+        qDebug("%s failed with status %d", __PRETTY_FUNCTION__, status);
+    return status;
+}
+
+NvAPI_Status QNvAPI::GPU_GetClientFanCoolersStatus(NvPhysicalGpuHandle hPhysicalGpu, NV_GPU_FAN_COOLERS_STATUS *pCoolersStatus)
+{
+    pCoolersStatus->version = NV_GPU_FAN_COOLERS_STATUS_VER;
+    NvAPI_Status status = nvapi_GPU_GetClientFanCoolersStatus(hPhysicalGpu, pCoolersStatus);
+    if(status != NVAPI_OK)
+        qDebug("%s failed with status %d", __PRETTY_FUNCTION__, status);
+    return status;
+}
+
+NvAPI_Status QNvAPI::GPU_GetClientFanCoolersControl(NvPhysicalGpuHandle hPhysicalGpu, NV_GPU_FAN_COOLERS_CONTROL *pCoolersControl)
+{
+    pCoolersControl->version = NV_GPU_FAN_COOLERS_CONTROL_VER;
+    NvAPI_Status status = nvapi_GPU_GetClientFanCoolersControl(hPhysicalGpu, pCoolersControl);
+    if(status != NVAPI_OK)
+        qDebug("%s failed with status %d", __PRETTY_FUNCTION__, status);
+    return status;
+}
+
+NvAPI_Status QNvAPI::GPU_SetClientFanCoolersControl(NvPhysicalGpuHandle hPhysicalGpu, NV_GPU_FAN_COOLERS_CONTROL *pCoolersControl)
+{
+    pCoolersControl->version = NV_GPU_FAN_COOLERS_CONTROL_VER;
+    NvAPI_Status status = nvapi_GPU_SetClientFanCoolersControl(hPhysicalGpu, pCoolersControl);
+    if(status != NVAPI_OK)
+        qDebug("%s failed with status %d", __PRETTY_FUNCTION__, status);
+    return status;
+}
+
 bool QNvAPI::isAvailable(void)
 {
     return  nvapi_QueryInterface &&
             nvapi_Initialize &&
+            nvapi_Unload &&
             nvapi_EnumNvidiaDisplayHandle &&
             nvapi_EnumPhysicalGPUs &&
             nvapi_GetInterfaceVersionString &&
@@ -265,10 +320,30 @@ bool QNvAPI::isAvailable(void)
             nvapi_GPU_GetEDID &&
             nvapi_GPU_GetTachReading &&
             nvapi_GPU_GetAllClocks &&
+            nvapi_GPU_GetAllClockFrequencies &&
             nvapi_GPU_GetDynamicPstatesInfoEx &&
             nvapi_GPU_GetMemoryInfo &&
             nvapi_GPU_GetPCIIdentifiers &&
             nvapi_GPU_GetUsages &&
             nvapi_GPU_GetCoolerSettings &&
-            nvapi_GPU_SetCoolerLevels;
+            nvapi_GPU_SetCoolerLevels &&
+            nvapi_GPU_GetClientFanCoolersInfo &&
+            nvapi_GPU_GetClientFanCoolersStatus &&
+            nvapi_GPU_GetClientFanCoolersControl &&
+            nvapi_GPU_SetClientFanCoolersControl
+        ;
+}
+
+bool QNvAPI::isRtx(NvPhysicalGpuHandle hPhysicalGpu)
+{
+    NV_GPU_COOLER_SETTINGS settings;
+    settings.version = NV_GPU_COOLER_SETTINGS_VER;
+    NvAPI_Status status = nvapi_GPU_GetCoolerSettings(hPhysicalGpu, NV_COOLER_TARGET_ALL, &settings);
+    if (status == NVAPI_OK) {
+        qDebug("%s succeded with status %d, not an RTX card", __PRETTY_FUNCTION__, status);
+        return false;
+    } else {
+        qDebug("%s failed with status %d, it's an RTX card", __PRETTY_FUNCTION__, status);
+        return true;
+    }
 }
