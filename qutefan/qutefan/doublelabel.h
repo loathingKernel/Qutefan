@@ -3,7 +3,7 @@
 #include <QWidget>
 
 namespace Ui {
-class DualLabel;
+class DoubleLabel;
 }
 
 class DoubleLabel : public QWidget
@@ -12,12 +12,16 @@ class DoubleLabel : public QWidget
 
 public:
     explicit DoubleLabel(QWidget *parent = nullptr);
+    explicit DoubleLabel(QWidget *parent, const QString &);
+    explicit DoubleLabel(QWidget *parent, const QString &, int);
     ~DoubleLabel();
 
-    void setCurrent(const QString &);
-    void setMaximum(const QString &);
+    void setFormat(const QString &, int = 100);
+    void setValue(int, bool = false);
 
 private:
-    Ui::DualLabel *ui;
+    QString m_format = "%1";
+    int     m_maximum = 0;
+    Ui::DoubleLabel *ui;
 };
 

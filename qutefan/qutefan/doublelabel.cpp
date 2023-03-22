@@ -1,20 +1,19 @@
 #include "doublelabel.h"
 #include "ui_doublelabel.h"
 
-DoubleLabel::DoubleLabel(QWidget *parent) :
-    QWidget(parent),
-    ui(new Ui::DualLabel)
+DoubleLabel::DoubleLabel(QWidget *parent) : QWidget(parent), ui(new Ui::DoubleLabel)
 {
     ui->setupUi(this);
+}
 
-    QFont font = this->font();
-    QFontMetrics fm = QFontMetrics(font);
-    int width =
-            fm.boundingRect("xxxxx").width() + (fm.horizontalAdvance(QLatin1Char('x')) * 2) +
-            (ui->labelCurrent->contentsMargins().left() + ui->labelCurrent->contentsMargins().right());
+DoubleLabel::DoubleLabel(QWidget *parent, const QString &format) : DoubleLabel(parent)
+{
+    setFormat(format);
+}
 
-    ui->labelCurrent->setMinimumWidth(width);
-    ui->labelMaximum->setMinimumWidth(width);
+DoubleLabel::DoubleLabel(QWidget *parent, const QString &format, int max) : DoubleLabel(parent)
+{
+    setFormat(format, max);
 }
 
 DoubleLabel::~DoubleLabel()
@@ -22,13 +21,23 @@ DoubleLabel::~DoubleLabel()
     delete ui;
 }
 
-void DoubleLabel::setCurrent(const QString &level)
+void DoubleLabel::setFormat(const QString &format, int max)
 {
-    ui->labelCurrent->setText(level);
+    m_format = format;
+    QFont font = this->font();
+    QFontMetrics fm = QFontMetrics(font);
+    int width =
+        fm.boundingRect(m_format.arg(max)).width() + (fm.horizontalAdvance(QLatin1Char('x')) * 2) +
+        (ui->labelCurrent->contentsMargins().left() + ui->labelCurrent->contentsMargins().right());
 
+    ui->labelCurrent->setMinimumWidth(width);
+    ui->labelMaximum->setMinimumWidth(width);
 }
 
-void DoubleLabel::setMaximum(const QString &level)
+void DoubleLabel::setValue(int value, bool reset)
 {
-    ui->labelMaximum->setText(level);
+    if (value > m_maximum || reset)
+        m_maximum = value;
+    ui->labelCurrent->setText(m_format.arg(value));
+    ui->labelMaximum->setText(m_format.arg(m_maximum));
 }

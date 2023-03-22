@@ -1,12 +1,10 @@
 #ifndef GPUTAB_NVCTRL_H
 #define GPUTAB_NVCTRL_H
 
-#include <QLabel>
 #include <QDateTime>
 
-#include "doublelabel.h"
 #include "gputab.h"
-#include "qutefan_nvctrl.h"
+#include "control_nvctrl.h"
 
 namespace Ui {
 class GpuTabNVCtrl;
@@ -15,7 +13,7 @@ class GpuTabNVCtrl;
 class GpuTabNVCtrl : public GpuTab
 {
 public:
-    explicit GpuTabNVCtrl(QuteFanNVCtrl*, QuteFanNVCtrl::NvGPU*, QSettings*, QWidget* parent = nullptr);
+    explicit GpuTabNVCtrl(ControlNVCtrl*, ControlNVCtrl::NvGPU*, QSettings*, QWidget* parent = nullptr);
     ~GpuTabNVCtrl();
 
     void saveGpuSettings();
@@ -30,14 +28,8 @@ private slots:
 #endif
 
 private:
-    QuteFanNVCtrl* api;
-    QuteFanNVCtrl::NvGPU* gpu;
-
-    QLabel*    temp_label;
-    DoubleLabel* temp_info;
-
-    QVector<QLabel*>    fan_label;
-    QVector<DoubleLabel*> fan_info;
+    ControlNVCtrl           *m_api;
+    ControlNVCtrl::NvGPU    *m_gpu;
 
 #if USE_CHARTS
     typedef struct {

@@ -77,15 +77,15 @@ typedef struct _NV_GPU_COOLER_SETTINGS_V1 {
     struct {
         NV_COOLER_TYPE type;
         NV_COOLER_CONTROLLER controller;
-        NvS32 defaultLevelMin;
-        NvS32 defaultLevelMax;
-        NvS32 currentLevelMin;
-        NvS32 currentLevelMax;
-        NvS32 currentLevel;
-        NV_COOLER_POLICY defaultPolicy;
-        NV_COOLER_POLICY currentPolicy;
+        NvS32 default_level_min;
+        NvS32 default_level_max;
+        NvS32 current_level_min;
+        NvS32 current_level_max;
+        NvS32 current_level;
+        NV_COOLER_POLICY default_policy;
+        NV_COOLER_POLICY current_policy;
         NV_COOLER_TARGET target;
-        NV_COOLER_CONTROL controlType;
+        NV_COOLER_CONTROL control_type;
         NV_COOLER_ACTIVITY_LEVEL active;
     } cooler[NVAPI_MAX_COOLERS_PER_GPU] = {};
 } NV_GPU_COOLER_SETTINGS_V1;
@@ -113,10 +113,10 @@ typedef struct _NV_GPU_FAN_COOLERS_INFO_V1 {
     NvU32 count = 0;
     NvU32 _reserved2[8] = {};
     struct {
-        NvU32 id;
+        NvU32 handle;
         NvU32 _reserved1;
         NvU32 _reserved2;
-        NvU32 rpmMax;
+        NvU32 rpm_max;
         NvU32 _reserved3[8];
     } cooler[NVAPI_CLIENT_MAX_COOLERS_PER_GPU] = {};
 } NV_GPU_FAN_COOLERS_INFO_V1;
@@ -129,11 +129,11 @@ typedef struct _NV_GPU_FAN_COOLERS_STATUS_V1 {
     NvU32 count = 0;
     NvU32 _reserved1[8] = {};
     struct {
-        NvU32 id;
+        NvU32 handle;
         NvU32 rpm;
-        NvU32 minimum;
-        NvU32 maximum;
-        NvU32 level;
+        NvU32 minimum_level;
+        NvU32 maximum_level;
+        NvU32 current_level;
         NvU32 _reserved1[8];
     } cooler[NVAPI_CLIENT_MAX_COOLERS_PER_GPU] = {};
 } NV_GPU_FAN_COOLERS_STATUS_V1;
@@ -148,11 +148,11 @@ typedef enum _NV_COOLER_CONTROL_MODE : NvU32 {
 
 typedef struct _NV_GPU_FAN_COOLERS_CONTROL_V1 {
     NvU32 version;
-    NvU32 _reserved1;
+    NvU32 _reserved1 = 0;
     NvU32 count = 0;
     NvU32 _reserved2[8] = {};
     struct {
-        NvU32 id;
+        NvU32 handle;
         NvU32 level;
         NV_COOLER_CONTROL_MODE mode;
         NvU32 _reserved1[8];

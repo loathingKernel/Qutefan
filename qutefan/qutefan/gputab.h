@@ -1,8 +1,12 @@
 #ifndef GPUTAB_H
 #define GPUTAB_H
 
+#include <QLabel>
 #include <QWidget>
 #include <QSettings>
+
+#include "control.h"
+#include "doublelabel.h"
 
 namespace Ui {
 class GpuTab;
@@ -30,21 +34,29 @@ public:
     void saveSettings(const QString &);
     void loadSettings(const QString &);
 
-    Ui::GpuTab* ui;
-
     virtual void saveGpuSettings() = 0;
     virtual void setGPUDefaults() = 0;
-    virtual void regulateFan() = 0;
-    virtual void displayStatus() = 0;
+    virtual void regulateFans() = 0;
+    virtual void displayFrequencies() = 0;
 
 public slots:
-    virtual void resetMax() = 0;
+    virtual void resetMaximums() = 0;
 #if USE_CHARTS
     virtual void showChart() = 0;
 #endif
 
+protected:
+    void addCoolers(Control::CoolerLevels);
+
+    QLabel*      m_temp_label;
+    DoubleLabel* m_temp_info;
+
+    QVector<QLabel*>      m_fan_label;
+    QVector<DoubleLabel*> m_fan_info;
+
+    Ui::GpuTab* ui;
 private:
-    QSettings* settings;
+    QSettings* m_settings;
 };
 
 #endif // GPUTAB_H

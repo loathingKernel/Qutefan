@@ -12,7 +12,7 @@
 #include "trayicon.h"
 
 #if defined(Q_OS_WIN)
-#include "qutefan_nvapi.h"
+#include "control_nvapi.h"
 #include "gputab_nvapi.h"
 #elif defined(Q_OS_LINUX)
 #include "qutefan_nvctrl.h"
@@ -51,12 +51,12 @@ private:
     QSettings* settings;
 
 #if defined(Q_OS_WIN)
-    QuteFanNvAPI* qf_nvapi;
+    ControlNvAPI* m_control_nvapi;
 #elif defined(Q_OS_LINUX)
-    QuteFanNVCtrl* qf_nvctrl;
+    ControlNVCtrl* m_nvctrl_control;
 #endif
 
-    QList<GpuTab*> gpu_tabs;
+    QList<GpuTab*> m_gpu_tab;
 
     QTimer* timer;
     int interval;

@@ -1,16 +1,16 @@
-#ifndef QUTEFAN_NVCTRL_H
-#define QUTEFAN_NVCTRL_H
+#ifndef CONTROL_NVCTRL_H
+#define CONTROL_NVCTRL_H
 
 #include <QtGlobal>
 #include <QVector>
-#include <QMap>
 
 #include <X11/Xlib.h>
 #include <NVCtrl/NVCtrl.h>
 #include <NVCtrl/NVCtrlLib.h>
 
+#include "control.h"
 
-class QuteFanNVCtrl
+class ControlNVCtrl : public Control
 {
 public:
     Display* dpy;
@@ -31,37 +31,41 @@ public:
         int maximum_level;
     } NvCooler;
 
-    int gpu_count;
     typedef struct {
         bool status;
         uint32_t handle;
-        char* name;
-        char* uuid;
+        int cooler_count;
+        QVector<NvCooler> cooler;
+        char name[64];
+        char uuid[64];
         int current_temp;
         int maximum_temp;
         int default_control;
         int current_control;
-        int cooler_count;
-        QVector<NvCooler> cooler;
     } NvGPU;
-    QVector<NvGPU> gpu;
+    QVector<NvGPU> m_gpu;
 
-    QuteFanNVCtrl();
-    ~QuteFanNVCtrl();
+    ControlNVCtrl();
+    ~ControlNVCtrl();
 
     bool available();
     void initialize();
 
+    const QString name(NvGPU*);
+    const QString uuid(NvGPU*);
+
+    NvGPU *getGpuByIndex(int index);
+    int  getCoolerCount(NvGPU*);
     void setCoolerManualControl(NvGPU*, bool);
-    QList<int> getCoolerLevel(NvGPU*, NvCooler*);
-    void setCoolerLevel(NvGPU*, NvCooler*, int level);
+    void setCoolerLevel(NvGPU*, int);
 
-    QList<int> getGpuTemperature(NvGPU*);
-
-    QMap<QString, int> getCurrentClockFreqs(NvGPU*);
+    CoolerLevels getCoolerLevels(NvGPU*);
+    CoolerLimits getCoolerLimits(NvGPU*);
+    Temperature  getGpuTemperatures(NvGPU*);
+    Frequency    getCurrentClockFrequencies(NvGPU*);
 
 private:
     int getNvXScreen(Display*);
 };
 
-#endif // QUTEFAN_NVCTRL_H
+#endif // CONTROL_NVCTRL_H

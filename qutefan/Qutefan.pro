@@ -11,14 +11,24 @@ greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 TARGET   = Qutefan
 TEMPLATE = app
 
+CONFIG(debug, debug|release) {
+    CONFIG += console
+}
+
+QMAKE_CXXFLAGS += \
+    -std=c++17
+
 win32-g++ {
     QMAKE_LFLAGS += -static
 }
 
 include(qutefan/qutefan.pri)
+
 win32 {
     include(platforms/qnvapi/qnvapi.pri)
+    RC_FILE += qutefan.rc
 }
+
 unix {
     include(platforms/qnvctrl/qnvctrl.pri)
     isEmpty(PREFIX) {
@@ -40,9 +50,3 @@ unix {
 
 RESOURCES += \
     qutefan.qrc
-
-RC_FILE += \
-    qutefan.rc
-
-QMAKE_CXXFLAGS += \
-    -std=c++17

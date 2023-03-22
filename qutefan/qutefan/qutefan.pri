@@ -5,6 +5,7 @@ SOURCES += \
     $$PWD/gputab.cpp \
     $$PWD/trayicon.cpp
 HEADERS += \
+    $$PWD/control.h \
     $$PWD/doublelabel.h \
     $$PWD/qutefan.h \
     $$PWD/gputab.h \
@@ -16,19 +17,19 @@ FORMS += \
 
 win32 {
 SOURCES += \
-    $$PWD/qutefan_nvapi.cpp \
+    $$PWD/control_nvapi.cpp \
     $$PWD/gputab_nvapi.cpp
 HEADERS += \
-    $$PWD/qutefan_nvapi.h \
+    $$PWD/control_nvapi.h \
     $$PWD/gputab_nvapi.h
 }
 
 unix {
 SOURCES += \
-    $$PWD/qutefan_nvctrl.cpp \
+    $$PWD/control_nvctrl.cpp \
     $$PWD/gputab_nvctrl.cpp
 HEADERS += \
-    $$PWD/qutefan_nvctrl.h \
+    $$PWD/control_nvctrl.h \
     $$PWD/gputab_nvctrl.h
 
 LIBS += -lXext -lX11 -lXNVCtrl -lXext

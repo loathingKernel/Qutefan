@@ -1,11 +1,11 @@
 #include "ui_gputab.h"
 #include "gputab.h"
 
-GpuTab::GpuTab(QSettings* _settings, QWidget* parent) : QWidget(parent), ui(new Ui::GpuTab)
+GpuTab::GpuTab(QSettings* settings, QWidget* parent) : QWidget(parent), ui(new Ui::GpuTab)
 {
     ui->setupUi(this);
 
-    settings = _settings;
+    m_settings = settings;
 
     // Hide unfinished UI elements
     ui->groupBoxOverclock->hide();
@@ -16,14 +16,24 @@ GpuTab::GpuTab(QSettings* _settings, QWidget* parent) : QWidget(parent), ui(new 
     ui->groupBoxCharts->hide();
     ui->spinBoxFixedLevel->setSingleStep(5);
 
+    m_temp_label = new QLabel("Temperature:", this);
+    m_temp_info = new DoubleLabel(this, "%1°C", 100);
+    ui->formLayoutStatus->insertRow(0, m_temp_label, m_temp_info);
+
 #if USE_CHARTS
     connect(ui->pushButtonChart, SIGNAL(pressed()), this, SLOT(showChart()));
 #endif
-    connect(ui->pushButtonReset, SIGNAL(pressed()), this, SLOT(resetMax()));
+    connect(ui->pushButtonReset, SIGNAL(pressed()), this, SLOT(resetMaximums()));
 }
 
 GpuTab::~GpuTab()
 {
+    m_temp_label->deleteLater();
+    m_temp_info->deleteLater();
+    for (int c = m_fan_label.size() - 1; c >= 0; --c)
+        m_fan_label[c]->deleteLater();
+    for (int c = m_fan_info.size() - 1; c >= 0; --c)
+        m_fan_info[c]->deleteLater();
     delete ui;
 }
 
@@ -40,23 +50,35 @@ GpuTab::FanMode GpuTab::getMode()
 
 void GpuTab::saveSettings(const QString &uuid)
 {
-    settings->beginGroup(uuid);
-    settings->setValue("mode", static_cast<int>(getMode()));
-    settings->setValue("fixed", ui->spinBoxFixedLevel->value());
-    settings->setValue("linear", ui->spinBoxLinearOffset->value());
-    settings->endGroup();
+    m_settings->beginGroup(uuid);
+    m_settings->setValue("mode", static_cast<int>(getMode()));
+    m_settings->setValue("fixed", ui->spinBoxFixedLevel->value());
+    m_settings->setValue("linear", ui->spinBoxLinearOffset->value());
+    m_settings->endGroup();
 }
 
 void GpuTab::loadSettings(const QString &uuid)
 {
-    settings->beginGroup(uuid);
-    int mode = settings->value("mode", 0).toInt();
+    m_settings->beginGroup(uuid);
+    int mode = m_settings->value("mode", 0).toInt();
     if (mode == static_cast<int>(FanMode::Off)) ui->radioButtonOff->setChecked(true);
     if (mode == static_cast<int>(FanMode::Quiet)) ui->radioButtonQuiet->setChecked(true);
     if (mode == static_cast<int>(FanMode::Fixed)) ui->radioButtonFixed->setChecked(true);
     if (mode == static_cast<int>(FanMode::Linear)) ui->radioButtonLinear->setChecked(true);
     if (mode == static_cast<int>(FanMode::Graph)) ui->radioButtonGraph->setChecked(true);
-    ui->spinBoxFixedLevel->setValue(settings->value("fixed", 0).toInt());
-    ui->spinBoxLinearOffset->setValue(settings->value("linear", 0).toInt());
-    settings->endGroup();
+    ui->spinBoxFixedLevel->setValue(m_settings->value("fixed", 0).toInt());
+    ui->spinBoxLinearOffset->setValue(m_settings->value("linear", 0).toInt());
+    m_settings->endGroup();
+}
+
+void GpuTab::addCoolers(Control::CoolerLevels levels)
+{
+    for (int c = 0; c < levels.count; ++c) {
+        QLabel* label = new QLabel(QString("Fan %1 level:").arg(c));
+        DoubleLabel* info = new DoubleLabel(this, "%1%", 100);
+        info->setValue(levels.current[c]);
+        ui->formLayoutStatus->insertRow(c + 1, label, info);
+        m_fan_label.push_back(label);
+        m_fan_info.push_back(info);
+    }
 }
