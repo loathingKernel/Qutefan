@@ -15,8 +15,7 @@ CONFIG(debug, debug|release) {
     CONFIG += console
 }
 
-QMAKE_CXXFLAGS += \
-    -std=c++17
+QMAKE_CXXFLAGS += -std=c++17
 
 win32-g++ {
     QMAKE_LFLAGS += -static

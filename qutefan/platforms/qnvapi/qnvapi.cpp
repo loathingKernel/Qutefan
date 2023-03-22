@@ -1,6 +1,9 @@
 #include "qnvapi.h"
 
-static QMutex* nvapi_lock = new QMutex(QMutex::Recursive);
+#include <QDebug>
+//#include <QMutex>
+
+//static QMutex* nvapi_lock = new QMutex(QMutex::Recursive);
 
 #if defined(Q_PROCESSOR_X86_64)
     #define NVAPI_NAME "nvapi64.dll"
@@ -10,12 +13,11 @@ static QMutex* nvapi_lock = new QMutex(QMutex::Recursive);
     #error "Uknown architecture"
 #endif
 
-QNvAPI::QNvAPI() : QLibrary()
+QNvAPI::QNvAPI(QObject *parent) : QLibrary(parent)
 {
-    QMutexLocker locker(nvapi_lock);
+//    QMutexLocker locker(nvapi_lock);
 
     setFileName(NVAPI_NAME);
-    load();
 
     nvapi_QueryInterface = reinterpret_cast<QNVAPI_QUERYINTERFACE>(resolve("nvapi_QueryInterface"));
 

@@ -1,9 +1,8 @@
 #ifndef QNVAPI_H
 #define QNVAPI_H
 
-#include <QMutex>
 #include <QLibrary>
-#include <QByteArray>
+
 #include "include/nvapi.h"
 
 /*! \class QNvAPI
@@ -174,7 +173,7 @@ typedef NV_GPU_CLOCKS_V2    NV_GPU_CLOCKS;
 class QNvAPI : public QLibrary
 {
 public:
-    QNvAPI();
+    QNvAPI(QObject *parent = nullptr);
     ~QNvAPI();
 
     bool unload(void);
