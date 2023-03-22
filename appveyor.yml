@@ -22,7 +22,7 @@ environment:
     platform: mingw
     qt: 5.15.2\mingw81_32
     suffix: mingw810_64
-    spec=win32-g++
+    spec: win32-g++
     
   # MinGW x64
   - name: win64
@@ -35,7 +35,7 @@ init:
   - if %platform%==mingw set PATH=%PATH:C:\Program Files\Git\usr\bin;=%
   - if %platform%==mingw set PATH=C:\Qt\Tools\%suffix%\bin;%PATH%
   - set PATH=C:\Qt\%qt%\bin;%PATH%
-  - if not %platform%==mingw call C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\Common7\Tools\vsdevcmd\ext\vcvars\vcvars140.bat" %platform%
+  - if not %platform%==mingw call "C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\Common7\Tools\vsdevcmd\ext\vcvars\vcvars140.bat" %platform%
   - if not %platform%==mingw (set spec=%spec%) else (set spec=%spec%)
 
 before_build:
