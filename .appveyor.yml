@@ -1,4 +1,6 @@
 version: 0.1.0.{branch}.{build}
+image: Visual Studio 2019
+build: off
 
 environment:
   matrix:
