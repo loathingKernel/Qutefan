@@ -5,35 +5,45 @@ environment:
   # MSVC x86
   - name: win32
     platform: x86
-    qt: 5.7\msvc2015
-    suffix: msvc2015
+    qt: 5.15.2\msvc2019
+    suffix: msvc2019
+    spec: win32-msvc2019
 
   # MSVC x64
   - name: win64
     platform: amd64
-    qt: 5.7\msvc2015_64
-    suffix: msvc2015
+    qt: 5.15.2\msvc2019_64
+    suffix: msvc2019 
+    spec: win32-msvc2019
 
-  # MinGW
+  # MinGW x86
   - name: win32
     platform: mingw
-    qt: 5.7\mingw53_32
-    suffix: mingw
+    qt: 5.15.2\mingw81_32
+    suffix: mingw810_64
+    spec=win32-g++
+    
+  # MinGW x64
+  - name: win64
+    platform: mingw
+    qt: 5.15.2\mingw81_64
+    suffix: mingw810_32
+    spec: win32-g++
 
 init:
   - if %platform%==mingw set PATH=%PATH:C:\Program Files\Git\usr\bin;=%
-  - if %platform%==mingw set PATH=C:\Qt\Tools\mingw530_32\bin;%PATH%
+  - if %platform%==mingw set PATH=C:\Qt\Tools\%suffix%\bin;%PATH%
   - set PATH=C:\Qt\%qt%\bin;%PATH%
-  - if not %platform%==mingw call "C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\vcvarsall.bat" %platform%
-  - if not %platform%==mingw (set spec=win32-msvc2015) else (set spec=win32-g++)
+  - if not %platform%==mingw call C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\Common7\Tools\vsdevcmd\ext\vcvars\vcvars140.bat" %platform%
+  - if not %platform%==mingw (set spec=%spec%) else (set spec=%spec%)
 
 before_build:
   - md build-%platform%
 
 build_script:
   - cd build-%platform%
-  - qmake ..\redshiftqt\RedShiftQt.pro -spec %spec%
+  - qmake ..\qutefan\Qutefan.pro -spec %spec%
   - if not %platform%==mingw (nmake) else (mingw32-make)
   
 artifacts:
-- path: build-%platform%\release\RedShiftQt.exe
+- path: build-%platform%\release\Qutefan.exe
