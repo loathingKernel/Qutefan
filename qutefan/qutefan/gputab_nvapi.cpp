@@ -31,17 +31,15 @@ void GpuTabNvAPI::saveGpuSettings()
 
 void GpuTabNvAPI::setGPUDefaults()
 {
-    for(unsigned int c = 0; c < m_gpu->cooler_count; ++c) {
-        ControlNvAPI::CoolerLimits limits = m_api->getCoolerLimits(m_gpu);
-        m_api->setCoolerLevels(m_gpu, limits.minimum);
-        m_api->setCoolerManualControl(m_gpu, false);
-    }
+    ControlNvAPI::CoolerLimits limits = m_api->getCoolerLimits(m_gpu);
+    m_api->setCoolerLevels(m_gpu, limits.minimum);
+    m_api->setCoolerManualControl(m_gpu, false);
     qDebug("Restored defaults for GPU");
 }
 
 void GpuTabNvAPI::regulateFans()
 {
-    ControlNvAPI::Temperature temps = m_api->getGpuTemperatures(m_gpu);
+    ControlNvAPI::Temperatures temps = m_api->getGpuTemperatures(m_gpu);
     m_temp_info->setValue(temps.gpu);
 
     GpuTab::FanMode mode = getMode();
@@ -52,21 +50,22 @@ void GpuTabNvAPI::regulateFans()
         int level = 0;
         m_api->setCoolerManualControl(m_gpu, true);
         switch(mode) {
-        case GpuTab::FanMode::Off:
-            break;
-        case GpuTab::FanMode::Quiet: {
-            ControlNvAPI::CoolerLimits limits = m_api->getCoolerLimits(m_gpu);
-            level = limits.minimum;
-            break;
-        }
-        case GpuTab::FanMode::Fixed: {
-            level = ui->spinBoxFixedLevel->text().toInt();
-        }   break;
-        case GpuTab::FanMode::Linear: {
-            level = temps.gpu + ui->spinBoxLinearOffset->text().toInt();
-        }   break;
-        case GpuTab::FanMode::Graph: {
-        }    break;
+            case GpuTab::FanMode::Off:
+            case GpuTab::FanMode::Graph:
+            case GpuTab::FanMode::Quiet:
+            default: {
+                ControlNvAPI::CoolerLimits limits = m_api->getCoolerLimits(m_gpu);
+                level = limits.minimum;
+                break;
+            }
+            case GpuTab::FanMode::Fixed: {
+                level = ui->spinBoxFixedLevel->text().toInt();
+                break;
+            }
+            case GpuTab::FanMode::Linear: {
+                level = temps.gpu + ui->spinBoxLinearOffset->text().toInt();
+                break;
+            }
         }
         m_api->setCoolerLevels(m_gpu, level);
     }
@@ -80,7 +79,7 @@ void GpuTabNvAPI::regulateFans()
 
 void GpuTabNvAPI::displayFrequencies()
 {
-    ControlNvAPI::Frequency frequency = m_api->getCurrentClockFrequencies(m_gpu);
+    ControlNvAPI::Frequencies frequency = m_api->getCurrentClockFrequencies(m_gpu);
     ui->labelStatusCoreCur->setText(QString("%1Mhz").arg(frequency.core));
     ui->labelStatusMemCur->setText(QString("%1Mhz").arg(frequency.memory));
     ui->labelStatusShaderCur->setText(QString("%1Mhz").arg(frequency.shader));
@@ -88,7 +87,7 @@ void GpuTabNvAPI::displayFrequencies()
 
 void GpuTabNvAPI::resetMaximums()
 {
-    ControlNvAPI::Temperature temps = m_api->getGpuTemperatures(m_gpu);
+    ControlNvAPI::Temperatures temps = m_api->getGpuTemperatures(m_gpu);
     m_temp_info->setValue(temps.gpu, true);
     ControlNvAPI::CoolerLevels levels = m_api->getCoolerLevels(m_gpu);
     for (int c = 0; c < levels.count; ++c) {

@@ -1,20 +1,18 @@
-#include "qutefan_nvctrl.h"
+#include <QDebug>
 
+#include "control_nvctrl.h"
 
-ControllerNVCtrl::ControllerNVCtrl()
+ControlNVCtrl::ControlNVCtrl()
 {
 
 }
 
-ControllerNVCtrl::~ControllerNVCtrl()
+ControlNVCtrl::~ControlNVCtrl()
 {
-    for(int i = 0; i < gpu_count; i ++) {
-        XFree(gpu[i].name);
-        XFree(gpu[i].uuid);
-    }
+
 }
 
-bool ControllerNVCtrl::available()
+bool ControlNVCtrl::available()
 {
     dpy = XOpenDisplay(nullptr);
     if (!dpy) {
@@ -31,7 +29,7 @@ bool ControllerNVCtrl::available()
     return true;
 }
 
-void ControllerNVCtrl::initialize()
+void ControlNVCtrl::initialize()
 {
     status = XNVCTRLQueryVersion(dpy, &(version.major), &(version.minor));
     if (status != True) {
@@ -46,110 +44,168 @@ void ControllerNVCtrl::initialize()
     }
 
     for(int i = 0; i < gpu_count; i++) {
-        NvGPU _gpu = NvGPU();
-        _gpu.handle = i;
-        _gpu.status = XNVCTRLQueryTargetStringAttribute(
-                    dpy, NV_CTRL_TARGET_TYPE_GPU, _gpu.handle,
-                    0, NV_CTRL_STRING_PRODUCT_NAME, &_gpu.name);
-        if (!_gpu.status) {
-            qDebug("Failed to query gpu product name");
-            return;
-        }
-        _gpu.status = XNVCTRLQueryTargetStringAttribute(
-                    dpy, NV_CTRL_TARGET_TYPE_GPU, _gpu.handle,
-                    0, NV_CTRL_STRING_GPU_UUID, &_gpu.uuid);
+        NvGPU gpu = NvGPU();
+        gpu.handle = i;
 
         // Get general cooler information
-        int len, *cooler_data = NULL;
-        _gpu.status = XNVCTRLQueryTargetBinaryData(
-                    dpy, NV_CTRL_TARGET_TYPE_GPU, _gpu.handle,
-                    0, NV_CTRL_BINARY_DATA_COOLERS_USED_BY_GPU, (unsigned char **)(&cooler_data), &len);
-        _gpu.cooler_count = cooler_data[0];
+        int len = 0;
+        NV_COOLER_DATA *p_cooler_data;
+        gpu.status = XNVCTRLQueryTargetBinaryData(
+                    dpy, NV_CTRL_TARGET_TYPE_GPU, gpu.handle,
+                    0, NV_CTRL_BINARY_DATA_COOLERS_USED_BY_GPU, (unsigned char **)(&p_cooler_data), &len);
+        gpu.cooler_count = p_cooler_data->count;
 
         // Get per cooler information
-        for(int j = 1; j <= _gpu.cooler_count; ++j) {
-            NvCooler _cooler = NvCooler();
-
-            _cooler.handle = cooler_data[j];
-
-            _gpu.status = XNVCTRLQueryTargetAttribute(
-                        dpy, NV_CTRL_TARGET_TYPE_COOLER, _cooler.handle,
-                        0, NV_CTRL_THERMAL_COOLER_LEVEL, &_cooler.default_level);
-
-            _gpu.status = XNVCTRLQueryTargetAttribute(
-                        dpy, NV_CTRL_TARGET_TYPE_COOLER, _cooler.handle,
-                        0, NV_CTRL_THERMAL_COOLER_CURRENT_LEVEL, &_cooler.current_level);
-            qDebug("Saved defaults");
-
-            _gpu.cooler.push_back(_cooler);
+        for(int c = 0; c < gpu.cooler_count; ++c) {
+            NvCooler cooler = NvCooler();
+            cooler.handle = p_cooler_data->handle[c];
+            gpu.cooler.push_back(cooler);
         }
-        delete cooler_data;
-
-        gpu.push_back(_gpu);
+        free((unsigned char *)p_cooler_data);
+        qDebug("GPU: %i: Number of coolers = %i", gpu_count, gpu.cooler_count);
+        m_gpu.push_back(gpu);
     }
+    qDebug("Number of GPUs = %i", gpu_count);
 }
 
-void ControllerNVCtrl::setCoolerManualControl(NvGPU* _gpu, bool enable)
+const QString ControlNVCtrl::name(NvGPU *gpu)
+{
+    char *nv_name;
+    gpu->status = XNVCTRLQueryTargetStringAttribute(
+                dpy, NV_CTRL_TARGET_TYPE_GPU, gpu->handle,
+                0, NV_CTRL_STRING_PRODUCT_NAME, &nv_name);
+    QString name(nv_name);
+    free(nv_name);
+    return name;
+}
+
+const QString ControlNVCtrl::uuid(NvGPU *gpu)
+{
+    char *nv_uuid;
+    gpu->status = XNVCTRLQueryTargetStringAttribute(
+                dpy, NV_CTRL_TARGET_TYPE_GPU, gpu->handle,
+                0, NV_CTRL_STRING_GPU_UUID, &nv_uuid);
+    QString uuid(nv_uuid);
+    free(nv_uuid);
+    return uuid;
+}
+
+ControlNVCtrl::NvGPU *ControlNVCtrl::getGpuByIndex(int index)
+{
+    return &m_gpu[index];
+}
+
+int ControlNVCtrl::getCoolerCount(NvGPU *gpu)
+{
+    return gpu->cooler_count;
+}
+
+Control::CoolerLimits ControlNVCtrl::getCoolerLimits(NvGPU *gpu)
+{
+    CoolerLimits limits = {};
+    limits.maximum = 100;
+    limits.minimum = 30;
+    // It seems there is no way to get the defaults for a cooler, so quickly reset it to
+    // get some values
+    setCoolerManualControl(gpu, false);
+    gpu->status = XNVCTRLQueryTargetAttribute(
+                dpy, NV_CTRL_TARGET_TYPE_COOLER, gpu->cooler[0].handle,
+                0, NV_CTRL_THERMAL_COOLER_LEVEL, &limits.current);
+    return limits;
+}
+
+
+void ControlNVCtrl::setCoolerManualControl(NvGPU* gpu, bool enable)
 {
     if (enable) {
-        _gpu->status = XNVCTRLSetTargetAttributeAndGetStatus(
-                    dpy, NV_CTRL_TARGET_TYPE_GPU, _gpu->handle,
+        gpu->status = XNVCTRLSetTargetAttributeAndGetStatus(
+                    dpy, NV_CTRL_TARGET_TYPE_GPU, gpu->handle,
                     0, NV_CTRL_GPU_COOLER_MANUAL_CONTROL, NV_CTRL_GPU_COOLER_MANUAL_CONTROL_TRUE);
     } else {
-        _gpu->status = XNVCTRLSetTargetAttributeAndGetStatus(
-                    dpy, NV_CTRL_TARGET_TYPE_GPU, _gpu->handle,
+        gpu->status = XNVCTRLSetTargetAttributeAndGetStatus(
+                    dpy, NV_CTRL_TARGET_TYPE_GPU, gpu->handle,
                     0, NV_CTRL_GPU_COOLER_MANUAL_CONTROL, NV_CTRL_GPU_COOLER_MANUAL_CONTROL_FALSE);
     }
 }
 
-QList<int> ControllerNVCtrl::getCoolerLevel(NvGPU* _gpu, NvCooler *_cooler)
+Control::CoolerLevels ControlNVCtrl::getCoolerLevels(NvGPU* gpu)
 {
-    _gpu->status = XNVCTRLQueryTargetAttribute(
-                dpy, NV_CTRL_TARGET_TYPE_COOLER, _cooler->handle,
-                0, NV_CTRL_THERMAL_COOLER_CURRENT_LEVEL, &_cooler->current_level);
-
-    if(_cooler->maximum_level < _cooler->current_level)
-        _cooler->maximum_level = _cooler->current_level;
-
-    return QList<int>({_cooler->current_level, _cooler->maximum_level});
-}
-
-void ControllerNVCtrl::setCoolerLevel(NvGPU* _gpu, NvCooler* _cooler, int level)
-{
-    _gpu->status = XNVCTRLSetTargetAttributeAndGetStatus(
-                dpy, NV_CTRL_TARGET_TYPE_COOLER, _cooler->handle,
-                0, NV_CTRL_THERMAL_COOLER_LEVEL, level);
-}
-
-QList<int> ControllerNVCtrl::getGpuTemperature(NvGPU* _gpu)
-{
-    _gpu->status = XNVCTRLQueryTargetAttribute(
-                dpy, NV_CTRL_TARGET_TYPE_THERMAL_SENSOR, _gpu->handle,
-                0, NV_CTRL_THERMAL_SENSOR_READING, &_gpu->current_temp);
-
-    if(_gpu->maximum_temp < _gpu->current_temp)
-        _gpu->maximum_temp = _gpu->current_temp;
-
-    return QList<int>({_gpu->current_temp, _gpu->maximum_temp});
-}
-
-QMap<QString, int> ControllerNVCtrl::getCurrentClockFreqs(NvGPU * _gpu)
-{
-    char* str;
-    _gpu->status = XNVCTRLQueryTargetStringAttribute(
-                dpy, NV_CTRL_TARGET_TYPE_GPU, _gpu->handle,
-                0, NV_CTRL_STRING_GPU_CURRENT_CLOCK_FREQS, &str);
-    QStringList list = QStringList(QString(str).split(", "));
-    XFree(str);
-
-    QMap<QString, int> clocks;
-    for(int i = 0; i < list.size(); i++) {
-        clocks.insert(list[i].split("=").first(), list[i].split("=").last().toInt());
+    CoolerLevels levels;
+    for (int c = 0; c < gpu->cooler_count; ++c) {
+        int level;
+        gpu->status = XNVCTRLQueryTargetAttribute(
+                    dpy, NV_CTRL_TARGET_TYPE_COOLER, gpu->cooler[c].handle,
+                    0, NV_CTRL_THERMAL_COOLER_CURRENT_LEVEL, &level);
+        levels.current.append(level);
     }
+    levels.count = gpu->cooler_count;
+    return levels;
+}
+
+void ControlNVCtrl::setCoolerLevels(NvGPU* gpu, int level)
+{
+    for (int c = 0; c < gpu->cooler_count; ++c) {
+        gpu->status = XNVCTRLSetTargetAttributeAndGetStatus(
+                    dpy, NV_CTRL_TARGET_TYPE_COOLER, gpu->cooler[c].handle,
+                    0, NV_CTRL_THERMAL_COOLER_LEVEL, level);
+    }
+}
+
+Control::Temperatures ControlNVCtrl::getGpuTemperatures(NvGPU* gpu)
+{
+    int len;
+    NV_THERMAL_SENSOR_DATA *p_sensor_data;
+    gpu->status = XNVCTRLQueryTargetBinaryData(
+                dpy, NV_CTRL_TARGET_TYPE_GPU, gpu->handle,
+                0, NV_CTRL_BINARY_DATA_COOLERS_USED_BY_GPU, (unsigned char **)(&p_sensor_data), &len);
+
+    Temperatures temps = {};
+    for (int s = 0; s < p_sensor_data->count; ++s) {
+
+        int target;
+        gpu->status = XNVCTRLQueryTargetAttribute(
+                    dpy, NV_CTRL_TARGET_TYPE_THERMAL_SENSOR, p_sensor_data->handle[s],
+                    0, NV_CTRL_THERMAL_SENSOR_TARGET, &target);
+
+        int reading;
+        gpu->status = XNVCTRLQueryTargetAttribute(
+                    dpy, NV_CTRL_TARGET_TYPE_THERMAL_SENSOR, p_sensor_data->handle[s],
+                    0, NV_CTRL_THERMAL_SENSOR_READING, &reading);
+
+        if (target == NV_CTRL_THERMAL_SENSOR_TARGET_NONE) {
+            temps.none = reading;
+        } else if (target == NV_CTRL_THERMAL_SENSOR_TARGET_GPU) {
+            temps.gpu = reading;
+        } else if (target == NV_CTRL_THERMAL_SENSOR_TARGET_MEMORY) {
+            temps.memory = reading;
+        } else if (target == NV_CTRL_THERMAL_SENSOR_TARGET_POWER_SUPPLY) {
+            temps.power_supply = reading;
+        } else if (target == NV_CTRL_THERMAL_SENSOR_TARGET_BOARD) {
+            temps.board = reading;
+        } else {
+//            qDebug("%s uknown target %d [handle: %d, reading: %d]",
+//                   __PRETTY_FUNCTION__, target, p_sensor_data->handle[s], reading);
+        }
+    }
+    free((unsigned char *)p_sensor_data);
+    return temps;
+}
+
+Control::Frequencies ControlNVCtrl::getCurrentClockFrequencies(NvGPU * gpu)
+{
+    NV_CLOCK_FREQS p_nv_clocks;
+    gpu->status = XNVCTRLQueryTargetAttribute(
+                dpy, NV_CTRL_TARGET_TYPE_GPU, gpu->handle,
+                0, NV_CTRL_GPU_CURRENT_CLOCK_FREQS, (int *)&p_nv_clocks);
+
+    Frequencies clocks;
+    clocks.core = p_nv_clocks.core;
+    clocks.memory = p_nv_clocks.memory;
+    clocks.shader = 0;
     return clocks;
 }
 
-int ControllerNVCtrl::getNvXScreen(Display *dpy)
+int ControlNVCtrl::getNvXScreen(Display *dpy)
 {
     int defaultScreen, screen;
 

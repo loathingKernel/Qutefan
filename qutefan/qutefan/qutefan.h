@@ -15,7 +15,7 @@
 #include "control_nvapi.h"
 #include "gputab_nvapi.h"
 #elif defined(Q_OS_LINUX)
-#include "qutefan_nvctrl.h"
+#include "control_nvctrl.h"
 #include "gputab_nvctrl.h"
 #endif
 
@@ -53,7 +53,7 @@ private:
 #if defined(Q_OS_WIN)
     ControlNvAPI* m_control_nvapi;
 #elif defined(Q_OS_LINUX)
-    ControlNVCtrl* m_nvctrl_control;
+    ControlNVCtrl* m_control_nvctrl;
 #endif
 
     QList<GpuTab*> m_gpu_tab;

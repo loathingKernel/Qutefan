@@ -18,11 +18,11 @@ public:
 
     void saveGpuSettings();
     void setGPUDefaults();
-    void regulateFan();
-    void displayStatus();
+    void regulateFans();
+    void displayFrequencies();
 
 private slots:
-    void resetMax();
+    void resetMaximums();
 #if USE_CHARTS
     void showChart();
 #endif

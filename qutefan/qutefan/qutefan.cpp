@@ -33,17 +33,17 @@ QuteFan::QuteFan(QWidget *parent) : QMainWindow(parent), ui(new Ui::QuteFan)
         }
     }
 #elif defined(Q_OS_LINUX)
-    m_control_nvctrl = new QuteFanNVCtrl();
+    m_control_nvctrl = new ControlNVCtrl();
 
     if(m_control_nvctrl->available()) {
         m_control_nvctrl->initialize();
 
-        for(unsigned int i = 0; i < m_control_nvctrl->gpu_count; i++) {
-            ControlNvCtrl::NvGPU *gpu = m_control_nvctrl->getGpuByIndex(i);
-            GPuTabNvCtrl *tab = new GpuTabNVCtrl(m_control_nvctrl, &m_control_nvctrl->gpu[i], settings, this)
-            gpu_tabs.append(tab);
+        for(int g = 0; g < m_control_nvctrl->gpu_count; ++g) {
+            ControlNVCtrl::NvGPU *gpu = m_control_nvctrl->getGpuByIndex(g);
+            GpuTabNVCtrl *tab = new GpuTabNVCtrl(m_control_nvctrl, gpu, settings, this);
+            m_gpu_tab.append(tab);
             ui->tabWidgetGpu->addTab(
-                gpu_tabs[i], QString("%1").arg(m_control_nvctrl->name(gpu)));
+                m_gpu_tab[g], QString("%1").arg(m_control_nvctrl->name(gpu)));
         }
     }
 #endif

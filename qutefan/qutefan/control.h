@@ -8,7 +8,6 @@ public:
     Control() { }
     virtual ~Control() { }
 
-    long unsigned int gpu_count = 0;
     typedef struct _NvGPUBase {
         unsigned int cooler_count;
     } NvGPUBase;
@@ -28,16 +27,18 @@ public:
     } CoolerLimits;
 
     typedef struct _Temperature {
+        int none;
         int gpu;
         int memory;
         int power_supply;
         int board;
-    } Temperature;
+        int unknown;
+    } Temperatures;
 
     typedef struct _Frequency {
         int core;
         int memory;
         int shader;
-    } Frequency;
+    } Frequencies;
 };
 

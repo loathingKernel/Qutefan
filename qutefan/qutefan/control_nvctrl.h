@@ -28,18 +28,15 @@ public:
         uint32_t handle;
         int default_level;
         int current_level;
-        int maximum_level;
     } NvCooler;
 
+    int gpu_count = 0;
     typedef struct {
         bool status;
         uint32_t handle;
         int cooler_count;
         QVector<NvCooler> cooler;
-        char name[64];
-        char uuid[64];
         int current_temp;
-        int maximum_temp;
         int default_control;
         int current_control;
     } NvGPU;
@@ -57,14 +54,29 @@ public:
     NvGPU *getGpuByIndex(int index);
     int  getCoolerCount(NvGPU*);
     void setCoolerManualControl(NvGPU*, bool);
-    void setCoolerLevel(NvGPU*, int);
+    void setCoolerLevels(NvGPU*, int);
 
     CoolerLevels getCoolerLevels(NvGPU*);
     CoolerLimits getCoolerLimits(NvGPU*);
-    Temperature  getGpuTemperatures(NvGPU*);
-    Frequency    getCurrentClockFrequencies(NvGPU*);
+    Temperatures getGpuTemperatures(NvGPU*);
+    Frequencies  getCurrentClockFrequencies(NvGPU*);
 
 private:
+    typedef struct _NV_THERMAL_SENSOR_DATA {
+        int count;
+        int handle[8];
+    } NV_THERMAL_SENSOR_DATA;
+
+    typedef struct _NV_COOLER_DATA {
+        int count;
+        int handle[8];
+    } NV_COOLER_DATA;
+
+    typedef struct _NV_CLOCK_FREQS {
+        int core : 16;
+        int memory : 16;
+    } NV_CLOCK_FREQS;
+
     int getNvXScreen(Display*);
 };
 

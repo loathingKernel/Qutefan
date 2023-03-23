@@ -38,10 +38,10 @@ void ControlNvAPI::initialize()
             gpu.status = m_nvapi->GPU_GetCoolerSettings(gpu.handle, NV_COOLER_TARGET_ALL, &settings);
             gpu.cooler_count = settings.count;
         }
-        qDebug("Saved defaults");
+        qDebug("Number of coolers = %u", gpu.cooler_count);
         m_gpu.push_back(gpu);
     }
-    qDebug("Total number of GPUs = %lu", gpu_count);
+    qDebug("Number of GPUs = %lu", gpu_count);
 }
 
 const QString ControlNvAPI::name(NvGPU *gpu)
@@ -148,12 +148,12 @@ void ControlNvAPI::setCoolerLevels(NvGPU *gpu, int level)
     }
 }
 
-Control::Temperature ControlNvAPI::getGpuTemperatures(NvGPU *gpu)
+Control::Temperatures ControlNvAPI::getGpuTemperatures(NvGPU *gpu)
 {
     NV_GPU_THERMAL_SETTINGS nv_thermal_settings = {};
     gpu->status = m_nvapi->GPU_GetThermalSettings(gpu->handle, NVAPI_THERMAL_TARGET_ALL, &nv_thermal_settings);
 
-    Temperature temps;
+    Temperatures temps;
     for (unsigned int t = 0; t < nv_thermal_settings.count; ++t) {
         if (nv_thermal_settings.sensor[t].target == NVAPI_THERMAL_TARGET_GPU) {
             temps.gpu = nv_thermal_settings.sensor[t].currentTemp;
@@ -170,9 +170,9 @@ Control::Temperature ControlNvAPI::getGpuTemperatures(NvGPU *gpu)
     return temps;
 }
 
-Control::Frequency ControlNvAPI::getCurrentClockFrequencies(NvGPU *gpu)
+Control::Frequencies ControlNvAPI::getCurrentClockFrequencies(NvGPU *gpu)
 {
-    Frequency freqs = {};
+    Frequencies freqs = {};
 
     if (gpu->rtx) {
         NV_GPU_CLOCK_FREQUENCIES nv_clock_frequencies = {};

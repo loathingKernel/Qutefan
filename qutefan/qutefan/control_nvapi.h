@@ -17,6 +17,7 @@ public:
     NvAPI_ShortString version = {};
     NV_DISPLAY_DRIVER_VERSION driver_version = {};
 
+    long unsigned int gpu_count = 0;
     typedef struct _NvGPU : NvGPUBase {
         NvAPI_Status status;
         NvPhysicalGpuHandle handle;
@@ -43,8 +44,8 @@ public:
 
     CoolerLevels getCoolerLevels(NvGPU *);
     CoolerLimits getCoolerLimits(NvGPU *);
-    Temperature  getGpuTemperatures(NvGPU *);
-    Frequency    getCurrentClockFrequencies(NvGPU *);
+    Temperatures getGpuTemperatures(NvGPU *);
+    Frequencies  getCurrentClockFrequencies(NvGPU *);
 };
 
 #endif // CONTROL_NVAPI_H
