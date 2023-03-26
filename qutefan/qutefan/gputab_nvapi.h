@@ -1,10 +1,8 @@
 #ifndef GPUTABNVAPI_H
 #define GPUTABNVAPI_H
 
-#include <QLabel>
 #include <QDateTime>
 
-#include "doublelabel.h"
 #include "gputab.h"
 #include "control_nvapi.h"
 
@@ -32,6 +30,16 @@ private slots:
 private:
     ControlNvAPI        *m_api;
     ControlNvAPI::NvGPU *m_gpu;
+
+#if USE_CHARTS
+    typedef struct {
+        QDateTime time;
+        int level;
+        int temp;
+    } NvLogger;
+    NvLogger history[600] = {};
+    NvLogger* current_entry = history;
+# endif
 };
 
 #endif // GPUTABNVAPI_H

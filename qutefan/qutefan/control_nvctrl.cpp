@@ -62,7 +62,7 @@ void ControlNVCtrl::initialize()
             gpu.cooler.push_back(cooler);
         }
         free((unsigned char *)p_cooler_data);
-        qDebug("GPU: %i: Number of coolers = %i", gpu_count, gpu.cooler_count);
+        qDebug("GPU %i: Number of coolers = %i", gpu_count, gpu.cooler_count);
         m_gpu.push_back(gpu);
     }
     qDebug("Number of GPUs = %i", gpu_count);
@@ -115,7 +115,7 @@ Control::CoolerLimits ControlNVCtrl::getCoolerLimits(NvGPU *gpu)
 }
 
 
-void ControlNVCtrl::setCoolerManualControl(NvGPU* gpu, bool enable)
+void ControlNVCtrl::setCoolerManualControl(NvGPU *gpu, bool enable)
 {
     if (enable) {
         gpu->status = XNVCTRLSetTargetAttributeAndGetStatus(
@@ -128,7 +128,7 @@ void ControlNVCtrl::setCoolerManualControl(NvGPU* gpu, bool enable)
     }
 }
 
-Control::CoolerLevels ControlNVCtrl::getCoolerLevels(NvGPU* gpu)
+Control::CoolerLevels ControlNVCtrl::getCoolerLevels(NvGPU *gpu)
 {
     CoolerLevels levels;
     for (int c = 0; c < gpu->cooler_count; ++c) {
@@ -142,7 +142,7 @@ Control::CoolerLevels ControlNVCtrl::getCoolerLevels(NvGPU* gpu)
     return levels;
 }
 
-void ControlNVCtrl::setCoolerLevels(NvGPU* gpu, int level)
+void ControlNVCtrl::setCoolerLevels(NvGPU *gpu, int level)
 {
     for (int c = 0; c < gpu->cooler_count; ++c) {
         gpu->status = XNVCTRLSetTargetAttributeAndGetStatus(
@@ -151,7 +151,7 @@ void ControlNVCtrl::setCoolerLevels(NvGPU* gpu, int level)
     }
 }
 
-Control::Temperatures ControlNVCtrl::getGpuTemperatures(NvGPU* gpu)
+Control::Temperatures ControlNVCtrl::getGpuTemperatures(NvGPU *gpu)
 {
     int len;
     NV_THERMAL_SENSOR_DATA *p_sensor_data;
@@ -172,26 +172,39 @@ Control::Temperatures ControlNVCtrl::getGpuTemperatures(NvGPU* gpu)
                     dpy, NV_CTRL_TARGET_TYPE_THERMAL_SENSOR, p_sensor_data->handle[s],
                     0, NV_CTRL_THERMAL_SENSOR_READING, &reading);
 
-        if (target == NV_CTRL_THERMAL_SENSOR_TARGET_NONE) {
-            temps.none = reading;
-        } else if (target == NV_CTRL_THERMAL_SENSOR_TARGET_GPU) {
-            temps.gpu = reading;
-        } else if (target == NV_CTRL_THERMAL_SENSOR_TARGET_MEMORY) {
-            temps.memory = reading;
-        } else if (target == NV_CTRL_THERMAL_SENSOR_TARGET_POWER_SUPPLY) {
-            temps.power_supply = reading;
-        } else if (target == NV_CTRL_THERMAL_SENSOR_TARGET_BOARD) {
-            temps.board = reading;
-        } else {
-//            qDebug("%s uknown target %d [handle: %d, reading: %d]",
-//                   __PRETTY_FUNCTION__, target, p_sensor_data->handle[s], reading);
+        switch(target) {
+            case NV_CTRL_THERMAL_SENSOR_TARGET_NONE: {
+                temps.none = reading;
+                break;
+            }
+            case NV_CTRL_THERMAL_SENSOR_TARGET_GPU: {
+                temps.gpu = reading;
+                break;
+            }
+            case NV_CTRL_THERMAL_SENSOR_TARGET_MEMORY: {
+                temps.memory = reading;
+                break;
+            }
+            case NV_CTRL_THERMAL_SENSOR_TARGET_POWER_SUPPLY: {
+                temps.power_supply = reading;
+                break;
+            }
+            case NV_CTRL_THERMAL_SENSOR_TARGET_BOARD: {
+                temps.board = reading;
+                break;
+            }
+            default: {
+//                qDebug("%s uknown target %d [handle: %d, reading: %d]",
+//                       __PRETTY_FUNCTION__, target, p_sensor_data->handle[s], reading);
+                break;
+            }
         }
     }
     free((unsigned char *)p_sensor_data);
     return temps;
 }
 
-Control::Frequencies ControlNVCtrl::getCurrentClockFrequencies(NvGPU * gpu)
+Control::Frequencies ControlNVCtrl::getCurrentClockFrequencies(NvGPU *gpu)
 {
     NV_CLOCK_FREQS p_nv_clocks;
     gpu->status = XNVCTRLQueryTargetAttribute(

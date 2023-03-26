@@ -38,7 +38,7 @@ void ControlNvAPI::initialize()
             gpu.status = m_nvapi->GPU_GetCoolerSettings(gpu.handle, NV_COOLER_TARGET_ALL, &settings);
             gpu.cooler_count = settings.count;
         }
-        qDebug("Number of coolers = %u", gpu.cooler_count);
+        qDebug("GPU %i: Number of coolers = %u", gpu_count, gpu.cooler_count);
         m_gpu.push_back(gpu);
     }
     qDebug("Number of GPUs = %lu", gpu_count);
@@ -93,7 +93,7 @@ Control::CoolerLimits ControlNvAPI::getCoolerLimits(NvGPU *gpu)
     return limits;
 }
 
-void ControlNvAPI::setCoolerManualControl(NvGPU * gpu, bool enable)
+void ControlNvAPI::setCoolerManualControl(NvGPU *gpu, bool enable)
 {
     if (gpu->rtx) {
         NV_GPU_FAN_COOLERS_CONTROL control;
@@ -155,16 +155,27 @@ Control::Temperatures ControlNvAPI::getGpuTemperatures(NvGPU *gpu)
 
     Temperatures temps;
     for (unsigned int t = 0; t < nv_thermal_settings.count; ++t) {
-        if (nv_thermal_settings.sensor[t].target == NVAPI_THERMAL_TARGET_GPU) {
-            temps.gpu = nv_thermal_settings.sensor[t].currentTemp;
-        } else if (nv_thermal_settings.sensor[t].target == NVAPI_THERMAL_TARGET_MEMORY) {
-           temps.memory = nv_thermal_settings.sensor[t].currentTemp;
-        } else if (nv_thermal_settings.sensor[t].target == NVAPI_THERMAL_TARGET_POWER_SUPPLY) {
-            temps.power_supply = nv_thermal_settings.sensor[t].currentTemp;
-        } else if (nv_thermal_settings.sensor[t].target == NVAPI_THERMAL_TARGET_BOARD) {
-            temps.board = nv_thermal_settings.sensor[t].currentTemp;
-        } else {
-            qDebug("%s uknown target %d", __PRETTY_FUNCTION__, nv_thermal_settings.sensor[t].target);
+        switch(nv_thermal_settings.sensor[t].target) {
+            case NVAPI_THERMAL_TARGET_GPU: {
+                temps.gpu = nv_thermal_settings.sensor[t].currentTemp;
+                break;
+            }
+            case NVAPI_THERMAL_TARGET_MEMORY: {
+                temps.memory = nv_thermal_settings.sensor[t].currentTemp;
+                break;
+            }
+            case NVAPI_THERMAL_TARGET_POWER_SUPPLY: {
+                temps.power_supply = nv_thermal_settings.sensor[t].currentTemp;
+                break;
+            }
+            case NVAPI_THERMAL_TARGET_BOARD: {
+                temps.board = nv_thermal_settings.sensor[t].currentTemp;
+                break;
+            }
+            default: {
+                qDebug("%s uknown target %d", __PRETTY_FUNCTION__, nv_thermal_settings.sensor[t].target);
+                break;
+            }
         }
     }
     return temps;

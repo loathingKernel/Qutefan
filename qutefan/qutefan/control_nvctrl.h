@@ -13,7 +13,7 @@
 class ControlNVCtrl : public Control
 {
 public:
-    Display* dpy;
+    Display *dpy;
     int screen;
 
     bool status;
@@ -48,18 +48,18 @@ public:
     bool available();
     void initialize();
 
-    const QString name(NvGPU*);
-    const QString uuid(NvGPU*);
+    const QString name(NvGPU *);
+    const QString uuid(NvGPU *);
 
     NvGPU *getGpuByIndex(int index);
-    int  getCoolerCount(NvGPU*);
-    void setCoolerManualControl(NvGPU*, bool);
-    void setCoolerLevels(NvGPU*, int);
+    int  getCoolerCount(NvGPU *);
+    void setCoolerManualControl(NvGPU *, bool);
+    void setCoolerLevels(NvGPU *, int);
 
-    CoolerLevels getCoolerLevels(NvGPU*);
-    CoolerLimits getCoolerLimits(NvGPU*);
-    Temperatures getGpuTemperatures(NvGPU*);
-    Frequencies  getCurrentClockFrequencies(NvGPU*);
+    CoolerLevels getCoolerLevels(NvGPU *);
+    CoolerLimits getCoolerLimits(NvGPU *);
+    Temperatures getGpuTemperatures(NvGPU *);
+    Frequencies  getCurrentClockFrequencies(NvGPU *);
 
 private:
     typedef struct _NV_THERMAL_SENSOR_DATA {
@@ -73,8 +73,8 @@ private:
     } NV_COOLER_DATA;
 
     typedef struct _NV_CLOCK_FREQS {
-        int core : 16;
         int memory : 16;
+        int core : 16;
     } NV_CLOCK_FREQS;
 
     int getNvXScreen(Display*);

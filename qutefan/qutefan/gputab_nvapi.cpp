@@ -1,3 +1,7 @@
+#if USE_CHARTS
+#include <QtCharts>
+#endif
+
 #include "ui_gputab.h"
 #include "gputab_nvapi.h"
 
@@ -9,12 +13,12 @@ GpuTabNvAPI::GpuTabNvAPI(ControlNvAPI* api,
     m_api = api;
     m_gpu = gpu;
 
-    ControlNvAPI::CoolerLimits limits = m_api->getCoolerLimits(m_gpu);
+    Control::CoolerLimits limits = m_api->getCoolerLimits(m_gpu);
     ui->spinBoxFixedLevel->setMinimum(limits.minimum);
     ui->spinBoxFixedLevel->setMaximum(limits.maximum);
     ui->spinBoxFixedLevel->setValue(limits.current);
 
-    ControlNvAPI::CoolerLevels levels = m_api->getCoolerLevels(m_gpu);
+    Control::CoolerLevels levels = m_api->getCoolerLevels(m_gpu);
     addCoolers(levels);
     loadSettings(QString(m_api->uuid(m_gpu)));
 }
@@ -31,7 +35,7 @@ void GpuTabNvAPI::saveGpuSettings()
 
 void GpuTabNvAPI::setGPUDefaults()
 {
-    ControlNvAPI::CoolerLimits limits = m_api->getCoolerLimits(m_gpu);
+    Control::CoolerLimits limits = m_api->getCoolerLimits(m_gpu);
     m_api->setCoolerLevels(m_gpu, limits.minimum);
     m_api->setCoolerManualControl(m_gpu, false);
     qDebug("Restored defaults for GPU");
@@ -39,7 +43,7 @@ void GpuTabNvAPI::setGPUDefaults()
 
 void GpuTabNvAPI::regulateFans()
 {
-    ControlNvAPI::Temperatures temps = m_api->getGpuTemperatures(m_gpu);
+    Control::Temperatures temps = m_api->getGpuTemperatures(m_gpu);
     m_temp_info->setValue(temps.gpu);
 
     GpuTab::FanMode mode = getMode();
@@ -54,7 +58,7 @@ void GpuTabNvAPI::regulateFans()
             case GpuTab::FanMode::Graph:
             case GpuTab::FanMode::Quiet:
             default: {
-                ControlNvAPI::CoolerLimits limits = m_api->getCoolerLimits(m_gpu);
+                Control::CoolerLimits limits = m_api->getCoolerLimits(m_gpu);
                 level = limits.minimum;
                 break;
             }
@@ -71,15 +75,22 @@ void GpuTabNvAPI::regulateFans()
     }
     last_mode = mode;
 
-    ControlNvAPI::CoolerLevels levels = m_api->getCoolerLevels(m_gpu);
+    Control::CoolerLevels levels = m_api->getCoolerLevels(m_gpu);
     for (int c = 0; c < levels.count; ++c) {
         m_fan_info[c]->setValue(levels.current[c]);
     }
+#if USE_CHARTS
+    current_entry->time = QDateTime::currentDateTime();
+    current_entry->level = level;
+    current_entry->temp = temp;
+    current_entry++;
+    if(current_entry > &history[599]) current_entry = history;
+# endif
 }
 
 void GpuTabNvAPI::displayFrequencies()
 {
-    ControlNvAPI::Frequencies frequency = m_api->getCurrentClockFrequencies(m_gpu);
+    Control::Frequencies frequency = m_api->getCurrentClockFrequencies(m_gpu);
     ui->labelStatusCoreCur->setText(QString("%1Mhz").arg(frequency.core));
     ui->labelStatusMemCur->setText(QString("%1Mhz").arg(frequency.memory));
     ui->labelStatusShaderCur->setText(QString("%1Mhz").arg(frequency.shader));
@@ -87,9 +98,9 @@ void GpuTabNvAPI::displayFrequencies()
 
 void GpuTabNvAPI::resetMaximums()
 {
-    ControlNvAPI::Temperatures temps = m_api->getGpuTemperatures(m_gpu);
+    Control::Temperatures temps = m_api->getGpuTemperatures(m_gpu);
     m_temp_info->setValue(temps.gpu, true);
-    ControlNvAPI::CoolerLevels levels = m_api->getCoolerLevels(m_gpu);
+    Control::CoolerLevels levels = m_api->getCoolerLevels(m_gpu);
     for (int c = 0; c < levels.count; ++c) {
         m_fan_info[c]->setValue(levels.current[c], true);
     }
