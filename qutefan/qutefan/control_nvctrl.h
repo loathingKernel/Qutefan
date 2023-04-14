@@ -73,8 +73,8 @@ private:
     } NV_COOLER_DATA;
 
     typedef struct _NV_CLOCK_FREQS {
-        int memory : 16;
         int core : 16;
+        int memory : 16;
     } NV_CLOCK_FREQS;
 
     int getNvXScreen(Display*);
