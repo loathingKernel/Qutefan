@@ -22,6 +22,9 @@
   </property>
   <widget class="QWidget" name="centralWidget">
    <layout class="QVBoxLayout" name="verticalLayout">
+    <property name="sizeConstraint">
+     <enum>QLayout::SetFixedSize</enum>
+    </property>
     <item>
      <widget class="QTabWidget" name="tabWidgetGpu">
       <property name="enabled">
@@ -34,6 +37,9 @@
     </item>
     <item>
      <layout class="QHBoxLayout" name="horizontalLayoutInterval">
+      <property name="sizeConstraint">
+       <enum>QLayout::SetDefaultConstraint</enum>
+      </property>
       <item>
        <widget class="QLabel" name="labelInterval">
         <property name="text">
@@ -89,7 +95,7 @@
      <x>0</x>
      <y>0</y>
      <width>218</width>
-     <height>19</height>
+     <height>18</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">

@@ -6,14 +6,17 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>469</width>
-    <height>340</height>
+    <width>459</width>
+    <height>329</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>Form</string>
   </property>
   <layout class="QGridLayout" name="gridLayout">
+   <property name="sizeConstraint">
+    <enum>QLayout::SetFixedSize</enum>
+   </property>
    <item row="0" column="2" alignment="Qt::AlignTop">
     <widget class="QGroupBox" name="groupBoxStatus">
      <property name="sizePolicy">
@@ -26,6 +29,9 @@
       <string>Status</string>
      </property>
      <layout class="QFormLayout" name="formLayoutStatus">
+      <property name="sizeConstraint">
+       <enum>QLayout::SetFixedSize</enum>
+      </property>
       <property name="labelAlignment">
        <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
       </property>
@@ -380,6 +386,9 @@
       <string>Fan Control</string>
      </property>
      <layout class="QGridLayout" name="gridLayoutFanControl">
+      <property name="sizeConstraint">
+       <enum>QLayout::SetFixedSize</enum>
+      </property>
       <item row="0" column="0">
        <widget class="QRadioButton" name="radioButtonOff">
         <property name="font">
