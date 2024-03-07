@@ -21,7 +21,6 @@ win32-g++ {
     QMAKE_LFLAGS += -static
 }
 
-include(qutefan/qutefan.pri)
 
 win32 {
     include(platforms/qnvapi/qnvapi.pri)
@@ -44,6 +43,11 @@ unix {
     QMAKE_SUBSTITUTES += resources/Qutefan.desktop.in
     INSTALLS     += desktop icons
 }
+
+include(platforms/qnvml/qnvml.pri)
+
+include(qutefan/qutefan.pri)
+
 
 !isEmpty(target.path): INSTALLS += target
 

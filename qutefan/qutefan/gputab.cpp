@@ -8,7 +8,7 @@ GpuTab::GpuTab(QSettings* settings, QWidget* parent) : QWidget(parent), ui(new U
     m_settings = settings;
 
     // Hide unfinished UI elements
-    ui->groupBoxOverclock->hide();
+    // ui->overclockGroup->hide();
     ui->radioButtonGraph->hide();
     ui->pushButtonGraph->hide();
     ui->pushButtonChart->hide();
@@ -20,10 +20,31 @@ GpuTab::GpuTab(QSettings* settings, QWidget* parent) : QWidget(parent), ui(new U
     m_temp_info = new DoubleLabel(this, "%1°C", 100);
     ui->formLayoutStatus->insertRow(0, m_temp_label, m_temp_info);
 
+    int row;
+    QFormLayout::ItemRole role;
+
+    m_core_slider = new GpuSlider(this);
+    m_core_slider->setDisabled(true);
+    ui->overclockLayout->getWidgetPosition(ui->coreClockCheck, &row, &role);
+    ui->overclockLayout->setWidget(row, QFormLayout::FieldRole, m_core_slider);
+    connect(ui->coreClockCheck, &QCheckBox::stateChanged, m_core_slider, &GpuSlider::setEnabled);
+
+    m_mem_slider = new GpuSlider(this);
+    m_mem_slider->setDisabled(true);
+    ui->overclockLayout->getWidgetPosition(ui->memClockCheck, &row, &role);
+    ui->overclockLayout->setWidget(row, QFormLayout::FieldRole, m_mem_slider);
+    connect(ui->memClockCheck, &QCheckBox::stateChanged, m_mem_slider, &GpuSlider::setEnabled);
+
+    m_power_slider = new GpuSlider(this);
+    m_power_slider->setDisabled(true);
+    ui->overclockLayout->getWidgetPosition(ui->powerLimitCheck, &row, &role);
+    ui->overclockLayout->setWidget(row, QFormLayout::FieldRole, m_power_slider);
+    connect(ui->powerLimitCheck, &QCheckBox::stateChanged, m_power_slider, &GpuSlider::setEnabled);
+
 #if USE_CHARTS
     connect(ui->pushButtonChart, SIGNAL(pressed()), this, SLOT(showChart()));
 #endif
-    connect(ui->pushButtonReset, SIGNAL(pressed()), this, SLOT(resetMaximums()));
+    connect(ui->pushButtonReset, &QPushButton::pressed, this, &GpuTab::resetMaximums);
 }
 
 GpuTab::~GpuTab()

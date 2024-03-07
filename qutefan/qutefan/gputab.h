@@ -7,6 +7,7 @@
 
 #include "control.h"
 #include "doublelabel.h"
+#include "gpuslider.h"
 
 namespace Ui {
 class GpuTab;
@@ -53,6 +54,10 @@ protected:
 
     QVector<QLabel*>      m_fan_label;
     QVector<DoubleLabel*> m_fan_info;
+
+    GpuSlider*   m_core_slider;
+    GpuSlider*   m_mem_slider;
+    GpuSlider*   m_power_slider;
 
     Ui::GpuTab* ui;
 private:

@@ -48,7 +48,7 @@ QuteFan::QuteFan(QWidget *parent) : QMainWindow(parent), ui(new Ui::QuteFan)
     }
 #endif
     else {
-        QMessageBox::critical(this, "Error", "No supported hardware was found.");
+        QMessageBox::critical(this, "Error", "No supported hardware found.");
         qApp->quit();
     }
 

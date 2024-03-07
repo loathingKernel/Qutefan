@@ -4,7 +4,7 @@
 #include <QDateTime>
 
 #include "gputab.h"
-#include "control_nvctrl.h"
+#include "qnvctrl.h"
 
 namespace Ui {
 class GpuTabNVCtrl;

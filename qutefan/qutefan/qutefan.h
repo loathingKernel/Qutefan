@@ -15,7 +15,7 @@
 #include "control_nvapi.h"
 #include "gputab_nvapi.h"
 #elif defined(Q_OS_LINUX)
-#include "control_nvctrl.h"
+#include "qnvctrl.h"
 #include "gputab_nvctrl.h"
 #endif
 
