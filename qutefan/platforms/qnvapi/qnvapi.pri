@@ -1,5 +1,3 @@
-include(../common/common.pri)
-
 win32-g++ {
     DEFINES += __NVAPI_EMPTY_SAL
 }

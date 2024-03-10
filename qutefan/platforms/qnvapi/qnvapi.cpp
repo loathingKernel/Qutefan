@@ -113,7 +113,7 @@ void ControlNvAPI::setCoolerManualControl(NvGPU *gpu, bool enable)
 
 Control::CoolerLevels ControlNvAPI::getCoolerLevels(NvGPU *gpu)
 {
-    CoolerLevels levels;
+    CoolerLevels levels = {};
     if (gpu->rtx) {
         NV_GPU_FAN_COOLERS_STATUS status = {};
         gpu->status = m_nvapi->GPU_GetClientFanCoolersStatus(gpu->handle, &status);
@@ -153,7 +153,7 @@ Control::Temperatures ControlNvAPI::getGpuTemperatures(NvGPU *gpu)
     NV_GPU_THERMAL_SETTINGS nv_thermal_settings = {};
     gpu->status = m_nvapi->GPU_GetThermalSettings(gpu->handle, NVAPI_THERMAL_TARGET_ALL, &nv_thermal_settings);
 
-    Temperatures temps;
+    Temperatures temps = {};
     for (unsigned int t = 0; t < nv_thermal_settings.count; ++t) {
         switch(nv_thermal_settings.sensor[t].target) {
             case NVAPI_THERMAL_TARGET_GPU: {
@@ -210,3 +210,4 @@ Control::Frequencies ControlNvAPI::getCurrentClockFrequencies(NvGPU *gpu)
     }
     return freqs;
 }
+

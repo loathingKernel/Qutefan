@@ -1,5 +1,4 @@
-#ifndef QNVAPI_H
-#define QNVAPI_H
+#pragma once
 
 #include <QtGlobal>
 #include <QVector>
@@ -21,7 +20,6 @@ public:
     typedef struct _NvGPU : NvGPUBase {
         NvAPI_Status status;
         NvPhysicalGpuHandle handle;
-        unsigned int cooler_count;
         bool rtx;
     } NvGPU;
     QVector<NvGPU> m_gpu;
@@ -42,10 +40,9 @@ public:
     void setCoolerManualControl(NvGPU *, bool);
     void setCoolerLevels(NvGPU *, int);
 
-    CoolerLevels getCoolerLevels(NvGPU *);
     CoolerLimits getCoolerLimits(NvGPU *);
+    CoolerLevels getCoolerLevels(NvGPU *);
     Temperatures getGpuTemperatures(NvGPU *);
     Frequencies  getCurrentClockFrequencies(NvGPU *);
 };
 
-#endif // QNVAPI_H

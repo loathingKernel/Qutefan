@@ -12,8 +12,8 @@
 class ControlNVCtrl : public Control
 {
 public:
-    Display *m_dpy;
-    int m_screen;
+    Display *dpy;
+    int screen;
 
     bool status;
 
@@ -30,7 +30,7 @@ public:
     } NvCooler;
 
     int gpu_count = 0;
-    typedef struct {
+    typedef struct _NvGPU : NvGPUBase {
         bool status;
         uint32_t handle;
         int cooler_count;
@@ -55,8 +55,8 @@ public:
     void setCoolerManualControl(NvGPU *, bool);
     void setCoolerLevels(NvGPU *, int);
 
-    CoolerLevels getCoolerLevels(NvGPU *);
     CoolerLimits getCoolerLimits(NvGPU *);
+    CoolerLevels getCoolerLevels(NvGPU *);
     Temperatures getGpuTemperatures(NvGPU *);
     Frequencies  getCurrentClockFrequencies(NvGPU *);
 
@@ -78,3 +78,4 @@ private:
 
     int getNvXScreen(Display*);
 };
+

@@ -8,17 +8,47 @@
 #include "control.h"
 #include "include/nvml.h"
 
-class ControlNVML : public Control
+class ControlNvml : public Control
 {
 public:
-    Display *m_dpy;
-    int m_screen;
+    Display *dpy;
+    int screen;
 
-    bool m_status;
+    nvmlReturn_t status;
 
-    ControlNVML();
-    ~ControlNVML();
+    char version[NVML_SYSTEM_NVML_VERSION_BUFFER_SIZE] = {};
+    char driver_version[NVML_SYSTEM_DRIVER_VERSION_BUFFER_SIZE] = {};
+
+    typedef struct {
+        unsigned int handle;
+        unsigned int default_level;
+        unsigned int current_level;
+    } NvCooler;
+
+    unsigned int gpu_count = 0;
+    typedef struct _NvGPU : NvGPUBase {
+        nvmlReturn_t status;
+        nvmlDevice_t handle;
+        QVector<NvCooler> cooler;
+    } NvGPU;
+    QVector<NvGPU> m_gpu;
+
+    ControlNvml();
+    ~ControlNvml();
 
     bool available();
     void initialize();
+
+    const QString name(NvGPU *);
+    const QString uuid(NvGPU *);
+
+    NvGPU *getGpuByIndex(int index);
+    int  getCoolerCount(NvGPU *);
+    void setCoolerManualControl(NvGPU *, bool);
+    void setCoolerLevels(NvGPU *, int);
+
+    CoolerLimits getCoolerLimits(NvGPU *);
+    CoolerLevels getCoolerLevels(NvGPU *);
+    Temperatures getGpuTemperatures(NvGPU *);
+    Frequencies  getCurrentClockFrequencies(NvGPU *);
 };

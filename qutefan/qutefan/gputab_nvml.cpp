@@ -1,10 +1,10 @@
 #include "ui_gputab.h"
-#include "gputab_nvapi.h"
+#include "gputab_nvml.h"
 
-GpuTabNvAPI::GpuTabNvAPI(ControlNvAPI* api,
-                         ControlNvAPI::NvGPU* gpu,
-                         QSettings* settings,
-                         QWidget* parent) : GpuTab(settings, parent)
+GpuTabNvml::GpuTabNvml(ControlNvml* api,
+                       ControlNvml::NvGPU* gpu,
+                       QSettings* settings,
+                       QWidget* parent) : GpuTab(settings, parent)
 {
     m_api = api;
     m_gpu = gpu;
@@ -19,17 +19,17 @@ GpuTabNvAPI::GpuTabNvAPI(ControlNvAPI* api,
     loadSettings(QString(m_api->uuid(m_gpu)));
 }
 
-GpuTabNvAPI::~GpuTabNvAPI()
+GpuTabNvml::~GpuTabNvml()
 {
 
 }
 
-void GpuTabNvAPI::saveGpuSettings()
+void GpuTabNvml::saveGpuSettings()
 {
     saveSettings(QString(m_api->uuid(m_gpu)));
 }
 
-void GpuTabNvAPI::setGPUDefaults()
+void GpuTabNvml::setGPUDefaults()
 {
     Control::CoolerLimits limits = m_api->getCoolerLimits(m_gpu);
     m_api->setCoolerLevels(m_gpu, limits.minimum);
@@ -37,7 +37,7 @@ void GpuTabNvAPI::setGPUDefaults()
     qDebug("Restored defaults for GPU");
 }
 
-void GpuTabNvAPI::regulateFans()
+void GpuTabNvml::regulateFans()
 {
     Control::Temperatures temps = m_api->getGpuTemperatures(m_gpu);
     m_temp_info->setValue(temps.gpu);
@@ -72,7 +72,7 @@ void GpuTabNvAPI::regulateFans()
     last_mode = mode;
 
     Control::CoolerLevels levels = m_api->getCoolerLevels(m_gpu);
-    for (int c = 0; c < levels.count; ++c) {
+    for (unsigned int c = 0; c < levels.count; ++c) {
         m_fan_info[c]->setValue(levels.current[c]);
     }
 #if USE_CHARTS
@@ -84,7 +84,7 @@ void GpuTabNvAPI::regulateFans()
 # endif
 }
 
-void GpuTabNvAPI::displayFrequencies()
+void GpuTabNvml::displayFrequencies()
 {
     Control::Frequencies frequency = m_api->getCurrentClockFrequencies(m_gpu);
     ui->labelStatusCoreCur->setText(QString("%1Mhz").arg(frequency.core));
@@ -92,12 +92,12 @@ void GpuTabNvAPI::displayFrequencies()
     ui->labelStatusShaderCur->setText(QString("%1Mhz").arg(frequency.shader));
 }
 
-void GpuTabNvAPI::resetMaximums()
+void GpuTabNvml::resetMaximums()
 {
     Control::Temperatures temps = m_api->getGpuTemperatures(m_gpu);
     m_temp_info->setValue(temps.gpu, true);
     Control::CoolerLevels levels = m_api->getCoolerLevels(m_gpu);
-    for (int c = 0; c < levels.count; ++c) {
+    for (unsigned int c = 0; c < levels.count; ++c) {
         m_fan_info[c]->setValue(levels.current[c], true);
     }
 }

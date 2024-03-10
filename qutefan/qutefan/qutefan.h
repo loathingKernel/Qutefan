@@ -11,8 +11,11 @@
 
 #include "trayicon.h"
 
-#if defined(Q_OS_WIN)
-#include "control_nvapi.h"
+#if defined(USE_NVML)
+#include "qnvml.h"
+#include "gputab_nvml.h"
+#elif defined(Q_OS_WIN)
+#include "qnvapi.h"
 #include "gputab_nvapi.h"
 #elif defined(Q_OS_LINUX)
 #include "qnvctrl.h"
@@ -50,7 +53,9 @@ private:
 
     QSettings* settings;
 
-#if defined(Q_OS_WIN)
+#if defined(USE_NVML)
+    ControlNvml* m_control_nvml;
+#elif defined(Q_OS_WIN)
     ControlNvAPI* m_control_nvapi;
 #elif defined(Q_OS_LINUX)
     ControlNVCtrl* m_control_nvctrl;

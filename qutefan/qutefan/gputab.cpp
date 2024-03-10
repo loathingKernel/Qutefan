@@ -8,7 +8,7 @@ GpuTab::GpuTab(QSettings* settings, QWidget* parent) : QWidget(parent), ui(new U
     m_settings = settings;
 
     // Hide unfinished UI elements
-    // ui->overclockGroup->hide();
+    ui->overclockGroup->hide();
     ui->radioButtonGraph->hide();
     ui->pushButtonGraph->hide();
     ui->pushButtonChart->hide();
@@ -94,7 +94,7 @@ void GpuTab::loadSettings(const QString &uuid)
 
 void GpuTab::addCoolers(Control::CoolerLevels levels)
 {
-    for (int c = 0; c < levels.count; ++c) {
+    for (unsigned int c = 0; c < levels.count; ++c) {
         QLabel* label = new QLabel(QString("Fan %1 level:").arg(c));
         DoubleLabel* info = new DoubleLabel(this, "%1%", 100);
         info->setValue(levels.current[c]);
@@ -103,3 +103,50 @@ void GpuTab::addCoolers(Control::CoolerLevels levels)
         m_fan_info.push_back(info);
     }
 }
+
+#if USE_CHARTS
+void GpuTab::showChart()
+{
+    if(ui->groupBoxCharts->isVisible()) {
+        return;
+    }
+
+    QLineSeries *series = new QLineSeries();
+    //TODO: fix this after testing
+    for (unsigned long i = 0; i < 600; i++)
+        if (history[i].level != 0)
+            series->append(history[i].time.toMSecsSinceEpoch(), history[i].level);
+
+    QChart *chart = new QChart();
+    chart->legend()->hide();
+    chart->addSeries(series);
+    chart->setTitle("Fan Speed");
+    chart->setMargins(QMargins(0,0,0,0));
+    //chart->setBackgroundRoundness(0);
+
+    QDateTimeAxis *axisX = new QDateTimeAxis;
+    axisX->setRange(QDateTime::currentDateTime().addSecs(-300), QDateTime::currentDateTime());
+    axisX->setTickCount(10);
+    axisX->setFormat("HH:mm:ss");
+    axisX->setTitleText("Time");
+    chart->addAxis(axisX, Qt::AlignBottom);
+    series->attachAxis(axisX);
+
+    QValueAxis *axisY = new QValueAxis;
+    axisY->setMax(max_level + 10);
+    axisY->setLabelFormat("%i");
+    axisY->setTitleText("Duty Cycle (%)");
+    chart->addAxis(axisY, Qt::AlignLeft);
+    series->attachAxis(axisY);
+
+    QChartView *chartView = new QChartView(chart);
+    chartView->setRenderHint(QPainter::Antialiasing);
+
+    //popup->resize(820, 600);
+    ui->groupBoxCharts->resize(640, 480);
+    chartView->resize(ui->groupBoxCharts->size());
+    ui->groupBoxCharts->layout()->addWidget(chartView);
+    ui->groupBoxCharts->show();
+    //popup->show();
+}
+#endif

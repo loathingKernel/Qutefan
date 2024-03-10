@@ -1,9 +1,12 @@
-#ifndef GPUTAB_H
-#define GPUTAB_H
+#pragma once
 
 #include <QLabel>
 #include <QWidget>
 #include <QSettings>
+
+#if USE_CHARTS
+#include <QtCharts>
+#endif
 
 #include "control.h"
 #include "doublelabel.h"
@@ -59,9 +62,18 @@ protected:
     GpuSlider*   m_mem_slider;
     GpuSlider*   m_power_slider;
 
+#if USE_CHARTS
+    typedef struct {
+        QDateTime time;
+        int level;
+        int temp;
+    } NvLogger;
+    NvLogger history[600] = {};
+    NvLogger* current_entry = history;
+# endif
+
     Ui::GpuTab* ui;
+
 private:
     QSettings* m_settings;
 };
-
-#endif // GPUTAB_H

@@ -1,5 +1,3 @@
-include(../common/common.pri)
-
 SOURCES += \
     $$PWD/qnvml.cpp
 
@@ -8,3 +6,7 @@ HEADERS += \
     $$PWD/qnvml.h
 
 INCLUDEPATH += $$PWD
+
+unix {
+LIBS += -lXext -lX11 -lnvidia-ml
+}

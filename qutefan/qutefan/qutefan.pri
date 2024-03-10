@@ -17,20 +17,24 @@ FORMS += \
     $$PWD/qutefan.ui \
     $$PWD/gputab.ui
 
+use_nvml {
+SOURCES += \
+    $$PWD/gputab_nvml.cpp
+HEADERS += \
+    $$PWD/gputab_nvml.h
+}
 
-win32 {
+!use_nvml: win32 {
 SOURCES += \
     $$PWD/gputab_nvapi.cpp
 HEADERS += \
     $$PWD/gputab_nvapi.h
 }
 
-unix {
+!use_nvml: unix {
 SOURCES += \
     $$PWD/gputab_nvctrl.cpp
 HEADERS += \
     $$PWD/gputab_nvctrl.h
-
-LIBS += -lXext -lX11 -lXNVCtrl -lXext -lnvidia-ml
 }
 

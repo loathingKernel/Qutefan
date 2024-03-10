@@ -17,7 +17,22 @@ QuteFan::QuteFan(QWidget *parent) : QMainWindow(parent), ui(new Ui::QuteFan)
                 qApp->applicationName(),
                 this);
 
-#if defined(Q_OS_WIN)
+#if defined(USE_NVML)
+    m_control_nvml = new ControlNvml();
+
+    if(m_control_nvml->available()) {
+        m_control_nvml->initialize();
+
+        for(unsigned int g = 0; g < m_control_nvml->gpu_count; ++g) {
+            ControlNvml::NvGPU *gpu = m_control_nvml->getGpuByIndex(g);
+            GpuTabNvml *tab = new GpuTabNvml(m_control_nvml, gpu, settings, this);
+            m_gpu_tab.append(tab);
+            ui->tabWidgetGpu->addTab(
+                m_gpu_tab[g], QString("%1").arg(m_control_nvml->name(gpu))
+                );
+        }
+    }
+#elif defined(Q_OS_WIN) // Windows fallback
     m_control_nvapi = new ControlNvAPI();
 
     if(m_control_nvapi->available()) {
@@ -32,7 +47,7 @@ QuteFan::QuteFan(QWidget *parent) : QMainWindow(parent), ui(new Ui::QuteFan)
             );
         }
     }
-#elif defined(Q_OS_LINUX)
+#elif defined(Q_OS_LINUX) // Linux fallback
     m_control_nvctrl = new ControlNVCtrl();
 
     if(m_control_nvctrl->available()) {
@@ -78,7 +93,9 @@ QuteFan::~QuteFan()
     for (int t = m_gpu_tab.size() - 1; t >= 0; --t)
         delete m_gpu_tab[t];
     saveSettings();
-#if defined(Q_OS_WIN)
+#if defined(USE_NVML)
+    delete m_control_nvml;
+#elif defined(Q_OS_WIN)
     delete m_control_nvapi;
 #elif defined(Q_OS_LINUX)
     delete m_control_nvctrl;
