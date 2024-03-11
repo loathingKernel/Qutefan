@@ -3,7 +3,7 @@
 #include <QtGlobal>
 #include <QVector>
 
-#include "qnvapi.h"
+#include "nvapi_glue.h"
 #include "control.h"
 
 class ControlNvAPI : public Control
@@ -24,7 +24,7 @@ public:
     } NvGPU;
     QVector<NvGPU> m_gpu;
 
-    QNvAPI *m_nvapi;
+    QNvAPIGlue *m_nvapi;
 
     ControlNvAPI();
     ~ControlNvAPI();

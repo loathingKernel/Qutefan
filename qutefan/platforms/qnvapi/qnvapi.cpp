@@ -2,7 +2,7 @@
 
 ControlNvAPI::ControlNvAPI()
 {
-    m_nvapi = new QNvAPI();
+    m_nvapi = new QNvAPIGlue();
 }
 
 ControlNvAPI::~ControlNvAPI()
@@ -38,7 +38,7 @@ void ControlNvAPI::initialize()
             gpu.status = m_nvapi->GPU_GetCoolerSettings(gpu.handle, NV_COOLER_TARGET_ALL, &settings);
             gpu.cooler_count = settings.count;
         }
-        qDebug("GPU %i: Number of coolers = %u", gpu_count, gpu.cooler_count);
+        qDebug("GPU %lu: Number of coolers = %u", gpu_count, gpu.cooler_count);
         m_gpu.push_back(gpu);
     }
     qDebug("Number of GPUs = %lu", gpu_count);

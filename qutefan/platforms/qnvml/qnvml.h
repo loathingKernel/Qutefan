@@ -3,17 +3,12 @@
 #include <QtGlobal>
 #include <QVector>
 
-#include <X11/Xlib.h>
-
 #include "control.h"
 #include "include/nvml.h"
 
 class ControlNvml : public Control
 {
 public:
-    Display *dpy;
-    int screen;
-
     nvmlReturn_t status;
 
     char version[NVML_SYSTEM_NVML_VERSION_BUFFER_SIZE] = {};

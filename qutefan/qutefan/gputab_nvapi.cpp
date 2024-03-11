@@ -72,7 +72,7 @@ void GpuTabNvAPI::regulateFans()
     last_mode = mode;
 
     Control::CoolerLevels levels = m_api->getCoolerLevels(m_gpu);
-    for (int c = 0; c < levels.count; ++c) {
+    for (unsigned int c = 0; c < levels.count; ++c) {
         m_fan_info[c]->setValue(levels.current[c]);
     }
 #if USE_CHARTS
@@ -97,7 +97,7 @@ void GpuTabNvAPI::resetMaximums()
     Control::Temperatures temps = m_api->getGpuTemperatures(m_gpu);
     m_temp_info->setValue(temps.gpu, true);
     Control::CoolerLevels levels = m_api->getCoolerLevels(m_gpu);
-    for (int c = 0; c < levels.count; ++c) {
+    for (unsigned int c = 0; c < levels.count; ++c) {
         m_fan_info[c]->setValue(levels.current[c], true);
     }
 }

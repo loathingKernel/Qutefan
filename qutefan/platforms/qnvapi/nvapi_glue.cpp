@@ -196,7 +196,7 @@ NvAPI_Status QNvAPIGlue::GPU_GetTachReading(NvPhysicalGpuHandle hPhysicalGpu, Nv
     return status;
 }
 
-NvAPI_Status QNvAPI::GPU_GetAllClocks(__in NvPhysicalGpuHandle hPhysicalGpu, __inout NV_GPU_CLOCKS* pClocks)
+NvAPI_Status QNvAPIGlue::GPU_GetAllClocks(__in NvPhysicalGpuHandle hPhysicalGpu, __inout NV_GPU_CLOCKS* pClocks)
 {
     pClocks->version = NV_GPU_CLOCKS_VER;
     NvAPI_Status status = nvapi_GPU_GetAllClocks(hPhysicalGpu, pClocks);
@@ -205,7 +205,7 @@ NvAPI_Status QNvAPI::GPU_GetAllClocks(__in NvPhysicalGpuHandle hPhysicalGpu, __i
     return status;
 }
 
-NvAPI_Status QNvAPI::GPU_GetAllClockFrequencies(__in NvPhysicalGpuHandle hPhysicalGpu, __inout NV_GPU_CLOCK_FREQUENCIES* pClkFreqs)
+NvAPI_Status QNvAPIGlue::GPU_GetAllClockFrequencies(__in NvPhysicalGpuHandle hPhysicalGpu, __inout NV_GPU_CLOCK_FREQUENCIES* pClkFreqs)
 {
     pClkFreqs->version = NV_GPU_CLOCK_FREQUENCIES_VER;
     NvAPI_Status status = nvapi_GPU_GetAllClockFrequencies(hPhysicalGpu, pClkFreqs);
@@ -214,7 +214,7 @@ NvAPI_Status QNvAPI::GPU_GetAllClockFrequencies(__in NvPhysicalGpuHandle hPhysic
     return status;
 }
 
-NvAPI_Status QNvAPI::GPU_GetDynamicPstatesInfoEx(__in NvPhysicalGpuHandle hPhysicalGpu, __inout NV_GPU_DYNAMIC_PSTATES_INFO_EX* pDynamicPstatesInfoEx)
+NvAPI_Status QNvAPIGlue::GPU_GetDynamicPstatesInfoEx(__in NvPhysicalGpuHandle hPhysicalGpu, __inout NV_GPU_DYNAMIC_PSTATES_INFO_EX* pDynamicPstatesInfoEx)
 {
     pDynamicPstatesInfoEx->version = NV_GPU_PERF_PSTATES20_INFO_VER;
     NvAPI_Status status = nvapi_GPU_GetDynamicPstatesInfoEx(hPhysicalGpu, pDynamicPstatesInfoEx);
@@ -249,7 +249,7 @@ NvAPI_Status QNvAPIGlue::GPU_GetUsages(NvPhysicalGpuHandle hPhysicalGpu, NV_GPU_
     return status;
 }
 
-NvAPI_Status QNvAPI::GPU_GetCoolerSettings(__in NvPhysicalGpuHandle hPhysicalGpu, __in NvU32 coolerIndex, __inout NV_GPU_COOLER_SETTINGS* pCoolerSettings)
+NvAPI_Status QNvAPIGlue::GPU_GetCoolerSettings(__in NvPhysicalGpuHandle hPhysicalGpu, __in NvU32 coolerIndex, __inout NV_GPU_COOLER_SETTINGS* pCoolerSettings)
 {
     pCoolerSettings->version = NV_GPU_COOLER_SETTINGS_VER;
     NvAPI_Status status = nvapi_GPU_GetCoolerSettings(hPhysicalGpu, coolerIndex, pCoolerSettings);
