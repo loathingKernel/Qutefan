@@ -8,7 +8,7 @@ GpuTab::GpuTab(QSettings* settings, QWidget* parent) : QWidget(parent), ui(new U
     m_settings = settings;
 
     // Hide unfinished UI elements
-    ui->overclockGroup->hide();
+    //ui->overclockGroup->hide();
     ui->radioButtonGraph->hide();
     ui->pushButtonGraph->hide();
     ui->pushButtonChart->hide();
@@ -45,6 +45,8 @@ GpuTab::GpuTab(QSettings* settings, QWidget* parent) : QWidget(parent), ui(new U
     connect(ui->pushButtonChart, SIGNAL(pressed()), this, SLOT(showChart()));
 #endif
     connect(ui->pushButtonReset, &QPushButton::pressed, this, &GpuTab::resetMaximums);
+    connect(ui->overclockApplyButton, &QPushButton::pressed, this, &GpuTab::applyOverclock);
+
 }
 
 GpuTab::~GpuTab()
@@ -102,6 +104,11 @@ void GpuTab::addCoolers(Control::CoolerLevels levels)
         m_fan_label.push_back(label);
         m_fan_info.push_back(info);
     }
+}
+
+void GpuTab::setPowerLimits(Control::Limits limits)
+{
+    m_power_slider->setLimits(limits);
 }
 
 #if USE_CHARTS

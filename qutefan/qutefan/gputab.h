@@ -44,6 +44,8 @@ public:
     virtual void displayFrequencies() = 0;
 
 public slots:
+    virtual void applyOverclock() = 0;
+    virtual void resetOverclock() = 0;
     virtual void resetMaximums() = 0;
 #if USE_CHARTS
     virtual void showChart() = 0;
@@ -51,6 +53,7 @@ public slots:
 
 protected:
     void addCoolers(Control::CoolerLevels);
+    void setPowerLimits(Control::Limits);
 
     QLabel*      m_temp_label;
     DoubleLabel* m_temp_info;

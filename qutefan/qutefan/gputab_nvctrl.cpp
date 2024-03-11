@@ -49,23 +49,23 @@ void GpuTabNVCtrl::regulateFans()
     } else {
         int level = 0;
         m_api->setCoolerManualControl(m_gpu, true);
-        switch(mode) {
-            case GpuTab::FanMode::Off:
-            case GpuTab::FanMode::Graph:
-            case GpuTab::FanMode::Quiet:
-            default: {
-                Control::CoolerLimits limits = m_api->getCoolerLimits(m_gpu);
-                level = limits.minimum;
-                break;
-            }
-            case GpuTab::FanMode::Fixed: {
-                level = ui->spinBoxFixedLevel->text().toInt();
-                break;
-            }
-            case GpuTab::FanMode::Linear: {
-                level = temps.gpu + ui->spinBoxLinearOffset->text().toInt();
-                break;
-            }
+        switch (mode) {
+        case GpuTab::FanMode::Off:
+        case GpuTab::FanMode::Graph:
+        case GpuTab::FanMode::Quiet:
+        default: {
+            Control::CoolerLimits limits = m_api->getCoolerLimits(m_gpu);
+            level = limits.minimum;
+            break;
+        }
+        case GpuTab::FanMode::Fixed: {
+            level = ui->spinBoxFixedLevel->text().toInt();
+            break;
+        }
+        case GpuTab::FanMode::Linear: {
+            level = temps.gpu + ui->spinBoxLinearOffset->text().toInt();
+            break;
+        }
         }
         m_api->setCoolerLevels(m_gpu, level);
     }
@@ -90,6 +90,7 @@ void GpuTabNVCtrl::displayFrequencies()
     ui->labelStatusCoreCur->setText(QString("%1Mhz").arg(frequency.core));
     ui->labelStatusMemCur->setText(QString("%1Mhz").arg(frequency.memory));
     ui->labelStatusShaderCur->setText(QString("%1Mhz").arg(frequency.shader));
+    ui->labelStatusPowerCur->setText(QString("%1W").arg(frequency.power/1000));
 }
 
 void GpuTabNVCtrl::resetMaximums()

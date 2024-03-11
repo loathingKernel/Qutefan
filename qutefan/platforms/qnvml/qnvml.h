@@ -43,12 +43,16 @@ public:
     const QString uuid(NvGPU *);
 
     NvGPU *getGpuByIndex(int index);
-    int  getCoolerCount(NvGPU *);
     void setCoolerManualControl(NvGPU *, bool);
     void setCoolerLevels(NvGPU *, int);
+    void setPowerLimit(NvGPU *, int);
 
+    int          getCoolerCount(NvGPU *);
     CoolerLimits getCoolerLimits(NvGPU *);
     CoolerLevels getCoolerLevels(NvGPU *);
     Temperatures getGpuTemperatures(NvGPU *);
     Frequencies  getCurrentClockFrequencies(NvGPU *);
+    Limits       getPowerLimits(NvGPU *);
+    Limits       getCoreClockLimits(NvGPU *);
+    Limits       getMemClockLimits(NvGPU *);
 };

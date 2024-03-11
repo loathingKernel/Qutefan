@@ -122,6 +122,11 @@ void ControlNvml::setCoolerLevels(NvGPU *gpu, int level)
     }
 }
 
+void ControlNvml::setPowerLimit(NvGPU *gpu, int limit)
+{
+    gpu->status = nvmlDeviceSetPowerManagementLimit(gpu->handle, limit);
+}
+
 Control::Temperatures ControlNvml::getGpuTemperatures(NvGPU *gpu)
 {
     Temperatures temps = {};
@@ -136,6 +141,37 @@ Control::Frequencies ControlNvml::getCurrentClockFrequencies(NvGPU *gpu)
     gpu->status = nvmlDeviceGetClockInfo(gpu->handle, NVML_CLOCK_MEM,      &(freqs.memory));
     gpu->status = nvmlDeviceGetClockInfo(gpu->handle, NVML_CLOCK_SM,       &(freqs.shader));
     gpu->status = nvmlDeviceGetClockInfo(gpu->handle, NVML_CLOCK_VIDEO,    &(freqs.video));
+    gpu->status = nvmlDeviceGetClockInfo(gpu->handle, NVML_CLOCK_VIDEO,    &(freqs.video));
+    gpu->status = nvmlDeviceGetPowerUsage(gpu->handle, &(freqs.power));
     return freqs;
 }
 
+Control::Limits ControlNvml::getPowerLimits(NvGPU *gpu)
+{
+    Limits limits = {};
+    limits.denominator = 1000;
+    limits.type = Control::LimitType::CONTROL_LIMIT_WATTAGE;
+    gpu->status = nvmlDeviceGetPowerManagementLimitConstraints(gpu->handle, &(limits.minimum), &(limits.maximum));
+    gpu->status = nvmlDeviceGetPowerManagementLimit(gpu->handle, &(limits.current));
+    return limits;
+}
+
+Control::Limits ControlNvml::getCoreClockLimits(NvGPU *gpu)
+{
+    Limits limits = {};
+    limits.denominator = 1000;
+    limits.type = Control::LimitType::CONTROL_LIMIT_FREQUENCY;
+    // gpu->status = nvmlDeviceGetPowerManagementLimitConstraints(gpu->handle, &(limits.minimum), &(limits.maximum));
+    // gpu->status = nvmlDeviceGetPowerManagementLimit(gpu->handle, &(limits.current));
+    return limits;
+}
+
+Control::Limits ControlNvml::getMemClockLimits(NvGPU *gpu)
+{
+    Limits limits = {};
+    limits.denominator = 1000;
+    limits.type = Control::LimitType::CONTROL_LIMIT_FREQUENCY;
+    // gpu->status = nvmlDeviceGetPowerManagementLimitConstraints(gpu->handle, &(limits.minimum), &(limits.maximum));
+    // gpu->status = nvmlDeviceGetPowerManagementLimit(gpu->handle, &(limits.current));
+    return limits;
+}

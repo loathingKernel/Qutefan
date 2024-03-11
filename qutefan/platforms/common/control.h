@@ -40,6 +40,21 @@ public:
         unsigned int memory;
         unsigned int shader;
         unsigned int video;
+        unsigned int power;
     } Frequencies;
+
+    enum LimitType {
+        CONTROL_LIMIT_FREQUENCY = 1,
+        CONTROL_LIMIT_WATTAGE = 2,
+        CONTROL_LIMIT_RPM = 3,
+    };
+
+    typedef struct _Limits {
+        unsigned int maximum;
+        unsigned int minimum;
+        unsigned int current;
+        int denominator;
+        LimitType type;
+    } Limits;
 };
 

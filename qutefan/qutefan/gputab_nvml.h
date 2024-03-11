@@ -21,6 +21,8 @@ public:
     void displayFrequencies();
 
 private slots:
+    void applyOverclock();
+    void resetOverclock() { return; }
     void resetMaximums();
 
 private:
