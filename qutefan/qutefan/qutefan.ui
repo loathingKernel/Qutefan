@@ -2,14 +2,6 @@
 <ui version="4.0">
  <class>QuteFan</class>
  <widget class="QMainWindow" name="QuteFan">
-  <property name="geometry">
-   <rect>
-    <x>0</x>
-    <y>0</y>
-    <width>347</width>
-    <height>183</height>
-   </rect>
-  </property>
   <property name="sizePolicy">
    <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
     <horstretch>0</horstretch>
@@ -23,7 +15,7 @@
   <widget class="QWidget" name="centralWidget">
    <layout class="QVBoxLayout" name="verticalLayout">
     <property name="sizeConstraint">
-     <enum>QLayout::SetFixedSize</enum>
+     <enum>QLayout::SizeConstraint::SetFixedSize</enum>
     </property>
     <item>
      <widget class="QTabWidget" name="tabWidgetGpu">
@@ -38,7 +30,7 @@
     <item>
      <layout class="QHBoxLayout" name="horizontalLayoutInterval">
       <property name="sizeConstraint">
-       <enum>QLayout::SetFixedSize</enum>
+       <enum>QLayout::SizeConstraint::SetFixedSize</enum>
       </property>
       <item>
        <widget class="QLabel" name="labelInterval">
@@ -67,7 +59,13 @@
       <item>
        <spacer name="horizontalSpacerInterval">
         <property name="orientation">
-         <enum>Qt::Horizontal</enum>
+         <enum>Qt::Orientation::Horizontal</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>0</width>
+          <height>0</height>
+         </size>
         </property>
        </spacer>
       </item>
@@ -83,7 +81,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>347</width>
+     <width>177</width>
      <height>18</height>
     </rect>
    </property>
@@ -105,6 +103,7 @@
    <addaction name="menuFile"/>
    <addaction name="menuHelp"/>
   </widget>
+  <widget class="QStatusBar" name="statusBar"/>
   <action name="actionQuit">
    <property name="text">
     <string>Quit</string>
