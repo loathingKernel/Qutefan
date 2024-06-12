@@ -41,6 +41,10 @@ GpuTab::GpuTab(QSettings* settings, QWidget* parent) : QWidget(parent), ui(new U
     ui->overclockLayout->setWidget(row, QFormLayout::FieldRole, m_power_slider);
     connect(ui->powerLimitCheck, &QCheckBox::stateChanged, m_power_slider, &GpuSlider::setEnabled);
 
+#ifndef USE_NVML
+    ui->overclockGroup->setHidden(true);
+#endif
+
 #if USE_CHARTS
     connect(ui->pushButtonChart, SIGNAL(pressed()), this, SLOT(showChart()));
 #endif
